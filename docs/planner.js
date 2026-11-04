@@ -12,6 +12,11 @@ let fleet = [];
 let routes = [];
 let hubs = new Set();
 let airportCodes = [];
+let pilots = [];
+let flightLog = [];
+let flightsSince = null;
+// Cobertura de cada rota pela frota atual (preenchida em start()).
+let coverage = new Map();
 
 const state = { origin: "", prefix: "", plan: [], tab: "routes", focus: null };
 const number = new Intl.NumberFormat("pt-BR");
@@ -210,6 +215,8 @@ function routeRow({ route, miles }) {
       ? "Aeronaves aqui que alcançam: " + able.map(item => item.prefix + " (" + item.model + ")").join(", ")
       : "Nenhuma aeronave disponível aqui alcança este trecho."));
   }
+  const status = coverage.get(route)?.status;
+  if (!plane && status === "comprar") row.append(element("span", "tag bad", "Nenhuma aeronave da frota alcança esta rota"));
   return row;
 }
 
@@ -343,6 +350,178 @@ fleetTab.addEventListener("click", () => { state.tab = "fleet"; render(false); }
 document.querySelector("#world").addEventListener("click", worldView);
 document.querySelector("#reset").addEventListener("click", reset);
 
+// ---------- Frota × rotas ----------
+
+const money = value => {
+  const abs = Math.abs(value);
+  const [div, unit] = abs >= 1e9 ? [1e9, " bi"] : abs >= 1e6 ? [1e6, " mi"] : abs >= 1e3 ? [1e3, " mil"] : [1, ""];
+  return "P$ " + new Intl.NumberFormat("pt-BR", { maximumFractionDigits: div === 1 ? 0 : 1 }).format(value / div) + unit;
+};
+
+// comprar: nenhum modelo da frota tem alcance · indisponivel: só aeronaves em uso/manutenção alcançam ·
+// reposicionar: há aeronave capaz livre, mas não na origem · pronta: há aeronave capaz livre na origem.
+function routeCoverage(route) {
+  const miles = distance(route.origin, route.destination);
+  const capable = fleet.filter(plane => ["ok", "limite"].includes(reach(plane, miles)));
+  const free = capable.filter(plane => !unavailable(plane));
+  const here = free.filter(plane => plane.airport === route.origin);
+  const status = !capable.length ? "comprar" : !free.length ? "indisponivel" : !here.length ? "reposicionar" : "pronta";
+  // Modelos do catálogo do PilOps que alcançam a rota, do mais barato ao mais caro.
+  const options = miles === null ? [] : aircraftCatalog.filter(item => item.range >= miles).sort((a, b) => a.price - b.price);
+  return { route, miles, capable, free, here, status, options };
+}
+
+const coverageText = {
+  comprar: ["Precisa comprar", "bad"],
+  indisponivel: ["Só com aeronave indisponível", "warn"],
+  reposicionar: ["Reposicionar aeronave", "warn"],
+  pronta: ["Pronta para voar", "ok"],
+};
+
+function renderCoverage() {
+  const order = { comprar: 0, indisponivel: 1, reposicionar: 2, pronta: 3 };
+  const items = [...coverage.values()].sort((a, b) => order[a.status] - order[b.status] || (b.miles ?? 0) - (a.miles ?? 0));
+  const counts = items.reduce((acc, item) => (acc[item.status] = (acc[item.status] || 0) + 1, acc), {});
+  document.querySelector("#coverage-summary").textContent = [
+    counts.comprar && counts.comprar + (counts.comprar > 1 ? " rotas precisam" : " rota precisa") + " de aeronave que a frota não tem",
+    counts.indisponivel && counts.indisponivel + " só com aeronave em uso ou manutenção",
+    counts.reposicionar && counts.reposicionar + " com aeronave capaz em outro aeroporto",
+    counts.pronta && counts.pronta + (counts.pronta > 1 ? " prontas" : " pronta") + " para voar",
+  ].filter(Boolean).join(" · ") + ".";
+  const list = document.querySelector("#coverage");
+  list.replaceChildren(...items.map(item => {
+    const row = element("li");
+    const head = element("div", "row-head");
+    head.append(button(item.route.origin + " → " + item.route.destination, "item-heading", () => {
+      Object.assign(state, { origin: item.route.origin, plan: [], focus: item.route, tab: "routes" });
+      render(false);
+      frame(listedRoutes());
+      document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
+    }));
+    head.append(element("span", "tag " + coverageText[item.status][1], coverageText[item.status][0]));
+    row.append(head, element("span", "meta", item.route.code + " · " + nm(item.miles)));
+    const models = list => [...new Set(list.map(plane => plane.model))].join(", ");
+    let detail;
+    if (item.status === "comprar") {
+      const cheapest = item.options.slice(0, 5).map(option => option.name + " (" + money(option.price) + ")");
+      detail = cheapest.length
+        ? "Nenhum modelo da frota tem esse alcance. No PilOps, alcançam: " + cheapest.join(", ") +
+          (item.options.length > 5 ? " e mais " + (item.options.length - 5) + " modelos" : "") + "."
+        : "Nenhum modelo do catálogo do PilOps tem esse alcance sem escala.";
+    } else if (item.status === "indisponivel") {
+      detail = "Alcançam, mas estão indisponíveis agora: " + item.capable.map(p => p.prefix + " (" + statusLabel(p.status).toLowerCase() + ")").join(", ") + ".";
+    } else if (item.status === "reposicionar") {
+      detail = "Capazes e livres em outros aeroportos: " + item.free.map(p => p.prefix + " em " + p.airport).join(", ") +
+        ". Modelos: " + models(item.free) + ".";
+    } else {
+      detail = "Livres em " + item.route.origin + ": " + item.here.map(p => p.prefix + " (" + p.model + ")").join(", ") + ".";
+    }
+    row.append(element("span", "meta", detail));
+    return row;
+  }));
+}
+
+// ---------- Ranking de pilotos ----------
+
+const hoursText = minutes => Math.floor(minutes / 60) + "h" + String(minutes % 60).padStart(2, "0");
+const dayText = iso => iso ? iso.split("-").reverse().join("/") : "—";
+const ranking = { key: "companyMinutes", desc: true };
+
+function pilotStats() {
+  const registered = new Set(routes.map(route => route.origin + "-" + route.destination));
+  const rows = new Map(pilots.map(p => [p.name, { ...p, flights: 0, minutes: 0, nm: 0, revenue: 0, vtx: new Set(), last: null, member: true }]));
+  for (const flight of flightLog) {
+    if (!rows.has(flight.pilot)) {
+      rows.set(flight.pilot, { name: flight.pilot, role: null, level: null, totalMinutes: null, companyMinutes: null,
+        joined: null, flights: 0, minutes: 0, nm: 0, revenue: 0, vtx: new Set(), last: null, member: false });
+    }
+    const row = rows.get(flight.pilot);
+    row.flights++;
+    row.minutes += flight.minutes;
+    row.nm += flight.nm;
+    row.revenue += flight.revenue;
+    const pair = flight.origin + "-" + flight.destination;
+    if (registered.has(pair)) row.vtx.add(pair);
+    if (!row.last || flight.date > row.last) row.last = flight.date;
+  }
+  return [...rows.values()].map(row => ({ ...row, vtxCount: row.vtx.size }));
+}
+
+const rankingColumns = [
+  ["name", "Piloto"],
+  ["companyMinutes", "Horas na Vortex"],
+  ["flights", "Voos"],
+  ["minutes", "Horas voadas*"],
+  ["nm", "Distância*"],
+  ["revenue", "Receita*"],
+  ["vtxCount", "Rotas VTX*"],
+  ["last", "Último voo*"],
+];
+
+function renderRanking() {
+  const table = document.querySelector("#ranking");
+  const rows = pilotStats().sort((a, b) => {
+    const [x, y] = [a[ranking.key], b[ranking.key]];
+    const result = typeof x === "string" || typeof y === "string"
+      ? String(x ?? "").localeCompare(String(y ?? ""), "pt-BR")
+      : (x ?? -1) - (y ?? -1);
+    return (ranking.desc ? -result : result) || (b.companyMinutes ?? -1) - (a.companyMinutes ?? -1);
+  });
+  const head = element("tr");
+  for (const [key, title] of rankingColumns) {
+    const th = element("th");
+    th.setAttribute("scope", "col");
+    th.setAttribute("aria-sort", ranking.key === key ? (ranking.desc ? "descending" : "ascending") : "none");
+    th.append(button(title + (ranking.key === key ? (ranking.desc ? " ↓" : " ↑") : ""), "sort", () => {
+      Object.assign(ranking, ranking.key === key ? { desc: !ranking.desc } : { key, desc: key !== "name" });
+      renderRanking();
+    }));
+    head.append(th);
+  }
+  const body = rows.map((row, index) => {
+    const tr = element("tr", row.member ? "" : "former");
+    const name = element("td");
+    name.append(element("span", "rank", String(index + 1)), element("strong", "", "@" + row.name));
+    if (row.role) name.append(element("span", "tag neutral", row.role));
+    if (!row.member) name.append(element("span", "tag warn", "fora do painel"));
+    tr.append(name,
+      element("td", "", row.companyMinutes === null ? "—" : hoursText(row.companyMinutes)),
+      element("td", "", number.format(row.flights)),
+      element("td", "", row.flights ? hoursText(row.minutes) : "—"),
+      element("td", "", row.flights ? nm(row.nm) : "—"),
+      element("td", "", row.flights ? money(row.revenue) : "—"),
+      element("td", "", row.flights ? String(row.vtxCount) : "—"),
+      element("td", "", dayText(row.last)));
+    return tr;
+  });
+  const thead = element("thead");
+  thead.append(head);
+  const tbody = element("tbody");
+  tbody.append(...body);
+  table.replaceChildren(thead, tbody);
+
+  document.querySelector("#ranking-note").textContent = (pilots.length ? pilots.length + " pilotos no painel do PilOps. " : "") +
+    "Horas na Vortex vêm do PilOps. * Contado a partir dos voos lidos " +
+    (flightsSince ? "desde " + dayText(flightsSince) : "nas sincronizações") +
+    " (" + flightLog.length + " voos): o PilOps mostra só os 10 voos mais recentes, então sincronize com frequência para não perder nenhum.";
+
+  const pairs = new Map();
+  for (const flight of flightLog) {
+    const key = flight.origin + " → " + flight.destination;
+    const item = pairs.get(key) || { key, count: 0, pilots: new Set(), nm: flight.nm };
+    item.count++;
+    item.pilots.add(flight.pilot);
+    pairs.set(key, item);
+  }
+  const top = [...pairs.values()].sort((a, b) => b.count - a.count || b.nm - a.nm).slice(0, 5);
+  document.querySelector("#top-routes").replaceChildren(...(top.length ? top.map(item => {
+    const li = element("li");
+    li.append(element("strong", "", item.key), element("span", "meta",
+      item.count + (item.count > 1 ? " voos" : " voo") + " · " + nm(item.nm) + " · " + [...item.pilots].map(p => "@" + p).join(", ")));
+    return li;
+  }) : [element("li", "meta", "Nenhum voo lido ainda.")]));
+}
+
 async function start() {
   let data;
   try {
@@ -358,6 +537,10 @@ async function start() {
   fleet = data.fleet;
   routes = data.routes;
   hubs = new Set(data.hubs);
+  pilots = data.pilots || [];
+  flightLog = data.flights || [];
+  flightsSince = data.flightsSince || null;
+  coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
   airportCodes = [...new Set([
     ...hubs, ...fleet.map(plane => plane.airport),
@@ -388,6 +571,8 @@ async function start() {
       (unavailable(plane) ? " (" + statusLabel(plane.status).toLowerCase() + ")" : ""), plane.prefix));
   }
   render(false);
+  renderCoverage();
+  renderRanking();
 }
 
 start();

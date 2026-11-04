@@ -5,6 +5,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { buildSnapshot } from "./dados.mjs";
 
 const repo = fileURLToPath(new URL("../", import.meta.url));
 const dataFile = new URL("../docs/dados.json", import.meta.url);
@@ -14,42 +15,18 @@ const extensionOrigin = "chrome-extension://" + [...hex].map(n => String.fromCha
 const waitMinutes = 5;
 const maxAttempts = 2;
 
-const airportCode = /^[A-Z0-9]{3,5}$/;
-const tailCode = /^[A-Z0-9-]{2,12}$/;
-const isRecord = value => value !== null && typeof value === "object" && !Array.isArray(value);
-const label = (value, limit) => typeof value === "string" && value.trim() && value.length <= limit;
-
-// Mesmas regras de validação do site antigo: uma leitura incompleta nunca substitui os dados publicados.
-function cleanSnapshot(data) {
-  if (!isRecord(data) || !Array.isArray(data.fleet) || data.fleet.length < 1 || data.fleet.length > 250 ||
-      !Array.isArray(data.routes) || data.routes.length > 1000 ||
-      !Array.isArray(data.hubs) || data.hubs.length < 1 || data.hubs.length > 20 ||
-      !Number.isInteger(data.reportedFleet) || data.reportedFleet < data.fleet.length || data.reportedFleet > 250) return null;
-  const validCode = code => typeof code === "string" && airportCode.test(code);
-  const { fleet, routes, hubs } = data;
-  if (!fleet.every(p => isRecord(p) && typeof p.prefix === "string" && tailCode.test(p.prefix) &&
-    label(p.model, 120) && validCode(p.airport) && (p.base === null || validCode(p.base)) && label(p.status, 180)) ||
-    new Set(fleet.map(p => p.prefix)).size !== fleet.length ||
-    !routes.every(r => isRecord(r) && validCode(r.origin) && validCode(r.destination) &&
-      r.origin !== r.destination && typeof r.code === "string" && /^VTX[0-9]{1,12}$/.test(r.code)) ||
-    !hubs.every(validCode) || new Set(hubs).size !== hubs.length) return null;
-  return {
-    capturedAt: new Date().toISOString(),
-    reportedFleet: data.reportedFleet,
-    fleet: fleet.map(({ prefix, model, airport, base, status }) => ({ prefix, model, airport, base, status })),
-    routes: routes.map(({ origin, destination, code }) => ({ origin, destination, code })),
-    hubs,
-  };
-}
-
 function git(...args) {
   return execFileSync("git", ["-C", repo, ...args], { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] }).trim();
 }
 
-function publish(snapshot) {
+function publish(snapshot, report) {
   writeFileSync(dataFile, JSON.stringify(snapshot, null, 1) + "\n");
   console.log("Coleta gravada: " + snapshot.fleet.length + " aeronaves, " + snapshot.routes.length +
     " rotas e " + snapshot.hubs.length + " hubs.");
+  console.log(report.pilotsRead ? "Pilotos: " + snapshot.pilots.length + " lidos."
+    : "Pilotos: " + (report.pilotsInvalid ? "leitura inválida" : "aba não lida") + "; mantidos os da coleta anterior.");
+  console.log(report.flightsRead ? "Voos: " + report.flightsAdded + " novos (total guardado: " + snapshot.flights.length + ")."
+    : "Voos: " + (report.flightsInvalid ? "leitura inválida" : "aba não lida") + "; histórico guardado mantido.");
   if (snapshot.reportedFleet !== snapshot.fleet.length) {
     // Em 04/11/2026 a API do PilOps listava 15 aeronaves com o contador em 16: a diferença é do PilOps.
     console.log("Observação: o contador do PilOps mostra " + snapshot.reportedFleet + " aeronaves, mas o PilOps lista " +
@@ -127,13 +104,16 @@ const server = createServer(async (req, res) => {
       }
       return;
     }
-    const { fleet, routes, hubs, reportedFleet } = input;
-    const snapshot = cleanSnapshot({ fleet, routes, hubs, reportedFleet });
-    if (!snapshot) {
+    const { fleet, routes, hubs, reportedFleet, pilots, flights } = input;
+    let previous = null;
+    try { previous = JSON.parse(readFileSync(dataFile, "utf8")); } catch { /* primeira coleta */ }
+    const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights }, previous);
+    if (!built) {
       json(res, 422, { error: "Leitura incompleta." });
       return finish(1, "A leitura veio incompleta ou inválida. Os dados publicados foram mantidos.");
     }
-    publish(snapshot);
+    const { snapshot, report } = built;
+    publish(snapshot, report);
     json(res, 200, { capturedAt: snapshot.capturedAt, fleet: snapshot.fleet.length, routes: snapshot.routes.length });
     finish(0, "Sincronização concluída.");
   } catch (error) {

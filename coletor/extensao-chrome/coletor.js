@@ -77,6 +77,64 @@ function readCompany(section, openTab) {
     }
     return routes;
   }
+  const months = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+  const isoDay = (mon, dayNumber, year) => months[mon.toLowerCase()]
+    ? year + "-" + String(months[mon.toLowerCase()]).padStart(2, "0") + "-" + String(dayNumber).padStart(2, "0") : null;
+  const pilotLine = /^@[\w.-]{1,40}$/;
+  if (section === "Pilotos") {
+    // Painel de pilotos: @nome, ADMIN (opcional), Nv. N, horas totais, horas na empresa e data de entrada.
+    const start = body.indexOf("Painel de pilotos");
+    if (start < 0) return null;
+    const lines = body.slice(start).split("\n").map(t => t.trim()).filter(Boolean);
+    const expected = Number(body.slice(start).match(/(\d+)\s+pilotos?\s+cadastrados?/i)?.[1]);
+    const clock = value => { const m = /^(\d+):(\d{2})$/.exec(value || ""); return m ? Number(m[1]) * 60 + Number(m[2]) : null; };
+    const date = value => { const m = /^([A-Za-z]{3})\w*\s+(\d{1,2}),\s+(\d{4})$/.exec(value || ""); return m ? isoDay(m[1], m[2], m[3]) : null; };
+    const pilots = [];
+    for (let i = 0; i < lines.length; i++) {
+      if (!pilotLine.test(lines[i])) continue;
+      const block = lines.slice(i + 1, i + 12);
+      const next = block.findIndex(t => pilotLine.test(t));
+      const own = next < 0 ? block : block.slice(0, next);
+      const after = name => own[own.findIndex(t => t.toUpperCase().startsWith(name)) + 1];
+      const pilot = {
+        name: lines[i].slice(1), role: own.includes("ADMIN") ? "ADMIN" : null,
+        level: Number(own.find(t => /^Nv\.\s*\d+$/.test(t))?.match(/\d+/)?.[0]) || null,
+        totalMinutes: clock(after("HORAS TOTAIS")), companyMinutes: clock(after("HORAS NA EMPRESA")),
+        joined: date(own.find(t => date(t))),
+      };
+      if (pilot.totalMinutes === null || pilot.companyMinutes === null) return null;
+      pilots.push(pilot);
+    }
+    return pilots.length && pilots.length === expected ? pilots : null;
+  }
+  if (section === "Voos") {
+    // Histórico de voos (o PilOps mostra os 10 últimos): modelo, prefixo, @piloto, Rota, origem, destino,
+    // Data, duração, distância, carga e receita.
+    const start = body.indexOf("Histórico de voos");
+    if (start < 0) return null;
+    const lines = body.slice(start).split("\n").map(t => t.trim()).filter(Boolean);
+    const flights = [];
+    for (let i = 0; i < lines.length; i++) {
+      if (!pilotLine.test(lines[i])) continue;
+      const [prefix, model] = [lines[i - 1], lines[i - 2]];
+      const rest = lines.slice(i + 1, i + 10);
+      const day = /^Data:\s*([A-Za-z]{3})\w*\s+(\d{1,2}),\s+(\d{4})$/.exec(rest[3] || "");
+      const time = /^(\d+):(\d{2})$/.exec(rest[4] || "");
+      const nm = /^([\d.,]+)\s*nm$/i.exec(rest[5] || "");
+      const lbs = /^([\d.,]+)\s*lbs$/i.exec(rest[6] || "");
+      const money = /^P\$\s*(-?[\d,]+(?:\.\d+)?)$/.exec(rest[7] || "");
+      if (rest[0] !== "Rota" || !/^[A-Z0-9]{3,5}$/.test(rest[1] || "") || !/^[A-Z0-9]{3,5}$/.test(rest[2] || "") ||
+          !day || !isoDay(day[1], day[2], day[3]) || !time || !nm || !money || !/^[A-Z0-9-]{2,12}$/.test(prefix || "")) return null;
+      flights.push({
+        pilot: lines[i].slice(1), prefix, model, origin: rest[1], destination: rest[2], date: isoDay(day[1], day[2], day[3]),
+        minutes: Number(time[1]) * 60 + Number(time[2]), nm: Math.round(Number(nm[1].replace(/,/g, "")) * 100) / 100,
+        // Carga no formato brasileiro (39.063,77); receita no americano (4,616,708.05).
+        payload: lbs ? Math.round(Number(lbs[1].replace(/\./g, "").replace(",", "."))) : null,
+        revenue: Math.round(Number(money[1].replace(/,/g, "")) * 100) / 100,
+      });
+    }
+    return flights;
+  }
   return null;
 }
 
@@ -91,7 +149,7 @@ async function section(tabId, name) {
       if (result !== null && result !== undefined) return result;
       const tab = await chrome.tabs.get(tabId);
       opened = tab.url?.startsWith(company + "?tab=") &&
-        new URL(tab.url).searchParams.get("tab") === { Frota:"fleet", Hangares:"hangars", Hubs:"hubs", Rotas:"routes" }[name];
+        new URL(tab.url).searchParams.get("tab") === { Frota:"fleet", Hangares:"hangars", Hubs:"hubs", Rotas:"routes", Pilotos:"pilots", Voos:"flights" }[name];
     } catch { /* Wait for the company's page to finish loading. */ }
     await new Promise(resolve => setTimeout(resolve, 500));
   }
@@ -117,10 +175,13 @@ async function run() {
     const hangars = await section(tab.id, "Hangares");
     const hubs = await section(tab.id, "Hubs");
     const routes = await section(tab.id, "Rotas");
+    // Pilotos e voos são opcionais: se a aba não carregar, a frota e as rotas são publicadas assim mesmo.
+    const pilots = await section(tab.id, "Pilotos").catch(() => null);
+    const flights = await section(tab.id, "Voos").catch(() => null);
     await local("snapshot", {
       lease: job.lease,
       fleet: fleet.map(p => ({ ...p, base: hangars[p.prefix] ?? null })),
-      reportedFleet, hubs, routes,
+      reportedFleet, hubs, routes, pilots, flights,
     });
     await chrome.action.setBadgeText({ text: "OK" });
     await chrome.action.setTitle({ title: "Vortex · coleta concluída" });

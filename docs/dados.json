@@ -270,5 +270,187 @@
   "LBBG",
   "EDDH",
   "LEMD"
- ]
+ ],
+ "pilots": [
+  {
+   "name": "astronauta",
+   "role": "ADMIN",
+   "level": 1,
+   "totalMinutes": 113401,
+   "companyMinutes": 103101,
+   "joined": "2026-05-23"
+  },
+  {
+   "name": "Titanocs",
+   "role": null,
+   "level": 1,
+   "totalMinutes": 16666,
+   "companyMinutes": 4553,
+   "joined": "2026-10-20"
+  },
+  {
+   "name": "AlphaPrime",
+   "role": null,
+   "level": 1,
+   "totalMinutes": 218,
+   "companyMinutes": 218,
+   "joined": "2026-06-29"
+  },
+  {
+   "name": "Mathiasen",
+   "role": null,
+   "level": 1,
+   "totalMinutes": 574,
+   "companyMinutes": 0,
+   "joined": "2026-11-03"
+  },
+  {
+   "name": "Harris",
+   "role": null,
+   "level": 1,
+   "totalMinutes": 4309,
+   "companyMinutes": 0,
+   "joined": "2026-10-23"
+  },
+  {
+   "name": "PonAir",
+   "role": null,
+   "level": 1,
+   "totalMinutes": 2432,
+   "companyMinutes": 0,
+   "joined": "2026-10-31"
+  },
+  {
+   "name": "claudiobastos",
+   "role": null,
+   "level": 1,
+   "totalMinutes": 3251,
+   "companyMinutes": 0,
+   "joined": "2026-11-01"
+  }
+ ],
+ "pilotsCapturedAt": "2026-11-04T10:49:50.113Z",
+ "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-03",
+   "minutes": 186,
+   "nm": 1590.35,
+   "payload": 39064,
+   "revenue": 4616708.05
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NPC7VI",
+   "model": "Airbus A320neo",
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "date": "2026-11-03",
+   "minutes": 349,
+   "nm": 2875.87,
+   "payload": 19754,
+   "revenue": 1886262.36
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NK4I2I",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "RJTT",
+   "date": "2026-11-03",
+   "minutes": 663,
+   "nm": 5810.2,
+   "payload": 133476,
+   "revenue": 6534970.73
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SBRF",
+   "destination": "SBGL",
+   "date": "2026-11-03",
+   "minutes": 168,
+   "nm": 1003.22,
+   "payload": 32603,
+   "revenue": 2113799.19
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "date": "2026-11-03",
+   "minutes": 326,
+   "nm": 2875.87,
+   "payload": 67947,
+   "revenue": 6048575.99
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-02",
+   "minutes": 266,
+   "nm": 2372.45,
+   "payload": 55058,
+   "revenue": 6286816.84
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-02",
+   "minutes": 184,
+   "nm": 1590.35,
+   "payload": 38149,
+   "revenue": 4412133.93
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NK4I2I",
+   "model": "Douglas MD-11",
+   "origin": "RJTT",
+   "destination": "LEMD",
+   "date": "2026-11-02",
+   "minutes": 655,
+   "nm": 5810.2,
+   "payload": 133584,
+   "revenue": 9577807.97
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NE2XUQ",
+   "model": "Douglas MD-11",
+   "origin": "SUMU",
+   "destination": "SBCG",
+   "date": "2026-11-02",
+   "minutes": 103,
+   "nm": 865.05,
+   "payload": 21974,
+   "revenue": 3492461.6
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-02",
+   "minutes": 189,
+   "nm": 1590.35,
+   "payload": 39542,
+   "revenue": 4092620.47
+  }
+ ],
+ "flightsSince": "2026-11-02"
 }
