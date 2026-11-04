@@ -1,6 +1,6 @@
 # Planejador de rotas da Vortex Airways
 
-Site estático (GitHub Pages) com o mapa, a frota e as rotas da Vortex no PilOps: distância e alcance de cada rota, tempo estimado, montagem de planos de trechos, cobertura das rotas pela frota (o que comprar ou reposicionar) e ranking de pilotos.
+Site estático (GitHub Pages) com o mapa, a frota e as rotas da Vortex no PilOps: distância e alcance de cada rota, tempo estimado, montagem de planos de trechos, sugestões de rotas (circuitos fechados com rotas cadastradas, classificados em nacionais, continentais e intercontinentais; rotas sem voo que só esperam piloto; aeroportos mais e menos voados), cobertura das rotas pela frota (o que comprar ou reposicionar) e ranking de pilotos.
 
 ## Estrutura
 

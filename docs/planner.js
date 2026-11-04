@@ -17,6 +17,9 @@ let flightLog = [];
 let flightsSince = null;
 // Cobertura de cada rota pela frota atual (preenchida em start()).
 let coverage = new Map();
+// Circuitos fechados formados por rotas cadastradas (preenchidos em start()).
+let circuits = [];
+const ideas = { view: "circuitos", scope: "todas", limit: 12 };
 
 const state = { origin: "", prefix: "", plan: [], tab: "routes", focus: null };
 const number = new Intl.NumberFormat("pt-BR");
@@ -308,6 +311,7 @@ function render(moveMap = true) {
   renderPlan();
   drawMap(listed);
   if (moveMap) frame(listed);
+  renderSuggestions();
 }
 
 // ---------- Ações ----------
@@ -349,6 +353,231 @@ routeTab.addEventListener("click", () => { state.tab = "routes"; render(false); 
 fleetTab.addEventListener("click", () => { state.tab = "fleet"; render(false); });
 document.querySelector("#world").addEventListener("click", worldView);
 document.querySelector("#reset").addEventListener("click", reset);
+
+// ---------- Sugestões de rotas ----------
+
+const continentName = { SA: "Sul-americana", NA: "Norte-americana", EU: "Europeia", AS: "Asiática",
+  AF: "Africana", OC: "Oceânica", AN: "Antártica" };
+const countryName = (() => {
+  try {
+    const names = new Intl.DisplayNames(["pt-BR"], { type: "region" });
+    return code => { try { return names.of(code); } catch { return code; } };
+  } catch { return code => code; }
+})();
+
+// nacional: um só país · continental: um só continente · intercontinental: mais de um continente.
+function scopeOf(codes) {
+  const places = codes.map(code => airports[code]);
+  if (places.some(place => !place?.country)) return { kind: "indefinida", label: "Sem classificação" };
+  const countries = new Set(places.map(place => place.country));
+  const continents = new Set(places.map(place => place.continent));
+  if (countries.size === 1) return { kind: "nacional", label: "Nacional · " + countryName([...countries][0]) };
+  if (continents.size === 1) return { kind: "continental", label: continentName[[...continents][0]] || "Continental" };
+  return { kind: "intercontinental", label: "Intercontinental" };
+}
+
+// Para aeroportos isolados, do ponto de vista de uma companhia brasileira:
+// nacional = Brasil · continental = resto da América do Sul · intercontinental = fora dela.
+const airportScope = code => airports[code]?.country === "BR" ? "nacional"
+  : airports[code]?.continent === "SA" ? "continental" : "intercontinental";
+
+const flownPairs = () => {
+  const counts = new Map();
+  for (const flight of flightLog) {
+    const key = flight.origin + "-" + flight.destination;
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  return counts;
+};
+
+// Ciclos simples (sem repetir aeroporto) de 2 a 6 trechos usando só rotas cadastradas.
+function findCircuits(maxLegs = 6, maxCircuits = 300) {
+  const byOrigin = new Map();
+  for (const route of routes) {
+    if (!byOrigin.has(route.origin)) byOrigin.set(route.origin, []);
+    byOrigin.get(route.origin).push(route);
+  }
+  const found = new Map();
+  const walk = (start, legs) => {
+    if (found.size >= maxCircuits) return;
+    const here = legs.length ? legs.at(-1).destination : start;
+    const visited = new Set([start, ...legs.map(leg => leg.destination)]);
+    for (const route of byOrigin.get(here) || []) {
+      if (route.destination === start && legs.length >= 1) {
+        const cycle = [...legs, route];
+        // Mesma sequência de aeroportos, girada, é o mesmo circuito.
+        const stops = cycle.map(leg => leg.origin);
+        const turn = stops.indexOf([...stops].sort()[0]);
+        const key = [...stops.slice(turn), ...stops.slice(0, turn)].join("-");
+        if (!found.has(key)) found.set(key, cycle);
+      } else if (!visited.has(route.destination) && legs.length + 1 < maxLegs) {
+        walk(start, [...legs, route]);
+      }
+    }
+  };
+  for (const start of byOrigin.keys()) walk(start, []);
+  return [...found.values()].map(legs => {
+    const miles = legs.map(leg => distance(leg.origin, leg.destination));
+    return { legs, miles, total: miles.reduce((sum, value) => sum + (value ?? 0), 0),
+      longest: Math.max(...miles.map(value => value ?? Infinity)), scope: scopeOf(legs.map(leg => leg.origin)) };
+  });
+}
+
+// Gira o circuito para começar num aeroporto escolhido, num hub com aeronave pronta, ou num hub.
+function circuitFrom(circuit, start) {
+  const stops = circuit.legs.map(leg => leg.origin);
+  const capable = fleet.filter(plane => !unavailable(plane) && ["ok", "limite"].includes(reach(plane, circuit.longest)));
+  const pick = start && stops.includes(start) ? start
+    : stops.find(code => hubs.has(code) && capable.some(plane => plane.airport === code)) ||
+      stops.find(code => capable.some(plane => plane.airport === code)) ||
+      stops.find(code => hubs.has(code)) || stops[0];
+  const turn = stops.indexOf(pick);
+  const legs = [...circuit.legs.slice(turn), ...circuit.legs.slice(0, turn)];
+  const miles = [...circuit.miles.slice(turn), ...circuit.miles.slice(0, turn)];
+  const ready = capable.filter(plane => plane.airport === pick);
+  const anyCapable = fleet.filter(plane => ["ok", "limite"].includes(reach(plane, circuit.longest)));
+  return { ...circuit, legs, miles, start: pick, capable, ready, anyCapable };
+}
+
+function scopeMatches(scope) {
+  return ideas.scope === "todas" || scope.kind === ideas.scope;
+}
+
+function suggestionChip(kind, label, count) {
+  const chip = button(label + " (" + count + ")", "chip", () => { ideas.scope = kind; ideas.limit = 12; renderSuggestions(); });
+  chip.setAttribute("aria-pressed", String(ideas.scope === kind));
+  return chip;
+}
+
+function circuitRow(circuit, pairs) {
+  const row = element("li");
+  const head = element("div", "row-head");
+  head.append(element("strong", "circuit", [circuit.start, ...circuit.legs.map(leg => leg.destination)].join(" → ")));
+  const plane = circuit.ready[0] || circuit.capable[0] || null;
+  head.append(button("Montar no plano", "secondary small", () => {
+    Object.assign(state, { origin: circuit.start, prefix: plane?.prefix || "", plan: [...circuit.legs], focus: null, tab: "routes" });
+    render();
+    document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+  row.append(head);
+  const times = plane ? circuit.legs.map((leg, i) => blockMinutes(circuit.miles[i], plane)) : [];
+  const total = times.length && times.every(value => value !== null) ? clock(times.reduce((a, b) => a + b, 0)) + " de bloco com " + plane.model : "";
+  row.append(element("span", "meta", [circuit.legs.length + " trechos", nm(circuit.total), "maior trecho " + nm(circuit.longest), total]
+    .filter(Boolean).join(" · ")));
+  const never = circuit.legs.filter(leg => !pairs.has(leg.origin + "-" + leg.destination)).length;
+  const tags = element("div", "tags");
+  tags.append(element("span", "tag neutral", circuit.scope.label));
+  if (circuit.ready.length) {
+    tags.append(element("span", "tag ok", "Pronta em " + circuit.start + ": " + circuit.ready.map(p => p.prefix).join(", ")));
+  } else if (circuit.capable.length) {
+    tags.append(element("span", "tag warn", "Aeronave capaz em outro aeroporto: " +
+      circuit.capable.slice(0, 3).map(p => p.prefix + " em " + p.airport).join(", ")));
+  } else if (circuit.anyCapable.length) {
+    tags.append(element("span", "tag warn", "Só com aeronave indisponível agora"));
+  } else {
+    tags.append(element("span", "tag bad", "A frota não alcança o maior trecho"));
+  }
+  if (never) tags.append(element("span", "tag warn", never === circuit.legs.length ? "Nenhum trecho voado ainda"
+    : never + (never > 1 ? " trechos nunca voados" : " trecho nunca voado")));
+  row.append(tags);
+  return row;
+}
+
+function renderSuggestions() {
+  const list = document.querySelector("#ideas");
+  if (!list || !routes.length) return;
+  const pairs = flownPairs();
+  const start = state.origin || null;
+  const routeScopes = routes.map(route => ({ route, scope: scopeOf([route.origin, route.destination]) }));
+  const visibleCircuits = circuits.filter(circuit => !start || circuit.legs.some(leg => leg.origin === start))
+    .map(circuit => circuitFrom(circuit, start));
+
+  // Filtros por tipo, com contagem do que a aba atual mostra.
+  const scopeSource = ideas.view === "circuitos" ? visibleCircuits.map(c => c.scope)
+    : ideas.view === "pilotos" ? routeScopes.filter(item => !pairs.has(item.route.origin + "-" + item.route.destination)).map(item => item.scope)
+      : airportCodes.filter(code => airports[code]).map(code => ({ kind: airportScope(code) }));
+  const count = kind => scopeSource.filter(scope => kind === "todas" || scope.kind === kind).length;
+  document.querySelector("#idea-scopes").replaceChildren(
+    suggestionChip("todas", "Todas", count("todas")), suggestionChip("nacional", "Nacionais", count("nacional")),
+    suggestionChip("continental", "Continentais", count("continental")),
+    suggestionChip("intercontinental", "Intercontinentais", count("intercontinental")));
+  for (const tabButton of document.querySelectorAll("#idea-tabs button")) {
+    tabButton.setAttribute("aria-pressed", String(tabButton.dataset.view === ideas.view));
+  }
+
+  const summary = document.querySelector("#ideas-summary");
+  const rows = [];
+  if (ideas.view === "circuitos") {
+    const order = circuit => circuit.ready.length ? 0 : circuit.capable.length ? 1 : circuit.anyCapable.length ? 2 : 3;
+    const shown = visibleCircuits.filter(circuit => scopeMatches(circuit.scope))
+      .sort((a, b) => order(a) - order(b) || b.legs.length - a.legs.length || a.total - b.total);
+    summary.textContent = (start ? "Circuitos que começam e terminam em " + start + ". " : "Escolha um aeroporto de partida no filtro acima para ver só os circuitos que saem e voltam a ele. ") +
+      shown.length + (shown.length === 1 ? " circuito fechado" : " circuitos fechados") + " com rotas já cadastradas na Vortex.";
+    rows.push(...shown.slice(0, ideas.limit).map(circuit => circuitRow(circuit, pairs)));
+    if (shown.length > ideas.limit) {
+      const more = element("li", "more");
+      more.append(button("Mostrar mais " + Math.min(12, shown.length - ideas.limit) + " de " + (shown.length - ideas.limit),
+        "secondary small", () => { ideas.limit += 12; renderSuggestions(); }));
+      rows.push(more);
+    }
+  } else if (ideas.view === "pilotos") {
+    const order = { pronta: 0, reposicionar: 1, indisponivel: 2, comprar: 3 };
+    const waiting = routeScopes.filter(item => !pairs.has(item.route.origin + "-" + item.route.destination) && scopeMatches(item.scope))
+      .map(item => ({ ...item, cover: coverage.get(item.route) }))
+      .sort((a, b) => order[a.cover.status] - order[b.cover.status] || (b.cover.miles ?? 0) - (a.cover.miles ?? 0));
+    summary.textContent = "Rotas cadastradas sem nenhum voo registrado " + (flightsSince ? "desde " + dayText(flightsSince) : "nas coletas") +
+      ". As de aeronave pronta na origem só esperam um piloto.";
+    rows.push(...waiting.map(item => {
+      const row = element("li");
+      const head = element("div", "row-head");
+      head.append(button(item.route.origin + " → " + item.route.destination, "item-heading", () => {
+        Object.assign(state, { origin: item.route.origin, plan: [], focus: item.route, tab: "routes" });
+        render(false);
+        frame(listedRoutes());
+        document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
+      }));
+      head.append(element("span", "tag " + coverageText[item.cover.status][1], coverageText[item.cover.status][0]));
+      row.append(head, element("span", "meta", item.route.code + " · " + nm(item.cover.miles) + " · " + item.scope.label +
+        (item.cover.here.length ? " · livre na origem: " + item.cover.here.map(p => p.prefix).join(", ") : "")));
+      return row;
+    }));
+    if (!waiting.length) rows.push(element("li", "meta", "Todas as rotas deste tipo já têm voo registrado."));
+  } else {
+    // Movimentos = pousos + decolagens nos voos lidos.
+    const moves = new Map(airportCodes.map(code => [code, 0]));
+    for (const flight of flightLog) {
+      for (const code of [flight.origin, flight.destination]) moves.set(code, (moves.get(code) || 0) + 1);
+    }
+    const items = [...moves].map(([code, total]) => ({ code, total, scope: scopeOf([code]),
+      planes: fleet.filter(plane => plane.airport === code).length,
+      departures: routes.filter(route => route.origin === code).length }))
+      .filter(item => airports[item.code]);
+    const filtered = items.filter(item => ideas.scope === "todas" || airportScope(item.code) === ideas.scope);
+    const most = [...filtered].filter(item => item.total).sort((a, b) => b.total - a.total).slice(0, 6);
+    const least = [...filtered].sort((a, b) => a.total - b.total || b.departures - a.departures).slice(0, 8);
+    summary.textContent = "Pousos e decolagens nos " + flightLog.length + " voos lidos" +
+      (flightsSince ? " desde " + dayText(flightsSince) : "") + ". Aeroportos pouco voados são boas oportunidades de voo." +
+      (ideas.scope === "nacional" ? " Filtro: aeroportos no Brasil." : ideas.scope === "continental" ? " Filtro: resto da América do Sul." :
+        ideas.scope === "intercontinental" ? " Filtro: fora da América do Sul." : "");
+    const airportRow = item => {
+      const row = element("li");
+      const head = element("div", "row-head");
+      head.append(button(item.code + " · " + (airports[item.code].city || airportName(item.code)), "item-heading", () => chooseAirport(item.code)));
+      head.append(element("span", "tag " + (item.total ? "neutral" : "warn"), item.total ? item.total + (item.total > 1 ? " movimentos" : " movimento") : "Nunca voado"));
+      row.append(head, element("span", "meta", airportName(item.code) + " · " + countryName(airports[item.code].country) + " · " +
+        item.departures + (item.departures === 1 ? " rota de partida" : " rotas de partida") + " · " +
+        item.planes + (item.planes === 1 ? " aeronave aqui" : " aeronaves aqui")));
+      return row;
+    };
+    rows.push(element("li", "group", "Mais voados"), ...(most.length ? most.map(airportRow) : [element("li", "meta", "Nenhum voo lido ainda.")]),
+      element("li", "group", "Menos voados"), ...least.map(airportRow));
+  }
+  list.replaceChildren(...rows);
+}
+
+for (const tabButton of document.querySelectorAll("#idea-tabs button")) {
+  tabButton.addEventListener("click", () => { ideas.view = tabButton.dataset.view; ideas.limit = 12; renderSuggestions(); });
+}
 
 // ---------- Frota × rotas ----------
 
@@ -449,9 +678,9 @@ function pilotStats() {
 
 const rankingColumns = [
   ["name", "Piloto"],
-  ["companyMinutes", "Horas na Vortex"],
-  ["flights", "Voos"],
-  ["minutes", "Horas voadas*"],
+  ["companyMinutes", "Horas na Vortex (total)"],
+  ["flights", "Voos lidos*"],
+  ["minutes", "Horas nos voos lidos*"],
   ["nm", "Distância*"],
   ["revenue", "Receita*"],
   ["vtxCount", "Rotas VTX*"],
@@ -501,9 +730,10 @@ function renderRanking() {
   table.replaceChildren(thead, tbody);
 
   document.querySelector("#ranking-note").textContent = (pilots.length ? pilots.length + " pilotos no painel do PilOps. " : "") +
-    "Horas na Vortex vêm do PilOps. * Contado a partir dos voos lidos " +
-    (flightsSince ? "desde " + dayText(flightsSince) : "nas sincronizações") +
-    " (" + flightLog.length + " voos): o PilOps mostra só os 10 voos mais recentes, então sincronize com frequência para não perder nenhum.";
+    "\"Horas na Vortex (total)\" vem do PilOps e soma tudo desde a entrada do piloto na companhia. " +
+    "* As colunas com asterisco contam só os voos que o planejador já leu " +
+    (flightsSince ? "desde " + dayText(flightsSince) : "nas sincronizações") + " (" + flightLog.length + " voos), " +
+    "por isso são bem menores: o PilOps mostra só os 10 voos mais recentes, e elas crescem a cada sincronização.";
 
   const pairs = new Map();
   for (const flight of flightLog) {
@@ -541,6 +771,7 @@ async function start() {
   flightLog = data.flights || [];
   flightsSince = data.flightsSince || null;
   coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
+  circuits = findCircuits();
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
   airportCodes = [...new Set([
     ...hubs, ...fleet.map(plane => plane.airport),

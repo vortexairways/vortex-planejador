@@ -44,16 +44,17 @@ for (const r of lines) {
   airports.set(code, {
     score, lat: Math.round(lat * 1e4) / 1e4, lon: Math.round(lon * 1e4) / 1e4,
     name: r[col.name].replace(/\|/g, "/"), city: (r[col.municipality] || "").replace(/\|/g, "/"),
+    country: r[col.iso_country] || "", continent: r[col.continent] || "",
   });
 }
 
 const body = [...airports].sort(([a], [b]) => a.localeCompare(b))
-  .map(([code, a]) => [code, a.lat, a.lon, a.name, a.city].join("|")).join("\n");
+  .map(([code, a]) => [code, a.lat, a.lon, a.name, a.city, a.country, a.continent].join("|")).join("\n");
 writeFileSync(new URL("../docs/aeroportos.js", import.meta.url),
   "// Coordenadas de OurAirports (ourairports.com/data, domínio público). Gerado por tools/gerar-aeroportos.mjs.\n" +
-  "// Código | Latitude | Longitude | Nome | Cidade\n" +
+  "// Código | Latitude | Longitude | Nome | Cidade | País (ISO) | Continente (SA, NA, EU, AS, AF, OC, AN)\n" +
   "const airports = Object.fromEntries(" + JSON.stringify(body) + String.raw`.split("\n").map(line => {` + "\n" +
-  '  const [code, lat, lon, name, city] = line.split("|");\n' +
-  "  return [code, { lat: Number(lat), lon: Number(lon), name, city }];\n" +
+  '  const [code, lat, lon, name, city, country, continent] = line.split("|");\n' +
+  "  return [code, { lat: Number(lat), lon: Number(lon), name, city, country, continent }];\n" +
   "}));\n");
 console.log(airports.size + " aeroportos gravados.");
