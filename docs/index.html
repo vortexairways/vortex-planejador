@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mapa, frota, rotas e planejamento de trechos da Vortex Airways no PilOps.">
+  <meta name="theme-color" content="#0b1630">
+  <title>Planejador de rotas | Vortex Airways</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script defer src="./aeroportos.js?v=2"></script>
+  <script defer src="./aeronaves.js?v=1"></script>
+  <script defer src="./planner.js?v=1"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="shell top-inner">
+      <div class="brand"><span class="emblem" aria-hidden="true">V</span><div><strong>VORTEX</strong><small>AIRWAYS</small></div></div>
+      <a href="https://pilops.com/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1" target="_blank" rel="noopener noreferrer">Abrir Vortex no PilOps ↗</a>
+    </div>
+  </header>
+  <main class="shell">
+    <div class="intro">
+      <div>
+        <p class="eyebrow">VTX / OPERAÇÕES</p>
+        <h1>Planejador de rotas</h1>
+        <p>Escolha uma aeronave ou um aeroporto, veja distância e alcance de cada rota e monte uma sequência de trechos.</p>
+      </div>
+      <div class="summary" aria-label="Totais da coleta">
+        <div><strong id="total-fleet">–</strong><span>Aeronaves</span></div>
+        <div><strong id="total-routes">–</strong><span>Rotas</span></div>
+        <div><strong id="total-hubs">–</strong><span>Hubs</span></div>
+      </div>
+    </div>
+    <aside class="notice" aria-label="Situação dos dados">
+      <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p></div>
+    </aside>
+    <section class="card filters" aria-label="Filtros">
+      <label>Aeroporto de partida <select id="airport"><option value="">Todos os aeroportos</option></select></label>
+      <label>Aeronave por prefixo <select id="aircraft"><option value="">Toda a frota</option></select></label>
+      <button id="reset" class="secondary" type="button">Limpar seleção</button>
+    </section>
+    <div class="layout">
+      <section class="card map-card" aria-labelledby="map-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">REDE VTX</p><h2 id="map-title">Mapa mundial</h2></div>
+          <button id="world" class="secondary" type="button">Visão mundial</button>
+        </div>
+        <div id="map" aria-label="Mapa interativo de aeroportos e rotas"></div>
+        <div class="legend"><span><i class="hub"></i> Hub</span><span><i class="station"></i> Aeroporto</span><span><i class="line"></i> Trecho cadastrado</span><span><i class="line focus"></i> Trecho em destaque</span><span><i class="line planned"></i> Plano de trechos</span></div>
+      </section>
+      <section class="card results" aria-label="Resultados da busca">
+        <p class="eyebrow">SELEÇÃO</p>
+        <h2 id="selection">Toda a rede</h2>
+        <p id="selection-detail" class="detail" aria-live="polite"></p>
+        <div id="plan" class="plan" aria-live="polite" hidden></div>
+        <div class="tabs" aria-label="Tipo de resultado">
+          <button id="show-routes" type="button" aria-pressed="true">Rotas <span id="route-count"></span></button>
+          <button id="show-fleet" type="button" aria-pressed="false">Frota <span id="fleet-count"></span></button>
+        </div>
+        <ul id="results"></ul>
+      </section>
+    </div>
+    <footer>As linhas seguem o grande círculo entre os aeroportos. Distâncias são ortodrômicas, sem vento; alcance e tempo usam valores aproximados de catálogo por modelo e servem só para triagem. Confirme a disponibilidade da aeronave, a carga e a viabilidade do voo no PilOps antes de despachar. Coordenadas de <a href="https://ourairports.com/data/">OurAirports</a>.</footer>
+  </main>
+</body>
+</html>

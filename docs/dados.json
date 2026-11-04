@@ -1,0 +1,274 @@
+{
+ "capturedAt": "2026-11-04T03:26:55.190Z",
+ "reportedFleet": 16,
+ "fleet": [
+  {
+   "prefix": "NKZEIA",
+   "model": "Airbus A321",
+   "airport": "DAAG",
+   "base": "LEMD",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NNV7QI",
+   "model": "Airbus A220-300",
+   "airport": "LEMD",
+   "base": "LPMT",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NKB0HS",
+   "model": "Boeing 737 MAX",
+   "airport": "EFHK",
+   "base": "SABE",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NV71GV",
+   "model": "Boeing 727 Freighter",
+   "airport": "SBRF",
+   "base": "SUMU",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NPC7VI",
+   "model": "Airbus A320neo",
+   "airport": "LEMD",
+   "base": "EFHK",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "N6KZLB",
+   "model": "Douglas MD-11",
+   "airport": "SBGL",
+   "base": "KJFK",
+   "status": "MANUTENÇÃO"
+  },
+  {
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "airport": "KRDU",
+   "base": "LEMD",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "N4XBCS",
+   "model": "Boeing 707-320C",
+   "airport": "RJTT",
+   "base": "SABE",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NUTTBL",
+   "model": "Airbus A220-300",
+   "airport": "OSDI",
+   "base": "EDDH",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NZT75I",
+   "model": "Embraer E195",
+   "airport": "SUMU",
+   "base": "SABE",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "airport": "SBGL",
+   "base": "SBGL",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "airport": "EFHK",
+   "base": "RJTT",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "airport": "LEMD",
+   "base": "OTHH",
+   "status": "EM USO"
+  },
+  {
+   "prefix": "NK4I2I",
+   "model": "Douglas MD-11",
+   "airport": "RJTT",
+   "base": "SBGL",
+   "status": "EM USO"
+  },
+  {
+   "prefix": "NE2XUQ",
+   "model": "Douglas MD-11",
+   "airport": "SBGL",
+   "base": "SUMU",
+   "status": "Sem alerta no cartão"
+  }
+ ],
+ "routes": [
+  {
+   "origin": "EFHK",
+   "destination": "RJTT",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "SBSP",
+   "destination": "EFHK",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "SBRF",
+   "destination": "SBGL",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "KRDU",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "KRDU",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "RJTT",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "OTHH",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "LEMD",
+   "code": "VTX0002"
+  },
+  {
+   "origin": "KRDU",
+   "destination": "SBGL",
+   "code": "VTX0002"
+  },
+  {
+   "origin": "EFHK",
+   "destination": "SBSP",
+   "code": "VTX0002"
+  },
+  {
+   "origin": "SBGL",
+   "destination": "SUMU",
+   "code": "VTX0002"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "EFHK",
+   "code": "VTX0002"
+  },
+  {
+   "origin": "SBMA",
+   "destination": "SBRF",
+   "code": "VTX0003"
+  },
+  {
+   "origin": "LPPT",
+   "destination": "LPMT",
+   "code": "VTX0005"
+  },
+  {
+   "origin": "LPMT",
+   "destination": "LPPT",
+   "code": "VTX0006"
+  },
+  {
+   "origin": "OTHH",
+   "destination": "RJTT",
+   "code": "VTX0007"
+  },
+  {
+   "origin": "SBGL",
+   "destination": "LEMD",
+   "code": "VTX0008"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "SBGL",
+   "code": "VTX0009"
+  },
+  {
+   "origin": "SABE",
+   "destination": "SBCT",
+   "code": "VTX0082"
+  },
+  {
+   "origin": "SBCT",
+   "destination": "SBCF",
+   "code": "VTX0087"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "code": "VTX0090"
+  },
+  {
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "code": "VTX0091"
+  },
+  {
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "code": "VTX0092"
+  },
+  {
+   "origin": "SBEG",
+   "destination": "SBRF",
+   "code": "VTX0093"
+  },
+  {
+   "origin": "SBCG",
+   "destination": "SBMA",
+   "code": "VTX0099"
+  },
+  {
+   "origin": "SUMU",
+   "destination": "SBCG",
+   "code": "VTX0099"
+  },
+  {
+   "origin": "SBCP",
+   "destination": "OMDM",
+   "code": "VTX3331"
+  },
+  {
+   "origin": "SBKP",
+   "destination": "KRDU",
+   "code": "VTX3333"
+  },
+  {
+   "origin": "OMDM",
+   "destination": "SBCP",
+   "code": "VTX4444"
+  },
+  {
+   "origin": "KRDU",
+   "destination": "SBKP",
+   "code": "VTX4444"
+  }
+ ],
+ "hubs": [
+  "RJTT",
+  "KJFK",
+  "SABE",
+  "SBMA",
+  "OTHH",
+  "SBGL",
+  "LBBG",
+  "EDDH",
+  "LEMD"
+ ]
+}

@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Coletor local da Vortex",
+  "description": "Lê a frota, os hangares, os hubs e as rotas da Vortex na sessão do PilOps.",
+  "version": "1.1.0",
+  "background": {
+    "service_worker": "coletor.js"
+  },
+  "permissions": [
+    "alarms",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://pilops.com/*",
+    "http://127.0.0.1:8768/*"
+  ],
+  "action": {
+    "default_title": "Estado do coletor local da Vortex"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqYPxRFw1n6MHBw69GvVBTapSuDnoYshIXVRLV7LpSxbbNhHEjcgcj2R4QJutmKdUn/NJZDYLVcDCIqFMKN1C7sF78BbnOrfI6vE+SWY3w3V/XXiwfmZBhxJEPyXzs6p2oWEmF5hq43ul373zikRhmXGfKwlNMKXZzmwDeIH47OUqTQyvDUPPMurcLtljae8sCI8QDyoShPwDtrlT8hpEvRATVnWChPUhwyl3ansANmcA1W+2mSEJYBoQcUjp8Zsl3Rd4kSweJ4WsVv60Z4/Dk+D6MJPXPwIKWVbm+9fc25nOEyZpypFQo2KifBYP9bEQ/AtHsULFX9uTBSYqXLTu7QIDAQAB"
+}
