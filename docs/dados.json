@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-04T04:16:56.327Z",
+ "capturedAt": "2026-11-04T10:37:08.981Z",
  "reportedFleet": 16,
  "fleet": [
   {
@@ -91,7 +91,7 @@
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "OTHH",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NK4I2I",
@@ -105,7 +105,7 @@
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "SUMU",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   }
  ],
  "routes": [
