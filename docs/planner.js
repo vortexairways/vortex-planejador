@@ -354,6 +354,115 @@ fleetTab.addEventListener("click", () => { state.tab = "fleet"; render(false); }
 document.querySelector("#world").addEventListener("click", worldView);
 document.querySelector("#reset").addEventListener("click", reset);
 
+// ---------- Aeronaves fora da rede ----------
+
+// Rede = aeroportos de onde parte pelo menos uma rota cadastrada. Fora dela a aeronave não consegue
+// voar nenhuma rota VTX sem antes fazer um traslado.
+const networkAirports = () => new Set(routes.map(route => route.origin));
+const isRegistered = (origin, destination) => routes.some(route => route.origin === origin && route.destination === destination);
+const canFly = (plane, origin, destination) => ["ok", "limite"].includes(reach(plane, distance(origin, destination)));
+
+// Voo lido mais recente que levou a aeronave até onde ela está agora.
+function lastArrival(plane) {
+  return flightLog.filter(flight => flight.prefix === plane.prefix && flight.destination === plane.airport)
+    .sort((a, b) => b.date.localeCompare(a.date))[0] || null;
+}
+
+// Aeroportos da rede ao alcance, primeiro os que têm rota sem aeronave capaz livre na origem.
+function repositionOptions(plane) {
+  return [...networkAirports()].filter(code => airports[code] && code !== plane.airport).map(code => {
+    const miles = distance(plane.airport, code);
+    const flyable = routes.filter(route => route.origin === code && canFly(plane, route.origin, route.destination));
+    const needed = flyable.filter(route => !coverage.get(route)?.here.length);
+    return { code, miles, flyable, needed, minutes: blockMinutes(miles, plane) };
+  }).filter(option => canFly(plane, plane.airport, option.code) && option.flyable.length)
+    .sort((a, b) => (b.needed.length > 0) - (a.needed.length > 0) || a.miles - b.miles)
+    .map(option => ({ ...option, hangar: option.code === plane.base }))
+    .filter((option, index, all) => index < 3 || option.hangar); // as 3 melhores + o hangar da aeronave, se estiver na rede
+}
+
+function planFerry(plane, code) {
+  Object.assign(state, { prefix: plane.prefix, origin: plane.airport, focus: null, tab: "routes",
+    plan: [{ origin: plane.airport, destination: code, code: "Traslado" }] });
+  render();
+  document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderAlerts() {
+  const list = document.querySelector("#alerts");
+  if (!list) return;
+  const network = networkAirports();
+  const outside = fleet.filter(plane => !network.has(plane.airport));
+  const offRoute = flightLog.filter(flight => !isRegistered(flight.origin, flight.destination))
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const alert = document.querySelector("#fleet-alert");
+  alert.replaceChildren();
+  alert.hidden = !outside.length && !offRoute.length;
+  if (!alert.hidden) {
+    alert.append(button("⚠ " + [outside.length && outside.length + (outside.length > 1 ? " aeronaves fora da rede" : " aeronave fora da rede"),
+      offRoute.length && offRoute.length + (offRoute.length > 1 ? " voos fora das rotas cadastradas" : " voo fora das rotas cadastradas")]
+      .filter(Boolean).join(" · ") + " — ver avisos", "alert-link",
+      () => document.querySelector("#alerts-card").scrollIntoView({ behavior: "smooth", block: "start" })));
+  }
+
+  document.querySelector("#alerts-summary").textContent = outside.length
+    ? outside.length + (outside.length > 1 ? " aeronaves estão em aeroportos" : " aeronave está em aeroporto") +
+      " sem nenhuma rota cadastrada de partida. Abaixo, quem levou cada uma até lá (quando o voo foi lido) e para onde reposicionar."
+    : "Todas as aeronaves estão em aeroportos com rotas cadastradas de partida.";
+
+  const rows = [];
+  for (const plane of outside) {
+    const row = element("li");
+    const head = element("div", "row-head");
+    head.append(button(plane.prefix + " · " + plane.model, "item-heading", () => chooseAircraft(plane.prefix)));
+    head.append(element("span", "tag bad", "Fora da rede em " + plane.airport));
+    row.append(head);
+    const place = airports[plane.airport];
+    row.append(element("span", "meta", (place ? place.name + " · " + countryName(place.country) : plane.airport) +
+      (hubs.has(plane.airport) ? " · hub sem rotas de partida" : "") + " · " + statusLabel(plane.status) +
+      (plane.base ? " · hangar em " + plane.base : "")));
+    const arrival = lastArrival(plane);
+    row.append(element("span", "meta who", arrival
+      ? "Levada até " + plane.airport + " por @" + arrival.pilot + " em " + dayText(arrival.date) + " (voo " + arrival.origin + " → " +
+        arrival.destination + (isRegistered(arrival.origin, arrival.destination) ? ")." : ", fora das rotas cadastradas).")
+      : "Chegou a " + plane.airport + " antes dos voos lidos" + (flightsSince ? " (desde " + dayText(flightsSince) + ")" : "") +
+        ": o piloto responsável não aparece no histórico do PilOps."));
+    const options = repositionOptions(plane);
+    const box = element("div", "ferries");
+    if (!options.length) {
+      box.append(element("span", "meta", "Nenhum aeroporto da rede ao alcance desta aeronave sem escala."));
+    }
+    for (const option of options) {
+      const line = element("div", "ferry");
+      line.append(element("span", "", "Traslado para " + option.code + " (" + (airports[option.code].city || airportName(option.code)) + ") · " +
+        nm(option.miles) + (option.minutes ? " · " + clock(option.minutes) : "") + " · " +
+        (option.needed.length ? option.needed.length + (option.needed.length > 1 ? " rotas" : " rota") + " sem aeronave livre ali"
+          : option.flyable.length + (option.flyable.length > 1 ? " rotas de partida" : " rota de partida"))));
+      if (option.needed.length) line.append(element("span", "tag ok", "Necessária"));
+      if (option.hangar) line.append(element("span", "tag neutral", "Hangar da aeronave"));
+      line.append(button("Planejar traslado", "secondary small", () => planFerry(plane, option.code)));
+      box.append(line);
+    }
+    row.append(box);
+    rows.push(row);
+  }
+  if (offRoute.length) {
+    rows.push(element("li", "group", "Voos fora das rotas cadastradas"));
+    for (const flight of offRoute) {
+      const row = element("li");
+      const head = element("div", "row-head");
+      head.append(element("strong", "", flight.origin + " → " + flight.destination));
+      if (!network.has(flight.destination)) head.append(element("span", "tag bad", "Deixou a aeronave fora da rede"));
+      row.append(head, element("span", "meta", dayText(flight.date) + " · @" + flight.pilot + " · " + flight.prefix + " (" + flight.model + ") · " +
+        nm(flight.nm)));
+      rows.push(row);
+    }
+  }
+  if (!rows.length) rows.push(element("li", "meta", "Nenhum aviso no momento."));
+  list.replaceChildren(...rows);
+}
+
 // ---------- Sugestões de rotas ----------
 
 const continentName = { SA: "Sul-americana", NA: "Norte-americana", EU: "Europeia", AS: "Asiática",
@@ -803,6 +912,7 @@ async function start() {
   }
   render(false);
   renderCoverage();
+  renderAlerts();
   renderRanking();
 }
 

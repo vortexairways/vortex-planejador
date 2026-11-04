@@ -7,11 +7,11 @@
   <meta name="theme-color" content="#0b1630">
   <title>Planejador de rotas | Vortex Airways</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=3">
+  <link rel="stylesheet" href="./style.css?v=4">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
-  <script defer src="./planner.js?v=5"></script>
+  <script defer src="./planner.js?v=6"></script>
 </head>
 <body>
   <header class="top">
@@ -34,7 +34,7 @@
       </div>
     </div>
     <aside class="notice" aria-label="Situação dos dados">
-      <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p></div>
+      <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p><p id="fleet-alert" class="fleet-alert" hidden></p></div>
     </aside>
     <section class="card filters" aria-label="Filtros">
       <label>Aeroporto de partida <select id="airport"><option value="">Todos os aeroportos</option></select></label>
@@ -62,6 +62,13 @@
         <ul id="results"></ul>
       </section>
     </div>
+    <section id="alerts-card" class="card wide" aria-labelledby="alerts-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">AVISOS DA FROTA</p><h2 id="alerts-title">Aeronaves fora da rede</h2></div>
+      </div>
+      <p id="alerts-summary" class="detail pad"></p>
+      <ul id="alerts" class="list pad"></ul>
+    </section>
     <section class="card wide" aria-labelledby="ideas-title">
       <div class="section-heading">
         <div><p class="eyebrow">SUGESTÕES</p><h2 id="ideas-title">Sugestões de rotas</h2></div>

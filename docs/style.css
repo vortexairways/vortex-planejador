@@ -126,3 +126,17 @@ footer a { color: var(--blue); }
   .filters button { justify-self: start; }
   #map { height: 390px; }
 }
+.fleet-alert { margin-top: .35rem; }
+.fleet-alert[hidden] { display: none; }
+.alert-link { border: 0; background: #fde6e9; color: #8c1d2c; border-radius: .4rem; padding: .25rem .55rem; font-size: .8rem; }
+.alert-link:hover { text-decoration: underline; }
+#alerts li { border-bottom: 1px solid #e4eaf3; padding: .7rem .2rem; }
+#alerts li:last-child { border-bottom: 0; }
+#alerts li.group { border: 0; padding: .9rem 0 .1rem; font-size: .72rem; font-weight: 800; letter-spacing: .12em; color: var(--blue); text-transform: uppercase; }
+#alerts .row-head .tag { margin-top: 0; flex-shrink: 0; }
+.who { color: #8c1d2c; }
+.ferries { display: grid; gap: .35rem; margin-top: .45rem; }
+.ferry { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; font-size: .8rem; color: var(--navy);
+  background: #f4f7ff; border: 1px solid #dfe7f7; border-radius: .5rem; padding: .4rem .55rem; }
+.ferry > span:first-child { flex: 1 1 16rem; }
+.ferry .tag { margin-top: 0; }
