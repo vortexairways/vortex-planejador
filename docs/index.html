@@ -4,10 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Mapa, frota, rotas e planejamento de trechos da Vortex Airways no PilOps.">
-  <meta name="theme-color" content="#0b1630">
+  <meta name="theme-color" content="#050b24">
   <title>Planejador de rotas | Vortex Airways</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./img/favicon-64.png">
+  <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Vortex Airways">
+  <meta property="og:title" content="Planejador de rotas | Vortex Airways">
+  <meta property="og:description" content="Frota, rotas, circuitos e ranking da Vortex Airways no PilOps.">
+  <meta property="og:url" content="https://vortexairways.github.io/vortex-planejador/">
+  <meta property="og:image" content="https://vortexairways.github.io/vortex-planejador/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=5">
+  <link rel="stylesheet" href="./style.css?v=6">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
@@ -16,13 +27,14 @@
 <body>
   <header class="top">
     <div class="shell top-inner">
-      <div class="brand"><span class="emblem" aria-hidden="true">V</span><div><strong>VORTEX</strong><small>AIRWAYS</small></div></div>
+      <div class="brand"><img class="emblem" src="./img/logo-192.webp" alt="" width="48" height="48"><div><strong>VORTEX</strong><small>AIRWAYS</small></div></div>
       <a href="https://pilops.com/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1" target="_blank" rel="noopener noreferrer">Abrir Vortex no PilOps ↗</a>
     </div>
   </header>
   <main class="shell">
-    <div class="intro">
-      <div>
+    <div class="intro hero">
+      <img class="hero-logo" src="./img/logo-512.webp" alt="Logo da Vortex Airways" width="190" height="190">
+      <div class="hero-text">
         <p class="eyebrow">VTX / OPERAÇÕES</p>
         <h1>Planejador de rotas</h1>
         <p>Escolha uma aeronave ou um aeroporto, veja distância e alcance de cada rota e monte uma sequência de trechos.</p>
