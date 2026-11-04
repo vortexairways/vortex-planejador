@@ -7,11 +7,11 @@
   <meta name="theme-color" content="#0b1630">
   <title>Planejador de rotas | Vortex Airways</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=4">
+  <link rel="stylesheet" href="./style.css?v=5">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
-  <script defer src="./planner.js?v=6"></script>
+  <script defer src="./planner.js?v=7"></script>
 </head>
 <body>
   <header class="top">
@@ -48,7 +48,16 @@
           <button id="world" class="secondary" type="button">Visão mundial</button>
         </div>
         <div id="map" aria-label="Mapa interativo de aeroportos e rotas"></div>
-        <div class="legend"><span><i class="hub"></i> Hub</span><span><i class="station"></i> Aeroporto</span><span><i class="line"></i> Trecho cadastrado</span><span><i class="line focus"></i> Trecho em destaque</span><span><i class="line planned"></i> Plano de trechos</span></div>
+        <div class="legend efb-legend">
+          <span><i class="sym hub"></i> Hub</span>
+          <span><i class="sym"></i> Aeroporto</span>
+          <span><i class="sym alert"></i> Aeronave fora da rede</span>
+          <span><i class="ln" style="--c:#5b8db8"></i> Malha da Vortex</span>
+          <span><i class="ln" style="--c:#22d3ee"></i> Alcança / pronta</span>
+          <span><i class="ln" style="--c:#fbbf24"></i> No limite / reposicionar</span>
+          <span><i class="ln" style="--c:#fb7185"></i> Fora do alcance / comprar</span>
+          <span><i class="ln planline" style="--c:#e040fb"></i> Plano de voo</span>
+        </div>
       </section>
       <section class="card results" aria-label="Resultados da busca">
         <p class="eyebrow">SELEÇÃO</p>

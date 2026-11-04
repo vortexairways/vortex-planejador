@@ -81,12 +81,21 @@ const markers = map && L.layerGroup().addTo(map);
 const worldView = () => map?.fitBounds([[-55, -177], [69, 177]], { padding: [8, 8] });
 
 if (map) {
+  // Mapa do OpenStreetMap escurecido por filtro (classe efb-tiles), no estilo das telas de navegação de um EFB.
+  // Não depende de chave de API nem de conta em serviço de mapas.
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    className: "efb-tiles",
     referrerPolicy: "strict-origin-when-cross-origin",
     maxZoom: 11,
   }).addTo(map);
+  const zoomClass = () => {
+    mapContainer.classList.toggle("efb-far", map.getZoom() < 3);
+    mapContainer.classList.toggle("efb-very-far", map.getZoom() < 2);
+  };
+  map.on("zoomend", zoomClass);
   worldView();
+  zoomClass();
 } else {
   mapContainer.textContent = "O mapa não carregou. Os filtros e as listas continuam disponíveis.";
 }
@@ -117,36 +126,114 @@ function arc(from, to) {
 const offsets = [-360, 0, 360];
 const shifted = (points, offset) => points.map(([lat, lon]) => [lat, lon + offset]);
 
+// Paleta inspirada nas telas de navegação: ciano = utilizável, âmbar = atenção, vermelho = impeditivo,
+// magenta = plano de voo, azul apagado = malha geral.
+const efb = { network: "#5b8db8", ok: "#22d3ee", warn: "#fbbf24", bad: "#fb7185", plan: "#e040fb",
+  focus: "#ffffff", casing: "#05080e", planCasing: "#2b0736" };
+
+function drawArc(points, style, casing) {
+  for (const offset of offsets) {
+    const line = shifted(points, offset);
+    if (casing) L.polyline(line, { ...casing, interactive: false, lineCap: "round", lineJoin: "round" }).addTo(connections);
+    L.polyline(line, { ...style, interactive: false, lineCap: "round", lineJoin: "round" }).addTo(connections);
+  }
+}
+
+// Marca um ponto ao longo do arco: seta de sentido (girada pela projeção do mapa) ou etiqueta de distância.
+function markAlong(points, fraction, text, className, color, rotate) {
+  const i = Math.min(points.length - 2, Math.max(0, Math.floor((points.length - 1) * fraction)));
+  const [a, b] = [points[i], points[i + 1]];
+  const pa = L.CRS.EPSG3857.project(L.latLng(a[0], a[1]));
+  const pb = L.CRS.EPSG3857.project(L.latLng(b[0], b[1]));
+  const angle = Math.atan2(-(pb.y - pa.y), pb.x - pa.x) * 180 / Math.PI;
+  for (const offset of offsets) {
+    const label = element("span", "", text);
+    if (color) label.style.color = color;
+    if (rotate) label.style.transform = "translate(-50%, -50%) rotate(" + angle.toFixed(1) + "deg)";
+    L.marker([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + offset], {
+      icon: L.divIcon({ className, html: label, iconSize: [0, 0] }), interactive: false, keyboard: false,
+    }).addTo(connections);
+  }
+}
+
+function routeColor(route, plane) {
+  if (plane) {
+    const status = reach(plane, distance(route.origin, route.destination));
+    return status === "ok" ? efb.ok : status === "limite" ? efb.warn : status === "fora" ? efb.bad : efb.network;
+  }
+  const status = coverage.get(route)?.status;
+  return status === "pronta" ? efb.ok : status === "comprar" ? efb.bad : status ? efb.warn : efb.network;
+}
+
 function drawMap(listed) {
   if (!map) return;
   markers.clearLayers();
   connections.clearLayers();
   const origin = currentOrigin();
-  const draw = (route, style) => {
-    if (!airports[route.origin] || !airports[route.destination]) return;
-    const points = arc(route.origin, route.destination);
-    for (const offset of offsets) {
-      L.polyline(shifted(points, offset), { ...style, interactive: false }).addTo(connections);
+  const plane = selectedPlane();
+  const valid = route => airports[route.origin] && airports[route.destination];
+  const samePair = (a, b) => a && b && [a.origin, a.destination].sort().join() === [b.origin, b.destination].sort().join();
+
+  if (!origin) {
+    // Visão geral: cada par de aeroportos vira uma linha só; seta apenas nas rotas de mão única.
+    const pairs = new Map();
+    for (const { route } of listed) {
+      if (!valid(route)) continue;
+      const key = [route.origin, route.destination].sort().join("-");
+      const item = pairs.get(key);
+      if (!item) pairs.set(key, { route, both: false });
+      else if (item.route.origin !== route.origin) item.both = true;
     }
-  };
-  for (const { route } of listed) {
-    const focused = state.focus === route;
-    draw(route, { color: focused ? "#ee4055" : "#184ccc", weight: focused ? 4 : origin ? 2.6 : 1.7,
-      opacity: focused ? 1 : origin ? .8 : .44 });
+    for (const { route, both } of pairs.values()) {
+      const points = arc(route.origin, route.destination);
+      const focused = samePair(state.focus, route);
+      drawArc(points, { color: focused ? efb.focus : efb.network, weight: focused ? 3 : 1.6, opacity: focused ? 1 : .6 },
+        focused ? { color: efb.ok, weight: 8, opacity: .3 } : null);
+      if (!both) markAlong(points, .6, "➤", "efb-arrow", focused ? efb.focus : efb.network, true);
+    }
+  } else {
+    for (const { route, miles } of listed) {
+      if (!valid(route)) continue;
+      const points = arc(route.origin, route.destination);
+      const focused = state.focus === route;
+      const color = focused ? efb.focus : routeColor(route, plane);
+      drawArc(points, { color, weight: focused ? 3.6 : 2.6, opacity: 1 },
+        { color: focused ? routeColor(route, plane) : efb.casing, weight: focused ? 9 : 6, opacity: focused ? .35 : .75 });
+      markAlong(points, .62, "➤", "efb-arrow", color, true);
+      if (focused) markAlong(points, .45, nm(miles), "efb-distance", null, false);
+    }
   }
+
+  // Plano de voo: magenta com contorno, setas de sentido e distância de cada trecho.
   for (const leg of state.plan) {
-    draw(leg, { color: "#0b1630", weight: 3.4, opacity: .9, dashArray: "7 6" });
+    if (!valid(leg)) continue;
+    const points = arc(leg.origin, leg.destination);
+    drawArc(points, { color: efb.plan, weight: 4, opacity: 1 }, { color: efb.planCasing, weight: 10, opacity: .9 });
+    markAlong(points, .64, "➤", "efb-arrow", efb.plan, true);
+    markAlong(points, .42, nm(distance(leg.origin, leg.destination)), "efb-distance on-plan", null, false);
   }
+
+  const network = networkAirports();
+  const planStops = new Set(state.plan.flatMap(leg => [leg.origin, leg.destination]));
+  const destinations = new Set(origin ? listed.map(item => item.route.destination) : []);
   for (const code of airportCodes) {
     if (!airports[code]) continue;
-    const count = fleet.filter(plane => plane.airport === code).length;
-    const tip = document.createElement("span");
-    tip.textContent = code + " · " + airports[code].name + (count ? " · " + count + " na frota" : "");
+    const planes = fleet.filter(item => item.airport === code);
+    const outside = planes.length && !network.has(code);
+    const important = hubs.has(code) || code === origin || planStops.has(code) || destinations.has(code) || outside;
+    const classes = ["efb-apt", hubs.has(code) ? "hub" : "", code === origin ? "origin" : "", planStops.has(code) ? "on-plan" : "",
+      outside ? "alert" : "", important ? "" : "minor"].filter(Boolean).join(" ");
+    const tip = element("span", "", code + " · " + airports[code].name + (planes.length ? " · " + planes.length + " na frota" : "") +
+      (outside ? " · fora da rede" : ""));
     for (const offset of offsets) {
-      L.circleMarker([airports[code].lat, airports[code].lon + offset], {
-        radius: code === origin ? 8 : hubs.has(code) ? 6 : 4,
-        color: "#ffffff", weight: 1.4, fillColor: hubs.has(code) ? "#ee4055" : "#184ccc", fillOpacity: 1,
-      }).bindTooltip(tip).on("click", () => chooseAirport(code)).addTo(markers);
+      const icon = element("div", classes);
+      icon.append(element("i"), element("b", "", code));
+      if (planes.length) icon.append(element("em", "", String(planes.length)));
+      L.marker([airports[code].lat, airports[code].lon + offset], {
+        icon: L.divIcon({ className: "efb-apt-icon", html: icon, iconSize: [0, 0] }),
+        zIndexOffset: code === origin ? 2000 : important ? 1000 : 0, keyboard: false,
+      }).bindTooltip(tip, { className: "efb-tip", direction: "top", offset: [0, -10] })
+        .on("click", () => chooseAirport(code)).addTo(markers);
     }
   }
 }
@@ -155,7 +242,7 @@ function drawMap(listed) {
 function frame(listed) {
   if (!map) return;
   const origin = currentOrigin();
-  const shown = state.focus ? [state.focus] : [...state.plan, ...listed.map(item => item.route)];
+  const shown = state.focus ? [state.focus] : state.plan.length ? state.plan : listed.map(item => item.route);
   const points = shown.filter(route => airports[route.origin] && airports[route.destination])
     .flatMap(route => arc(route.origin, route.destination));
   if (origin && airports[origin]) points.push([airports[origin].lat, airports[origin].lon]);

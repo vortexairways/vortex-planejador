@@ -140,3 +140,55 @@ footer a { color: var(--blue); }
   background: #f4f7ff; border: 1px solid #dfe7f7; border-radius: .5rem; padding: .4rem .55rem; }
 .ferry > span:first-child { flex: 1 1 16rem; }
 .ferry .tag { margin-top: 0; }
+
+/* ---------- Mapa no estilo EFB ---------- */
+.map-card { background: #0b1220; border-color: #1b2a40; color: #d7e3f5; box-shadow: 0 10px 30px #02060d40; }
+.map-card .eyebrow { color: #4fd1f5; }
+.map-card h2 { color: #f2f7ff; }
+.map-card .secondary { background: #111c2e; color: #d7e3f5; border-color: #2a3d5a; }
+.map-card .secondary:hover { background: #18273f; }
+#map { background: #0e1116; }
+.leaflet-container { font: inherit; }
+.leaflet-bar a, .leaflet-bar a:hover { background: #111c2e; color: #d7e3f5; border-bottom-color: #2a3d5a; }
+.leaflet-bar { border-color: #2a3d5a !important; }
+.leaflet-control-attribution { background: #0b1220cc !important; color: #8aa0bf; }
+.leaflet-control-attribution a { color: #7cc8ff; }
+.efb-legend { color: #9fb3cf; gap: .4rem 1rem; }
+.efb-legend .sym { width: .7rem; height: .7rem; border-radius: 50%; background: #0b1220; border: 2px solid #4fd1f5; box-sizing: border-box; }
+.efb-legend .sym.hub { width: .85rem; height: .85rem; background: #4fd1f5; border: 2px solid #e8faff; }
+.efb-legend .sym.alert { border-color: #fb7185; box-shadow: 0 0 0 2px #fb718555; }
+.efb-legend .ln { width: 1.1rem; height: .2rem; border-radius: 2px; background: var(--c); box-shadow: 0 0 0 1.5px #05080e; }
+.efb-legend .ln.planline { height: .28rem; box-shadow: 0 0 0 2px #2b0736; }
+
+/* Aeroportos */
+.efb-apt-icon { background: none; border: 0; }
+.efb-apt { position: relative; width: 0; height: 0; cursor: pointer; }
+.efb-apt i { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
+  background: #0b1220; border: 2px solid #4fd1f5; box-sizing: border-box; box-shadow: 0 0 0 2px #05080e; }
+.efb-apt.hub i { left: -7px; top: -7px; width: 14px; height: 14px; background: #4fd1f5; border: 2.5px solid #e8faff; }
+.efb-apt.origin i { left: -9px; top: -9px; width: 18px; height: 18px; background: #e040fb; border: 3px solid #fff; box-shadow: 0 0 0 3px #e040fb55; }
+.efb-apt.on-plan i { border-color: #e040fb; }
+.efb-apt.alert i { border-color: #fb7185; box-shadow: 0 0 0 3px #fb718566; }
+.efb-apt b { position: absolute; left: 10px; top: -9px; padding: 1px 4px; border-radius: 3px; white-space: nowrap;
+  font: 700 11px/1.3 ui-monospace, "Cascadia Mono", Consolas, monospace; letter-spacing: .04em; color: #e8f4ff;
+  background: #0b1220d9; border: 1px solid #22344f; pointer-events: none; }
+.efb-apt.origin b, .efb-apt.on-plan b { color: #fff; border-color: #e040fb; }
+.efb-apt.alert b { border-color: #fb7185; }
+.efb-apt em { position: absolute; left: -16px; top: -17px; min-width: 13px; height: 13px; padding: 0 2px; border-radius: 7px;
+  font: 700 9px/13px system-ui, sans-serif; font-style: normal; text-align: center; color: #05080e; background: #fbbf24; pointer-events: none; }
+.efb-far .efb-apt.minor b, .efb-far .efb-apt.minor em { display: none; }
+
+/* Setas de sentido e distâncias ao longo das rotas */
+.efb-arrow, .efb-distance { background: none; border: 0; }
+.efb-arrow span { position: absolute; font-size: 12px; line-height: 1; text-shadow: 0 0 3px #05080e, 0 0 2px #05080e; pointer-events: none; }
+.efb-distance span { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; padding: 1px 5px; border-radius: 3px;
+  font: 700 10.5px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; color: #e8f4ff; background: #0b1220e6;
+  border: 1px solid #5b8db8; pointer-events: none; }
+.efb-distance.on-plan span { border-color: #e040fb; color: #fbe3ff; }
+
+/* Dicas ao passar o mouse */
+.leaflet-tooltip.efb-tip { background: #0b1220; color: #e8f4ff; border: 1px solid #2a3d5a; border-radius: 6px;
+  box-shadow: 0 6px 18px #02060d80; font-size: .78rem; }
+.leaflet-tooltip.efb-tip::before { border-top-color: #2a3d5a; }
+.efb-tiles { filter: invert(1) hue-rotate(185deg) brightness(.82) contrast(1.1) saturate(.35); }
+.efb-very-far .efb-apt:not(.origin):not(.on-plan) b, .efb-very-far .efb-apt:not(.origin):not(.on-plan) em { display: none; }
