@@ -372,10 +372,8 @@ async function start() {
       dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo",
     }).format(new Date(data.capturedAt));
     document.querySelector("#snapshot-time").textContent = "Última coleta no PilOps · " + date + " (Brasília)";
-    document.querySelector("#snapshot-note").textContent =
-      data.reportedFleet === fleet.length ? "Frota e rotas cadastradas na coleta."
-        : "Frota e rotas cadastradas na coleta. O contador do PilOps mostra " + data.reportedFleet +
-          " aeronaves, mas o próprio PilOps só lista " + fleet.length + "; o planejador usa as listadas.";
+    document.querySelector("#snapshot-note").textContent = fleet.length + (fleet.length === 1 ? " aeronave" : " aeronaves") +
+      " e " + routes.length + (routes.length === 1 ? " rota mapeada" : " rotas mapeadas") + " nesta coleta.";
   }
 
   for (const code of airportCodes) {
