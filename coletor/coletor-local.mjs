@@ -51,8 +51,9 @@ function publish(snapshot) {
   console.log("Coleta gravada: " + snapshot.fleet.length + " aeronaves, " + snapshot.routes.length +
     " rotas e " + snapshot.hubs.length + " hubs.");
   if (snapshot.reportedFleet !== snapshot.fleet.length) {
-    console.log("Atenção: o PilOps informa " + snapshot.reportedFleet + " aeronaves, mas a lista exibiu " +
-      snapshot.fleet.length + ".");
+    // Em 04/11/2026 a API do PilOps listava 15 aeronaves com o contador em 16: a diferença é do PilOps.
+    console.log("Observação: o contador do PilOps mostra " + snapshot.reportedFleet + " aeronaves, mas o PilOps lista " +
+      snapshot.fleet.length + ". A coleta usa as listadas.");
   }
   git("add", "docs/dados.json");
   const stamp = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short",
