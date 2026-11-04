@@ -16,7 +16,7 @@ Site estático (GitHub Pages) com o mapa, a frota e as rotas da Vortex no PilOps
 ## Atualizar os dados
 
 1. Deixe o Chrome aberto e logado no PilOps, com a extensão "Coletor local da Vortex" ativa.
-2. Rode `Sincronizar Vortex.cmd` (ou o atalho na Área de Trabalho).
+2. Rode `Sincronizar Vortex.cmd` (ou o atalho "Sincronizar Vortex" fixado no menu Iniciar). O projeto fica em `Documentos\vortex-planejador`; se mudar a pasta de lugar, atualize o atalho e recarregue a extensão no Chrome.
 3. Em até 1 minuto a extensão lê a Vortex numa aba em segundo plano; o coletor grava, faz o commit e envia ao GitHub.
 4. O site mostra os dados novos em 1 a 2 minutos.
 
