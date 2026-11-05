@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-11-04T11:25:18.012Z",
- "reportedFleet": 16,
+ "capturedAt": "2026-11-05T18:20:18.073Z",
+ "reportedFleet": 17,
  "fleet": [
   {
    "prefix": "NKZEIA",
@@ -75,14 +75,14 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SBGL",
+   "airport": "SUMU",
    "base": "SBGL",
    "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "EFHK",
+   "airport": "LEMD",
    "base": "RJTT",
    "status": "Sem alerta no cartão"
   },
@@ -91,20 +91,27 @@
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "OTHH",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NK4I2I",
    "model": "Douglas MD-11",
-   "airport": "RJTT",
+   "airport": "EFHK",
    "base": "SBGL",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NE2XUQ",
    "model": "Douglas MD-11",
-   "airport": "SBGL",
+   "airport": "KRDU",
    "base": "SUMU",
+   "status": "Sem alerta no cartão"
+  },
+  {
+   "prefix": "NLFTDW",
+   "model": "Boeing 787-10 Dreamliner",
+   "airport": "SBGL",
+   "base": "SBGL",
    "status": "EM USO"
   }
  ],
