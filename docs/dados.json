@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-05T18:20:18.073Z",
+ "capturedAt": "2026-11-06T20:04:44.631Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -75,7 +75,7 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SUMU",
+   "airport": "SBRF",
    "base": "SBGL",
    "status": "Sem alerta no cartão"
   },
@@ -91,14 +91,14 @@
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "OTHH",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NK4I2I",
    "model": "Douglas MD-11",
-   "airport": "EFHK",
+   "airport": "LEMD",
    "base": "SBGL",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NE2XUQ",
@@ -117,8 +117,23 @@
  ],
  "routes": [
   {
-   "origin": "EFHK",
+   "origin": "SBRF",
+   "destination": "SBGL",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "LEMD",
    "destination": "RJTT",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "KRDU",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "KRDU",
    "code": "VTX0001"
   },
   {
@@ -127,33 +142,18 @@
    "code": "VTX0001"
   },
   {
-   "origin": "SBRF",
-   "destination": "SBGL",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "LEMD",
-   "destination": "KRDU",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "RJTT",
-   "destination": "KRDU",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "LEMD",
-   "destination": "RJTT",
-   "code": "VTX0001"
-  },
-  {
    "origin": "LEMD",
    "destination": "OTHH",
    "code": "VTX0001"
   },
   {
+   "origin": "EFHK",
+   "destination": "RJTT",
+   "code": "VTX0001"
+  },
+  {
    "origin": "RJTT",
-   "destination": "LEMD",
+   "destination": "EFHK",
    "code": "VTX0002"
   },
   {
@@ -173,7 +173,7 @@
   },
   {
    "origin": "RJTT",
-   "destination": "EFHK",
+   "destination": "LEMD",
    "code": "VTX0002"
   },
   {
@@ -189,6 +189,11 @@
   {
    "origin": "LPMT",
    "destination": "LPPT",
+   "code": "VTX0006"
+  },
+  {
+   "origin": "SBKP",
+   "destination": "SBGL",
    "code": "VTX0006"
   },
   {
@@ -237,13 +242,13 @@
    "code": "VTX0093"
   },
   {
-   "origin": "SBCG",
-   "destination": "SBMA",
+   "origin": "SUMU",
+   "destination": "SBCG",
    "code": "VTX0099"
   },
   {
-   "origin": "SUMU",
-   "destination": "SBCG",
+   "origin": "SBCG",
+   "destination": "SBMA",
    "code": "VTX0099"
   },
   {
@@ -257,14 +262,24 @@
    "code": "VTX3333"
   },
   {
+   "origin": "KRDU",
+   "destination": "SBKP",
+   "code": "VTX4444"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "OMDM",
+   "code": "VTX4444"
+  },
+  {
    "origin": "OMDM",
    "destination": "SBCP",
    "code": "VTX4444"
   },
   {
-   "origin": "KRDU",
-   "destination": "SBKP",
-   "code": "VTX4444"
+   "origin": "OMDM",
+   "destination": "RJTT",
+   "code": "VTX5555"
   }
  ],
  "hubs": [
