@@ -141,6 +141,47 @@ footer a { color: var(--blue); }
 .ferry > span:first-child { flex: 1 1 16rem; }
 .ferry .tag { margin-top: 0; }
 
+/* ---------- Realocação de aeronaves ---------- */
+.tag.hot { color: #6b1d7a; background: #f6e5fb; }
+.explain { background: #f4f7ff; border: 1px solid #dfe7f7; border-radius: .75rem; padding: .7rem .9rem; margin-bottom: .9rem; font-size: .88rem; }
+.explain summary { cursor: pointer; font-weight: 700; color: var(--navy); }
+.explain-body { margin-top: .55rem; display: grid; gap: .5rem; color: #2a3850; }
+.explain .steps { margin: 0; padding-left: 1.3rem; display: grid; gap: .2rem; }
+.glossary { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin: .15rem 0 0; font-size: .8rem; color: var(--muted); }
+.glossary div { display: flex; align-items: center; gap: .35rem; }
+.glossary dt, .glossary dd { margin: 0; }
+.glossary .tag { margin: 0; }
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: .55rem; }
+.stat { display: flex; flex-direction: column; align-items: flex-start; gap: .05rem; text-align: left; min-width: 0;
+  background: white; border: 1px solid var(--border); border-left: 4px solid var(--c, #b9c8e0); border-radius: .65rem;
+  padding: .55rem .7rem; color: var(--navy); font-weight: 400; }
+.stat:hover { background: #f4f7ff; }
+.stat[aria-pressed="true"] { background: #eaf0ff; border-color: var(--blue); border-left-color: var(--c, var(--blue)); box-shadow: 0 0 0 1px var(--blue) inset; }
+.stat strong { font-size: 1.45rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat span { font-size: .82rem; font-weight: 700; }
+.stat small { font-size: .72rem; color: var(--muted); line-height: 1.3; }
+.stat-realocar { --c: #e8a317; }
+.stat-voar { --c: #22a55a; }
+.stat-revezar { --c: #a43cc2; }
+.stat-ok { --c: #7d8da8; }
+.stat-indisponivel { --c: #b9c3d3; }
+#realloc { max-height: 46rem; overflow: auto; }
+#realloc li { border-bottom: 1px solid #e4eaf3; padding: .75rem .2rem; }
+#realloc li:last-child { border-bottom: 0; }
+#realloc li.group { border: 0; padding: 1rem 0 .1rem; font-size: .72rem; font-weight: 800; letter-spacing: .12em; color: var(--blue); text-transform: uppercase; }
+#realloc .row-head { align-items: flex-start; flex-wrap: wrap; }
+#realloc .row-head .tags { margin-top: 0; }
+.realloc-item .todo { margin-top: .4rem; font-size: .9rem; color: var(--navy); }
+.realloc-item .why { margin-top: .2rem; font-size: .82rem; color: var(--muted); }
+.realloc-item .plan-actions { margin-top: .45rem; }
+.realloc-item.kind-ok .todo, .realloc-item.kind-indisponivel .todo { font-size: .84rem; color: var(--muted); }
+.bar { height: .55rem; background: #eef2f8; border-radius: 999px; overflow: hidden; margin-top: .4rem; }
+.bar i { display: block; height: 100%; min-width: 3px; border-radius: 999px; background: #22a55a; }
+.bar .fill-muito { background: #a43cc2; }
+.bar .fill-pouco { background: #e8a317; }
+.bar .fill-parada { background: #e05267; }
+.bar .fill-indisponivel { background: #9aa8bf; }
+
 /* ---------- Mapa no estilo EFB ---------- */
 .map-card { background: #0b1220; border-color: #1b2a40; color: #d7e3f5; box-shadow: 0 10px 30px #02060d40; }
 .map-card .eyebrow { color: #4fd1f5; }

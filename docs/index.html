@@ -18,11 +18,11 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=6">
+  <link rel="stylesheet" href="./style.css?v=7">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
-  <script defer src="./planner.js?v=7"></script>
+  <script defer src="./planner.js?v=8"></script>
 </head>
 <body>
   <header class="top">
@@ -89,6 +89,39 @@
       </div>
       <p id="alerts-summary" class="detail pad"></p>
       <ul id="alerts" class="list pad"></ul>
+    </section>
+    <section id="realloc-card" class="card wide" aria-labelledby="realloc-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">FROTA EM MOVIMENTO</p><h2 id="realloc-title">Realocação de aeronaves</h2></div>
+      </div>
+      <div class="pad">
+        <details class="explain" open>
+          <summary>Novo na Vortex? Entenda em 30 segundos</summary>
+          <div class="explain-body">
+            <p><strong>No PilOps, a aeronave fica onde pousou.</strong> Para voar uma rota da Vortex, você precisa de uma aeronave <em>livre</em> no aeroporto de partida dessa rota.</p>
+            <p><strong>Realocar</strong> é levar uma aeronave de onde ela está parada para onde ela faz falta. Sempre que possível, a sugestão usa uma rota da Vortex no caminho, e assim o voo também conta como voo da companhia. Quando não existe rota, o trajeto é um <strong>traslado</strong> (voo direto, fora das rotas cadastradas).</p>
+            <ol class="steps">
+              <li>Escolha um cartão em <em>O que fazer agora</em>, começando pelos de cima, que são os mais urgentes.</li>
+              <li>Clique em <em>Ver no mapa</em> para conferir o trecho, a distância e o tempo estimado.</li>
+              <li>No PilOps, escolha a aeronave pelo <strong>prefixo</strong> (ex.: NK4I2I) e voe o trecho sugerido.</li>
+            </ol>
+            <dl class="glossary">
+              <div><dt><span class="tag bad">Parada</span></dt><dd>nenhum voo registrado no período</dd></div>
+              <div><dt><span class="tag warn">Pouco usada</span></dt><dd>último voo há 3 dias ou mais</dd></div>
+              <div><dt><span class="tag ok">Ativa</span></dt><dd>voou recentemente, em ritmo normal</dd></div>
+              <div><dt><span class="tag hot">Muito usada</span></dt><dd>voa bem mais que a média da frota</dd></div>
+              <div><dt><span class="tag neutral">Indisponível</span></dt><dd>em uso por um piloto ou em manutenção</dd></div>
+            </dl>
+          </div>
+        </details>
+        <div id="realloc-stats" class="stat-row" role="group" aria-label="Filtrar sugestões"></div>
+        <div id="realloc-tabs" class="tabs" role="group" aria-label="Tipo de visão">
+          <button type="button" data-view="acoes" aria-pressed="true">O que fazer agora</button>
+          <button type="button" data-view="atividade" aria-pressed="false">Atividade da frota</button>
+        </div>
+        <p id="realloc-summary" class="detail"></p>
+      </div>
+      <ul id="realloc" class="list pad"></ul>
     </section>
     <section class="card wide" aria-labelledby="ideas-title">
       <div class="section-heading">

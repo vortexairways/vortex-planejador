@@ -15,6 +15,7 @@ let airportCodes = [];
 let pilots = [];
 let flightLog = [];
 let flightsSince = null;
+let capturedAt = null;
 // Cobertura de cada rota pela frota atual (preenchida em start()).
 let coverage = new Map();
 // Circuitos fechados formados por rotas cadastradas (preenchidos em start()).
@@ -966,6 +967,7 @@ async function start() {
   pilots = data.pilots || [];
   flightLog = data.flights || [];
   flightsSince = data.flightsSince || null;
+  capturedAt = data.capturedAt || null;
   coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
   circuits = findCircuits();
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
@@ -1001,6 +1003,287 @@ async function start() {
   renderCoverage();
   renderAlerts();
   renderRanking();
+  renderRealloc();
+}
+
+// ---------- Realocação de aeronaves ----------
+// Para cada aeronave: quanto ela voou nos voos lidos e o que fazer com ela agora. Uma aeronave parada vai
+// para onde há rota sem aeronave livre capaz (de preferência voando uma rota VTX no caminho); duas aeronaves
+// não são mandadas para cobrir as mesmas rotas; as mais usadas recebem uma substituta parada.
+
+const realloc = { view: "acoes", filter: "todas" };
+const daysBetween = (from, to) => Math.round((Date.parse(to + "T12:00:00Z") - Date.parse(from + "T12:00:00Z")) / 86_400_000);
+const referenceDay = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" })
+  .format(capturedAt ? new Date(capturedAt) : new Date());
+const agoText = days => days <= 0 ? "hoje" : days === 1 ? "ontem" : "há " + days + " dias";
+const where = code => code + " (" + placeName(code) + ")";
+const plural = (count, one, many) => count + " " + (count === 1 ? one : many);
+const flyableFrom = (plane, code) => routes.filter(route => route.origin === code && canFly(plane, route.origin, route.destination));
+const legText = route => route.code + " " + route.origin + " → " + route.destination;
+
+const activityLevels = {
+  parada: ["Parada", "bad"],
+  pouco: ["Pouco usada", "warn"],
+  ativa: ["Ativa", "ok"],
+  muito: ["Muito usada", "hot"],
+  indisponivel: ["Indisponível", "neutral"],
+};
+
+const reallocKinds = {
+  realocar: { tag: ["Realocar", "warn"], title: "Precisam ser realocadas", hint: "levar para onde falta aeronave" },
+  voar: { tag: ["Pronta para voar", "ok"], title: "Prontas para voar", hint: "já estão no lugar certo: só falta piloto" },
+  revezar: { tag: ["Revezar", "hot"], title: "Muito usadas", hint: "dividir os voos com uma aeronave parada" },
+  ok: { tag: ["Em boa rotação", "neutral"], title: "Em boa rotação", hint: "voando normalmente: nada a fazer" },
+  indisponivel: { tag: ["Indisponível", "neutral"], title: "Indisponíveis", hint: "em uso ou em manutenção agora" },
+};
+
+function fleetActivity() {
+  const today = referenceDay();
+  // "Muito usada": pelo menos 3 voos e o dobro da média de voos por aeronave no período.
+  const busyLine = Math.max(3, Math.ceil(2 * flightLog.length / Math.max(1, fleet.length)));
+  return fleet.map(plane => {
+    const flights = flightLog.filter(flight => flight.prefix === plane.prefix).sort((a, b) => b.date.localeCompare(a.date));
+    const last = flights[0] || null;
+    const idleDays = last ? daysBetween(last.date, today) : null;
+    const level = unavailable(plane) ? "indisponivel" : !flights.length ? "parada" : idleDays >= 3 ? "pouco"
+      : flights.length >= busyLine ? "muito" : "ativa";
+    return { plane, flights, last, idleDays, level, minutes: flights.reduce((sum, flight) => sum + flight.minutes, 0),
+      longest: Math.max(0, ...flights.map(flight => flight.nm)) };
+  });
+}
+
+const lastFlightText = item => item.last
+  ? "último voo " + agoText(item.idleDays) + " (" + dayText(item.last.date) + ") por @" + item.last.pilot + ", " +
+    item.last.origin + " → " + item.last.destination
+  : "nenhum voo registrado" + (flightsSince ? " desde " + dayText(flightsSince) : "");
+
+function reallocCards() {
+  const items = fleetActivity();
+  const network = networkAirports();
+  const pairs = flownPairs();
+  const claimed = new Set();   // rotas que já ganharam uma aeronave nesta rodada de sugestões
+  const assigned = new Set();  // aeronaves que já receberam um destino
+  const freeAt = code => fleet.filter(plane => plane.airport === code && !unavailable(plane));
+  const cards = [];
+
+  // 1. Paradas e fora da rede: primeiro as que estão fora da rede, depois as paradas há mais tempo.
+  const idle = items.filter(item => item.level === "parada" || item.level === "pouco" ||
+    (item.level !== "indisponivel" && !network.has(item.plane.airport)))
+    .sort((a, b) => network.has(a.plane.airport) - network.has(b.plane.airport) || (b.idleDays ?? 999) - (a.idleDays ?? 999));
+  for (const item of idle) {
+    const { plane } = item;
+    const outside = !network.has(plane.airport);
+    const here = flyableFrom(plane, plane.airport);
+    const departures = routes.filter(route => route.origin === plane.airport).length;
+    const crowd = freeAt(plane.airport).length;
+    const surplus = !outside && crowd > departures;
+    const targets = [...network].filter(code => code !== plane.airport && airports[code]).map(code => ({
+      code, miles: distance(plane.airport, code), direct: canFly(plane, plane.airport, code),
+      via: routes.find(route => route.origin === plane.airport && route.destination === code && canFly(plane, route.origin, route.destination)) || null,
+      needs: routes.filter(route => route.origin === code && !claimed.has(route) && coverage.get(route)?.status === "reposicionar" &&
+        canFly(plane, route.origin, route.destination)),
+    })).filter(target => target.needs.length && (target.via || target.direct))
+      .sort((a, b) => b.needs.length - a.needs.length || Boolean(b.via) - Boolean(a.via) || a.miles - b.miles);
+
+    const why = outside ? "Ela está em " + where(plane.airport) + ", onde nenhuma rota da Vortex começa."
+      : !here.length ? "Nenhuma rota que sai de " + plane.airport + " está ao alcance deste modelo."
+        : surplus ? "Há " + crowd + " aeronaves livres em " + plane.airport + " para só " + plural(departures, "rota", "rotas") + " de partida."
+          : "";
+
+    if (outside || !here.length || (surplus && targets.length)) {
+      let target = targets[0];
+      let fallback = null;
+      if (!target) fallback = repositionOptions(plane)[0] || null;
+      const code = target?.code || fallback?.code;
+      if (!code) {
+        cards.push({ kind: "realocar", item, action: "Planeje um traslado com escala: nenhum aeroporto da rede está ao alcance sem parar.",
+          why, button: ["Abrir no mapa", () => focusPlane(plane)] });
+        continue;
+      }
+      assigned.add(plane.prefix);
+      const via = target?.via || null;
+      const miles = distance(plane.airport, code);
+      const leg = nm(miles) + (blockMinutes(miles, plane) ? ", " + clock(blockMinutes(miles, plane)) : "");
+      const action = via
+        ? "Voe a rota " + legText(via) + " (" + leg + "). Ela já deixa a aeronave em " + where(code) + "."
+        : "Faça um traslado até " + where(code) + " (" + leg + ").";
+      let reason;
+      if (target) {
+        target.needs.forEach(route => claimed.add(route));
+        reason = "Em " + code + ", " + (target.needs.length > 1 ? target.needs.length + " rotas esperam" : "1 rota espera") +
+          " uma aeronave que ela alcança: " + target.needs.slice(0, 3).map(route => route.origin + " → " + route.destination).join(", ") +
+          (target.needs.length > 3 ? " e mais " + (target.needs.length - 3) : "") + ".";
+      } else {
+        reason = "De " + code + " saem " + plural(fallback.flyable.length, "rota que ela alcança", "rotas que ela alcança") + ".";
+      }
+      cards.push({ kind: "realocar", item, action, why: [why, reason].filter(Boolean).join(" "), hangar: code === plane.base,
+        button: ["Ver no mapa", () => via ? showPlan(plane, [via]) : planFerry(plane, code)] });
+      continue;
+    }
+
+    // Tem rota daqui: sugere a melhor, priorizando rota nunca voada e destino onde falta aeronave.
+    const needAirports = new Set(routes.filter(route => coverage.get(route)?.status === "reposicionar").map(route => route.origin));
+    // Rota já sugerida para outra aeronave vai para o fim da fila.
+    const score = route => (claimed.has(route) ? -10 : 0) + (pairs.has(route.origin + "-" + route.destination) ? 0 : 2) +
+      (needAirports.has(route.destination) ? 1 : 0);
+    const best = [...here].sort((a, b) => score(b) - score(a) ||
+      (distance(a.origin, a.destination) ?? 0) - (distance(b.origin, b.destination) ?? 0));
+    const route = best[0];
+    claimed.add(route);
+    const miles = distance(route.origin, route.destination);
+    const notes = [];
+    if (!pairs.has(route.origin + "-" + route.destination)) notes.push("Essa rota ainda não tem voo registrado.");
+    if (needAirports.has(route.destination)) notes.push("E ela chega a " + route.destination + ", onde falta aeronave para outras rotas.");
+    cards.push({ kind: "voar", item,
+      action: "Voe a rota " + legText(route) + " (" + nm(miles) + (blockMinutes(miles, plane) ? ", " + clock(blockMinutes(miles, plane)) : "") + ").",
+      why: [(item.level === "parada" ? "Está parada" : "Está sem voar " + agoText(item.idleDays)) + " em " + where(plane.airport) +
+        ", que tem rota ao alcance dela.", ...notes].join(" "),
+      others: best.slice(1, 4).map(other => other.origin + " → " + other.destination),
+      button: ["Ver no mapa", () => showPlan(plane, [route])] });
+  }
+
+  // 2. Muito usadas: indica uma substituta parada que alcança as mesmas distâncias.
+  const spare = items.filter(item => (item.level === "parada" || item.level === "pouco") && network.has(item.plane.airport) &&
+    !assigned.has(item.plane.prefix));
+  const usedSubs = new Set();
+  for (const item of items.filter(entry => entry.level === "muito" && !idle.includes(entry))) {
+    const { plane } = item;
+    // Cada substituta é indicada para uma aeronave só, enquanto houver outras opções.
+    const subs = spare.filter(other => ["ok", "limite"].includes(reach(other.plane, item.longest)))
+      .sort((a, b) => usedSubs.has(a.plane.prefix) - usedSubs.has(b.plane.prefix) ||
+        (b.plane.airport === plane.airport) - (a.plane.airport === plane.airport) ||
+        (b.plane.model === plane.model) - (a.plane.model === plane.model) ||
+        (distance(plane.airport, a.plane.airport) ?? Infinity) - (distance(plane.airport, b.plane.airport) ?? Infinity));
+    const sub = subs[0]?.plane;
+    if (sub) usedSubs.add(sub.prefix);
+    const share = "Fez " + item.flights.length + " dos " + flightLog.length + " voos lidos (" + hoursText(item.minutes) + " de voo).";
+    cards.push({ kind: "revezar", item,
+      action: sub
+        ? "Ofereça o próximo voo para a " + sub.prefix + " (" + sub.model + ", " +
+          (sub.airport === plane.airport ? "parada no mesmo aeroporto, " + sub.airport : "parada em " + where(sub.airport)) + ")."
+        : "Siga usando, mas acompanhe o desgaste no PilOps: não há aeronave parada que cubra as mesmas distâncias.",
+      why: share + (sub ? " Dividir os voos espalha o desgaste e deixa a frota inteira em uso." : ""),
+      button: sub ? ["Ver a substituta", () => focusPlane(sub)] : ["Abrir no mapa", () => focusPlane(plane)] });
+  }
+
+  for (const item of items.filter(entry => entry.level === "ativa" && !idle.includes(entry))) {
+    cards.push({ kind: "ok", item, action: "está voando normalmente, nada a fazer.", why: "", button: ["Abrir no mapa", () => focusPlane(item.plane)] });
+  }
+  for (const item of items.filter(entry => entry.level === "indisponivel")) {
+    cards.push({ kind: "indisponivel", item,
+      action: /manuten/i.test(item.plane.status) ? "em manutenção. Volta às sugestões quando sair." : "em uso por um piloto agora. Volta às sugestões quando pousar.",
+      why: "", button: null });
+  }
+  return { cards, items };
+}
+
+function focusPlane(plane) {
+  chooseAircraft(plane.prefix);
+  document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function showPlan(plane, legs) {
+  Object.assign(state, { prefix: plane.prefix, origin: plane.airport, focus: null, tab: "routes", plan: [...legs] });
+  render();
+  document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function reallocRow(card) {
+  const { plane } = card.item;
+  const row = element("li", "realloc-item kind-" + card.kind);
+  const head = element("div", "row-head");
+  head.append(button(plane.prefix + " · " + plane.model, "item-heading", () => focusPlane(plane)));
+  const tags = element("div", "tags");
+  const [levelLabel, levelTone] = activityLevels[card.item.level];
+  tags.append(element("span", "tag " + levelTone, levelLabel));
+  if (card.hangar) tags.append(element("span", "tag neutral", "Volta ao hangar"));
+  const attention = plane.status.split(" · ").filter(part => /atenção/i.test(part));
+  if (attention.length) tags.append(element("span", "tag warn", attention.join(" · ")));
+  head.append(tags);
+  row.append(head);
+  row.append(element("span", "meta", "Agora em " + where(plane.airport) + " · hangar " + (plane.base || "não informado") +
+    " · " + lastFlightText(card.item)));
+  const action = element("p", "todo");
+  action.append(element("strong", "", card.kind === "ok" || card.kind === "indisponivel" ? "Situação: " : "O que fazer: "), card.action);
+  row.append(action);
+  if (card.why) row.append(element("p", "why", "Por quê: " + card.why));
+  if (card.others?.length) row.append(element("span", "meta", "Outras rotas daqui ao alcance: " + card.others.join(", ") + "."));
+  if (card.button) {
+    const actions = element("div", "plan-actions");
+    actions.append(button(card.button[0], "secondary small", card.button[1]));
+    row.append(actions);
+  }
+  return row;
+}
+
+function renderRealloc() {
+  const list = document.querySelector("#realloc");
+  if (!list || !fleet.length) return;
+  const { cards, items } = reallocCards();
+  const order = Object.keys(reallocKinds);
+
+  // Contadores que também servem de filtro.
+  const stats = document.querySelector("#realloc-stats");
+  stats.replaceChildren(...order.map(kind => {
+    const count = cards.filter(card => card.kind === kind).length;
+    const tile = button("", "stat stat-" + kind, () => {
+      realloc.filter = realloc.filter === kind ? "todas" : kind;
+      realloc.view = "acoes";
+      renderRealloc();
+    });
+    tile.setAttribute("aria-pressed", String(realloc.filter === kind));
+    tile.append(element("strong", "", String(count)), element("span", "", reallocKinds[kind].title),
+      element("small", "", reallocKinds[kind].hint));
+    return tile;
+  }));
+  for (const tab of document.querySelectorAll("#realloc-tabs button")) {
+    tab.setAttribute("aria-pressed", String(tab.dataset.view === realloc.view));
+  }
+
+  const period = flightsSince ? " desde " + dayText(flightsSince) + " (" + plural(daysBetween(flightsSince, referenceDay()) + 1, "dia", "dias") + ")" : "";
+  const summary = document.querySelector("#realloc-summary");
+  const rows = [];
+  if (realloc.view === "acoes") {
+    summary.textContent = "Sugestões calculadas com a posição de cada aeronave na última coleta e os " + flightLog.length +
+      " voos lidos" + period + ". Os grupos de cima são os mais urgentes. Elas são recalculadas a cada sincronização." +
+      (realloc.filter !== "todas" ? " Filtro: " + reallocKinds[realloc.filter].title.toLowerCase() + " (clique de novo no quadro para ver tudo)." : "");
+    for (const kind of order) {
+      if (realloc.filter !== "todas" && realloc.filter !== kind) continue;
+      const group = cards.filter(card => card.kind === kind);
+      if (!group.length) continue;
+      rows.push(element("li", "group", reallocKinds[kind].title + " · " + reallocKinds[kind].hint));
+      rows.push(...group.map(reallocRow));
+    }
+    if (!rows.length) rows.push(element("li", "meta", "Nenhuma aeronave neste grupo agora."));
+  } else {
+    summary.textContent = "Voos de cada aeronave" + period + ", da mais usada para a menos usada. O PilOps mostra só os 10 voos " +
+      "mais recentes da companhia, então a contagem cresce a cada sincronização.";
+    const sorted = [...items].sort((a, b) => b.flights.length - a.flights.length || b.minutes - a.minutes ||
+      a.plane.prefix.localeCompare(b.plane.prefix));
+    const max = Math.max(1, ...sorted.map(item => item.flights.length));
+    for (const item of sorted) {
+      const row = element("li", "activity");
+      const head = element("div", "row-head");
+      head.append(button(item.plane.prefix + " · " + item.plane.model, "item-heading", () => focusPlane(item.plane)));
+      const [label, tone] = activityLevels[item.level];
+      head.append(element("span", "tag " + tone, label));
+      const bar = element("div", "bar");
+      bar.setAttribute("role", "img");
+      bar.setAttribute("aria-label", plural(item.flights.length, "voo", "voos"));
+      const fill = element("i", "fill-" + item.level);
+      fill.style.width = (item.flights.length / max * 100) + "%";
+      bar.append(fill);
+      row.append(head, bar, element("span", "meta", (item.flights.length
+        ? plural(item.flights.length, "voo", "voos") + " · " + hoursText(item.minutes) + " de voo · "
+        : "") + lastFlightText(item) + " · agora em " + item.plane.airport));
+      rows.push(row);
+    }
+  }
+  list.replaceChildren(...rows);
+}
+
+for (const tab of document.querySelectorAll("#realloc-tabs button")) {
+  tab.addEventListener("click", () => { realloc.view = tab.dataset.view; renderRealloc(); });
 }
 
 start();
