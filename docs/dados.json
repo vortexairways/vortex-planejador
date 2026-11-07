@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-07T12:53:44.165Z",
+ "capturedAt": "2026-11-07T12:56:51.424Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -77,7 +77,7 @@
    "model": "Airbus A330",
    "airport": "SBRF",
    "base": "SBGL",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NTXJ5N",
@@ -112,7 +112,7 @@
    "model": "Boeing 787-10 Dreamliner",
    "airport": "LEMD",
    "base": "SBGL",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   }
  ],
  "routes": [
@@ -297,23 +297,23 @@
   {
    "name": "astronauta",
    "role": "ADMIN",
-   "level": 1,
-   "totalMinutes": 113401,
-   "companyMinutes": 103101,
+   "level": null,
+   "totalMinutes": 118010,
+   "companyMinutes": 107709,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
-   "level": 1,
-   "totalMinutes": 16666,
-   "companyMinutes": 4553,
+   "level": null,
+   "totalMinutes": 18463,
+   "companyMinutes": 6350,
    "joined": "2026-10-20"
   },
   {
    "name": "AlphaPrime",
    "role": null,
-   "level": 1,
+   "level": null,
    "totalMinutes": 218,
    "companyMinutes": 218,
    "joined": "2026-06-29"
@@ -321,7 +321,7 @@
   {
    "name": "Mathiasen",
    "role": null,
-   "level": 1,
+   "level": null,
    "totalMinutes": 574,
    "companyMinutes": 0,
    "joined": "2026-11-03"
@@ -329,29 +329,29 @@
   {
    "name": "Harris",
    "role": null,
-   "level": 1,
-   "totalMinutes": 4309,
+   "level": null,
+   "totalMinutes": 4657,
    "companyMinutes": 0,
    "joined": "2026-10-23"
   },
   {
    "name": "PonAir",
    "role": null,
-   "level": 1,
-   "totalMinutes": 2432,
+   "level": null,
+   "totalMinutes": 2535,
    "companyMinutes": 0,
    "joined": "2026-10-31"
   },
   {
    "name": "claudiobastos",
    "role": null,
-   "level": 1,
+   "level": null,
    "totalMinutes": 3251,
    "companyMinutes": 0,
    "joined": "2026-11-01"
   }
  ],
- "pilotsCapturedAt": "2026-11-04T10:49:50.113Z",
+ "pilotsCapturedAt": "2026-11-07T12:56:51.424Z",
  "flights": [
   {
    "pilot": "astronauta",
