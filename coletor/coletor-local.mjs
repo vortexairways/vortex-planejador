@@ -104,7 +104,10 @@ const server = createServer(async (req, res) => {
       }
       return;
     }
-    const { fleet, routes, hubs, reportedFleet, pilots, flights } = input;
+    const { fleet, routes, hubs, reportedFleet, pilots, flights, notes } = input;
+    if (Array.isArray(notes)) {
+      for (const note of notes.slice(0, 5)) if (typeof note === "string") console.log("Extensão: " + note.slice(0, 300));
+    }
     let previous = null;
     try { previous = JSON.parse(readFileSync(dataFile, "utf8")); } catch { /* primeira coleta */ }
     const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights }, previous);

@@ -82,7 +82,9 @@ function readCompany(section, openTab) {
     ? year + "-" + String(months[mon.toLowerCase()]).padStart(2, "0") + "-" + String(dayNumber).padStart(2, "0") : null;
   const pilotLine = /^@[\w.-]{1,40}$/;
   if (section === "Pilotos") {
-    // Painel de pilotos: @nome, ADMIN (opcional), Nv. N, horas totais, horas na empresa e data de entrada.
+    // Painel de pilotos. Desde 04/11/2026 é uma tabela: os títulos (HORAS TOTAIS DE VOO, HORAS NA EMPRESA,
+    // DATA DE ENTRADA) aparecem uma vez só e cada piloto vem como @nome, ADMIN (opcional), país, horas totais,
+    // horas na empresa e data de entrada. O formato antigo (título repetido em cada cartão) continua aceito.
     const start = body.indexOf("Painel de pilotos");
     if (start < 0) return null;
     const lines = body.slice(start).split("\n").map(t => t.trim()).filter(Boolean);
@@ -95,11 +97,13 @@ function readCompany(section, openTab) {
       const block = lines.slice(i + 1, i + 12);
       const next = block.findIndex(t => pilotLine.test(t));
       const own = next < 0 ? block : block.slice(0, next);
-      const after = name => own[own.findIndex(t => t.toUpperCase().startsWith(name)) + 1];
+      const labelled = name => { const at = own.findIndex(t => t.toUpperCase().startsWith(name)); return at < 0 ? null : clock(own[at + 1]); };
+      const clocks = own.map(clock).filter(value => value !== null);
       const pilot = {
         name: lines[i].slice(1), role: own.includes("ADMIN") ? "ADMIN" : null,
         level: Number(own.find(t => /^Nv\.\s*\d+$/.test(t))?.match(/\d+/)?.[0]) || null,
-        totalMinutes: clock(after("HORAS TOTAIS")), companyMinutes: clock(after("HORAS NA EMPRESA")),
+        totalMinutes: labelled("HORAS TOTAIS") ?? clocks[0] ?? null,
+        companyMinutes: labelled("HORAS NA EMPRESA") ?? clocks[1] ?? null,
         joined: date(own.find(t => date(t))),
       };
       if (pilot.totalMinutes === null || pilot.companyMinutes === null) return null;
@@ -153,7 +157,18 @@ async function section(tabId, name) {
     } catch { /* Wait for the company's page to finish loading. */ }
     await new Promise(resolve => setTimeout(resolve, 500));
   }
-  throw new Error("A aba " + name + " não carregou por completo. Confira a sessão do PilOps.");
+  // Diagnóstico curto do que a página mostrava, para o serviço local exibir no terminal.
+  let seen = "";
+  try {
+    const [{ result }] = await chrome.scripting.executeScript({ target: { tabId }, func: () => {
+      const body = document.body.innerText;
+      const selected = document.querySelector('[role="tab"][aria-selected="true"]')?.innerText.trim() || "nenhuma";
+      return "aba aberta: " + selected + "; " + location.search + "; " +
+        body.split("\n").filter(t => /^@[\w.-]{1,40}$/.test(t.trim())).length + " linhas com @piloto";
+    } });
+    seen = " (" + result + ")";
+  } catch { /* sem diagnóstico */ }
+  throw new Error("A aba " + name + " não carregou por completo" + seen + ".");
 }
 
 async function run() {
@@ -176,12 +191,14 @@ async function run() {
     const hubs = await section(tab.id, "Hubs");
     const routes = await section(tab.id, "Rotas");
     // Pilotos e voos são opcionais: se a aba não carregar, a frota e as rotas são publicadas assim mesmo.
-    const pilots = await section(tab.id, "Pilotos").catch(() => null);
-    const flights = await section(tab.id, "Voos").catch(() => null);
+    const notes = [];
+    const optional = name => section(tab.id, name).catch(error => { notes.push(error.message); return null; });
+    const pilots = await optional("Pilotos");
+    const flights = await optional("Voos");
     await local("snapshot", {
       lease: job.lease,
       fleet: fleet.map(p => ({ ...p, base: hangars[p.prefix] ?? null })),
-      reportedFleet, hubs, routes, pilots, flights,
+      reportedFleet, hubs, routes, pilots, flights, notes,
     });
     await chrome.action.setBadgeText({ text: "OK" });
     await chrome.action.setTitle({ title: "Vortex · coleta concluída" });
