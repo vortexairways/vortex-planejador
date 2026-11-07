@@ -1092,6 +1092,7 @@ function paintAll() {
   renderAlerts();
   renderRanking();
   renderRealloc();
+  renderRevenue();
 }
 
 function setLanguage(next) {
@@ -1417,6 +1418,189 @@ function renderRealloc() {
 
 for (const tab of document.querySelectorAll("#realloc-tabs button")) {
   tab.addEventListener("click", () => { realloc.view = tab.dataset.view; renderRealloc(); });
+}
+
+// ---------- Monitor de receita ----------
+// Procura cortes de pagamento do PilOps não avisados. Compara voos da mesma rota com o mesmo modelo pela
+// receita por libra de carga (na mesma rota a distância é fixa, então isso separa preço de carga). Cada voo é
+// comparado com a mediana dos voos anteriores daquele grupo; queda maior que revenueLimit gera alerta.
+
+const revenueLimit = 0.10;
+const median = values => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+};
+const percent = value => (value > 0 ? "+" : value < 0 ? "−" : "") +
+  new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 }).format(Math.abs(value * 100)) + "%";
+const perLbText = value => "P$ " + new Intl.NumberFormat(locale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value) + "/lb";
+const perLb = flight => flight.revenue / flight.payload;
+
+function revenueGroups() {
+  // Do mais antigo para o mais recente; voos sem receita (traslados) ou sem carga ficam de fora.
+  const paid = [...flightLog].reverse().filter(flight => flight.revenue > 0 && flight.payload > 0)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const groups = new Map();
+  for (const flight of paid) {
+    const key = flight.origin + "-" + flight.destination + "|" + flight.model;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(flight);
+  }
+  return [...groups.values()].map(list => {
+    const rows = list.map((flight, i) => {
+      if (!i) return { flight, value: perLb(flight), reference: null, vsReference: null, vsPrevious: null };
+      const previous = list[i - 1];
+      const reference = median(list.slice(0, i).map(perLb));
+      return { flight, value: perLb(flight), reference, vsReference: perLb(flight) / reference - 1,
+        vsPrevious: perLb(flight) / perLb(previous) - 1, loadChange: flight.payload / previous.payload - 1,
+        timeChange: flight.minutes / previous.minutes - 1 };
+    });
+    const last = rows.at(-1);
+    const hadDrop = rows.some(row => row.vsReference !== null && row.vsReference <= -revenueLimit);
+    const state = rows.length < 2 ? "unico" : last.vsReference <= -revenueLimit ? "queda"
+      : last.vsReference >= revenueLimit ? "alta" : hadDrop ? "recuperada" : "estavel";
+    const { origin, destination, model } = list[0];
+    return { origin, destination, model, rows, last, state, total: last.value / rows[0].value - 1 };
+  });
+}
+
+const revenueStates = () => ({
+  queda: [T("Queda acima de 10%", "Drop over 10%"), "bad"],
+  recuperada: [T("Queda isolada, recuperada", "One-off drop, recovered"), "warn"],
+  alta: [T("Alta acima de 10%", "Rise over 10%"), "ok"],
+  estavel: [T("Estável", "Stable"), "neutral"],
+});
+
+function revenueRow(group) {
+  const row = element("li", "revenue-item state-" + group.state);
+  const head = element("div", "row-head");
+  head.append(element("strong", "circuit", group.origin + " → " + group.destination + " · " + group.model));
+  const [label, tone] = revenueStates()[group.state];
+  head.append(element("span", "tag " + tone, label));
+  row.append(head);
+  const first = group.rows[0].flight;
+  row.append(element("span", "meta", T(group.rows.length + " voos comparáveis · referência atual " + perLbText(group.last.reference) +
+    " · desde o 1º voo (" + dayText(first.date) + "): " + percent(group.total),
+    group.rows.length + " comparable flights · current reference " + perLbText(group.last.reference) +
+    " · since the 1st flight (" + dayText(first.date) + "): " + percent(group.total))));
+
+  // Leitura do último voo, com carga e duração para ajudar a separar corte de preço de outras causas.
+  const last = group.last;
+  const f = last.flight;
+  const ctx = [];
+  if (Math.abs(last.loadChange) >= 0.03) ctx.push(T("carga " + percent(last.loadChange), "load " + percent(last.loadChange)));
+  if (Math.abs(last.timeChange) >= 0.05) ctx.push(T("duração " + percent(last.timeChange), "flight time " + percent(last.timeChange)));
+  const ctxText = ctx.length ? T(" Em relação ao voo anterior: " + ctx.join(", ") + ".", " Compared with the previous flight: " + ctx.join(", ") + ".") : "";
+  const who = dayText(f.date) + ", @" + f.pilot + ", " + f.prefix;
+  let reading;
+  if (group.state === "queda") {
+    reading = T("O último voo (" + who + ") pagou " + perLbText(last.value) + ", " + percent(last.vsReference).slice(1) +
+      " abaixo da mediana dos voos anteriores (" + perLbText(last.reference) + ")." + ctxText +
+      (last.loadChange > 0 ? " Como a carga foi maior, ela não explica a queda." : "") +
+      " Se o próximo voo nesta rota também vier baixo, o corte está confirmado.",
+      "The last flight (" + who + ") paid " + perLbText(last.value) + ", " + percent(last.vsReference).slice(1) +
+      " below the median of earlier flights (" + perLbText(last.reference) + ")." + ctxText +
+      (last.loadChange > 0 ? " The load was higher, so it does not explain the drop." : "") +
+      " If the next flight on this route also comes in low, the cut is confirmed.");
+  } else if (group.state === "recuperada") {
+    reading = T("Houve uma queda de mais de 10% num voo anterior, mas o último (" + who + ") voltou ao normal (" +
+      percent(last.vsReference) + " em relação à mediana).",
+      "An earlier flight dropped more than 10%, but the last one (" + who + ") is back to normal (" +
+      percent(last.vsReference) + " against the median).");
+  } else if (group.state === "alta") {
+    reading = T("O último voo (" + who + ") pagou " + percent(last.vsReference) + " em relação à mediana dos anteriores." + ctxText,
+      "The last flight (" + who + ") paid " + percent(last.vsReference) + " against the median of earlier flights." + ctxText);
+  } else {
+    reading = T("O último voo (" + who + ") ficou " + percent(last.vsReference) + " em relação à mediana: dentro da variação normal.",
+      "The last flight (" + who + ") came in at " + percent(last.vsReference) + " against the median: within normal variation.");
+  }
+  row.append(element("p", "why", reading));
+
+  const table = element("table", "revenue-table");
+  const headRow = element("tr");
+  for (const title of [T("Data", "Date"), T("Piloto", "Pilot"), T("Aeronave", "Aircraft"), T("Carga", "Load"), T("Receita", "Revenue"),
+    "P$/lb", T("vs. anterior", "vs. previous"), T("vs. referência", "vs. reference")]) {
+    const th = element("th", "", title);
+    th.setAttribute("scope", "col");
+    headRow.append(th);
+  }
+  const thead = element("thead");
+  thead.append(headRow);
+  const tbody = element("tbody");
+  const changeCell = value => {
+    const td = element("td", value === null || value === undefined ? "" : value <= -revenueLimit ? "down" : value >= revenueLimit ? "up" : "",
+      value === null || value === undefined ? "—" : percent(value));
+    return td;
+  };
+  for (const item of [...group.rows].reverse()) {
+    const tr = element("tr");
+    tr.append(element("td", "", dayText(item.flight.date)), element("td", "", "@" + item.flight.pilot), element("td", "", item.flight.prefix),
+      element("td", "", number.format(item.flight.payload) + " lbs"), element("td", "", money(item.flight.revenue)),
+      element("td", "", perLbText(item.value).replace("P$ ", "").replace("/lb", "")), changeCell(item.vsPrevious), changeCell(item.vsReference));
+    tbody.append(tr);
+  }
+  table.append(thead, tbody);
+  const wrap = element("div", "table-wrap");
+  wrap.append(table);
+  row.append(wrap);
+  return row;
+}
+
+function renderRevenue() {
+  const list = document.querySelector("#revenue");
+  if (!list) return;
+  const groups = revenueGroups();
+  const compared = groups.filter(group => group.state !== "unico");
+  const count = state => compared.filter(group => group.state === state).length;
+  const drops = compared.filter(group => group.state === "queda");
+
+  // Sinal geral: quedas em rotas diferentes com o último voo em até 3 dias de diferença.
+  const dropDays = drops.map(group => group.last.flight.date).sort();
+  const general = new Set(drops.map(group => group.origin + "-" + group.destination)).size >= 2 &&
+    daysBetween(dropDays[0], dropDays.at(-1)) <= 3;
+
+  const stats = document.querySelector("#revenue-stats");
+  const tile = (value, title, hint, kind) => {
+    const box = element("div", "stat stat-" + kind);
+    box.append(element("strong", "", String(value)), element("span", "", title), element("small", "", hint));
+    return box;
+  };
+  stats.replaceChildren(
+    tile(count("queda"), T("Rotas com queda", "Routes with a drop"), T("último voo mais de 10% abaixo", "last flight over 10% lower"), "queda"),
+    tile(count("alta"), T("Rotas com alta", "Routes with a rise"), T("último voo mais de 10% acima", "last flight over 10% higher"), "alta"),
+    tile(count("estavel") + count("recuperada"), T("Rotas estáveis", "Stable routes"), T("dentro da variação normal", "within normal variation"), "estavel"),
+    tile(groups.length - compared.length, T("Aguardando 2º voo", "Waiting for a 2nd flight"),
+      T("rota + modelo voados só uma vez", "route + model flown only once"), "unico"));
+
+  const paidCount = flightLog.filter(flight => flight.revenue > 0 && flight.payload > 0).length;
+  document.querySelector("#revenue-summary").textContent = (general
+    ? T("⚠ Possível deságio geral: " + drops.length + " rotas caíram mais de 10% entre " + dayText(dropDays[0]) + " e " + dayText(dropDays.at(-1)) +
+      ". Quedas em várias rotas ao mesmo tempo apontam para mudança no próprio PilOps. ",
+      "⚠ Possible across-the-board cut: " + drops.length + " routes dropped more than 10% between " + dayText(dropDays[0]) + " and " +
+      dayText(dropDays.at(-1)) + ". Drops on several routes at once point to a change in PilOps itself. ")
+    : drops.length ? T("Queda restrita a " + (drops.length === 1 ? "uma rota" : drops.length + " rotas") + " por enquanto: ainda não há sinal de corte geral. ",
+      "Drop limited to " + (drops.length === 1 ? "one route" : drops.length + " routes") + " for now: no sign of an across-the-board cut yet. ")
+      : "") +
+    T(paidCount + " voos com receita lidos" + (flightsSince ? " desde " + dayText(flightsSince) : "") + ", em " + compared.length +
+      (compared.length === 1 ? " rota comparável" : " rotas comparáveis") + " (mesma rota e mesmo modelo, com 2 voos ou mais). O monitor fica mais preciso a cada sincronização.",
+      paidCount + " paid flights read" + (flightsSince ? " since " + dayText(flightsSince) : "") + ", on " + compared.length +
+      (compared.length === 1 ? " comparable route" : " comparable routes") + " (same route and model, with 2 or more flights). The monitor gets sharper with every sync.");
+
+  const order = { queda: 0, recuperada: 1, alta: 2, estavel: 3 };
+  const rows = compared.sort((a, b) => order[a.state] - order[b.state] || a.last.vsReference - b.last.vsReference).map(revenueRow);
+  if (!rows.length) rows.push(element("li", "meta", T("Ainda não há duas viagens na mesma rota com o mesmo modelo para comparar.",
+    "There are no two flights on the same route with the same model to compare yet.")));
+  list.replaceChildren(...rows);
+
+  const banner = document.querySelector("#revenue-alert");
+  banner.replaceChildren();
+  banner.hidden = !drops.length;
+  if (drops.length) {
+    banner.append(button("⚠ " + (general ? T("Possível deságio geral do PilOps", "Possible across-the-board PilOps cut")
+      : T("Receita: queda acima de 10% em " + (drops.length === 1 ? "1 rota" : drops.length + " rotas"),
+        "Revenue: drop over 10% on " + (drops.length === 1 ? "1 route" : drops.length + " routes"))) + T(" — ver monitor", " — see monitor"),
+    "alert-link", () => document.querySelector("#revenue-card").scrollIntoView({ behavior: "smooth", block: "start" })));
+  }
 }
 
 start();

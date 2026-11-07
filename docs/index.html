@@ -18,11 +18,11 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=8">
+  <link rel="stylesheet" href="./style.css?v=9">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
-  <script defer src="./planner.js?v=9"></script>
+  <script defer src="./planner.js?v=10"></script>
 </head>
 <body>
   <header class="top">
@@ -52,7 +52,7 @@
       </div>
     </div>
     <aside class="notice" aria-label="Situação dos dados" data-en-label="Data status">
-      <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p><p id="fleet-alert" class="fleet-alert" hidden></p></div>
+      <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p><p id="fleet-alert" class="fleet-alert" hidden></p><p id="revenue-alert" class="fleet-alert" hidden></p></div>
     </aside>
     <section class="card filters" aria-label="Filtros" data-en-label="Filters">
       <label><span data-en="Departure airport">Aeroporto de partida</span> <select id="airport"><option value="">Todos os aeroportos</option></select></label>
@@ -142,6 +142,29 @@
         <p id="realloc-summary" class="detail"></p>
       </div>
       <ul id="realloc" class="list pad"></ul>
+    </section>
+    <section id="revenue-card" class="card wide" aria-labelledby="revenue-title">
+      <div class="section-heading">
+        <div><p class="eyebrow" data-en="PILOPS PAYMENTS">PAGAMENTOS DO PILOPS</p><h2 id="revenue-title" data-en="Revenue monitor">Monitor de receita</h2></div>
+      </div>
+      <div class="pad">
+        <details class="explain">
+          <summary data-en="How the monitor works">Como o monitor funciona</summary>
+          <div class="explain-body"
+            data-en="&lt;p&gt;The monitor compares flights on the &lt;strong&gt;same route with the same aircraft model&lt;/strong&gt; to spot a pay cut by PilOps that was not announced to players.&lt;/p&gt;
+            &lt;p&gt;The yardstick is &lt;strong&gt;revenue per pound of load&lt;/strong&gt; (P$ ÷ lbs). On the same route the distance does not change, so this number separates &amp;ldquo;PilOps paid less&amp;rdquo; from &amp;ldquo;the flight simply carried less&amp;rdquo;.&lt;/p&gt;
+            &lt;p&gt;Each flight is compared with the &lt;strong&gt;median of the earlier flights&lt;/strong&gt; on that route. A drop of more than 10% raises an alert. A one-off drop that recovers on the next flight is only noted, because revenue naturally varies by a few percent from flight to flight. Ferries with no revenue are left out.&lt;/p&gt;
+            &lt;p&gt;When several routes drop at the same time, it points to a change in PilOps itself and not to a specific flight.&lt;/p&gt;">
+            <p>O monitor compara voos da <strong>mesma rota com o mesmo modelo de aeronave</strong> para achar um corte de pagamento do PilOps que não foi avisado aos jogadores.</p>
+            <p>A régua é a <strong>receita por libra de carga</strong> (P$ ÷ lbs). Na mesma rota a distância não muda, então esse número separa &ldquo;o PilOps pagou menos&rdquo; de &ldquo;o voo levou menos carga&rdquo;.</p>
+            <p>Cada voo é comparado com a <strong>mediana dos voos anteriores</strong> naquela rota. Queda maior que 10% gera alerta. Uma queda isolada que se recupera no voo seguinte só fica registrada, porque a receita varia naturalmente alguns por cento de um voo para outro. Traslados sem receita ficam de fora.</p>
+            <p>Quando várias rotas caem ao mesmo tempo, o sinal aponta para uma mudança no próprio PilOps, e não para um voo específico.</p>
+          </div>
+        </details>
+        <div id="revenue-stats" class="stat-row"></div>
+        <p id="revenue-summary" class="detail"></p>
+      </div>
+      <ul id="revenue" class="list pad"></ul>
     </section>
     <section class="card wide" aria-labelledby="ideas-title">
       <div class="section-heading">
