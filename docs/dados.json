@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-06T20:04:44.631Z",
+ "capturedAt": "2026-11-07T12:53:44.165Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -49,7 +49,7 @@
    "model": "Douglas MD-11",
    "airport": "KRDU",
    "base": "LEMD",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N4XBCS",
@@ -82,7 +82,7 @@
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "KRDU",
    "base": "RJTT",
    "status": "Sem alerta no cartão"
   },
@@ -96,9 +96,9 @@
   {
    "prefix": "NK4I2I",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "OTHH",
    "base": "SBGL",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NE2XUQ",
@@ -110,7 +110,7 @@
   {
    "prefix": "NLFTDW",
    "model": "Boeing 787-10 Dreamliner",
-   "airport": "SBGL",
+   "airport": "LEMD",
    "base": "SBGL",
    "status": "EM USO"
   }
