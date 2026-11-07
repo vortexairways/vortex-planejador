@@ -1,11 +1,11 @@
 {
- "capturedAt": "2026-11-07T13:03:09.830Z",
+ "capturedAt": "2026-11-07T22:32:10.761Z",
  "reportedFleet": 17,
  "fleet": [
   {
    "prefix": "NKZEIA",
    "model": "Airbus A321",
-   "airport": "DAAG",
+   "airport": "LPMT",
    "base": "LEMD",
    "status": "Sem alerta no cartão"
   },
@@ -49,7 +49,7 @@
    "model": "Douglas MD-11",
    "airport": "KRDU",
    "base": "LEMD",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N4XBCS",
@@ -98,7 +98,7 @@
    "model": "Douglas MD-11",
    "airport": "OTHH",
    "base": "SBGL",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NE2XUQ",
@@ -306,8 +306,8 @@
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 18463,
-   "companyMinutes": 6350,
+   "totalMinutes": 18582,
+   "companyMinutes": 6469,
    "joined": "2026-10-20"
   },
   {
@@ -319,18 +319,10 @@
    "joined": "2026-06-29"
   },
   {
-   "name": "Mathiasen",
-   "role": null,
-   "level": null,
-   "totalMinutes": 574,
-   "companyMinutes": 0,
-   "joined": "2026-11-03"
-  },
-  {
    "name": "Harris",
    "role": null,
    "level": null,
-   "totalMinutes": 4657,
+   "totalMinutes": 4754,
    "companyMinutes": 0,
    "joined": "2026-10-23"
   },
@@ -343,15 +335,39 @@
    "joined": "2026-10-31"
   },
   {
+   "name": "Mathiasen",
+   "role": null,
+   "level": null,
+   "totalMinutes": 574,
+   "companyMinutes": 0,
+   "joined": "2026-11-03"
+  },
+  {
    "name": "claudiobastos",
    "role": null,
    "level": null,
    "totalMinutes": 3251,
    "companyMinutes": 0,
    "joined": "2026-11-01"
+  },
+  {
+   "name": "PaxArcturia",
+   "role": null,
+   "level": null,
+   "totalMinutes": 254,
+   "companyMinutes": 0,
+   "joined": "2026-11-07"
+  },
+  {
+   "name": "marcelocanela",
+   "role": null,
+   "level": null,
+   "totalMinutes": 13119,
+   "companyMinutes": 0,
+   "joined": "2026-11-07"
   }
  ],
- "pilotsCapturedAt": "2026-11-07T13:03:09.830Z",
+ "pilotsCapturedAt": "2026-11-07T22:32:10.761Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -376,6 +392,18 @@
    "nm": 2372.45,
    "payload": 58442,
    "revenue": 5145680.24
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NKZEIA",
+   "model": "Airbus A321",
+   "origin": "DAAG",
+   "destination": "LPMT",
+   "date": "2026-11-07",
+   "minutes": 119,
+   "nm": 593.38,
+   "payload": 10097,
+   "revenue": 0
   },
   {
    "pilot": "astronauta",
