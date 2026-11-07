@@ -138,7 +138,11 @@ function readCompany(section, openTab) {
       const lbs = find(/^([\d.,]+)\s*lbs$/i);
       const money = find(/^P\$\s*(-?[\d,]+(?:\.\d+)?)$/);
       if (rest[0] !== "Rota" || !/^[A-Z0-9]{3,5}$/.test(rest[1] || "") || !/^[A-Z0-9]{3,5}$/.test(rest[2] || "") ||
-          !day || !isoDay(day[1], day[2], day[3]) || !time || !nm || !money || !/^[A-Z0-9-]{2,12}$/.test(prefix || "")) return null;
+          !day || !isoDay(day[1], day[2], day[3]) || !time || !nm || !money || !/^[A-Z0-9-]{2,12}$/.test(prefix || "")) {
+        // Guardado no mundo isolado da extensão para o diagnóstico de section() mostrar o bloco recusado.
+        window.__vortexRecusado = [model, prefix, lines[i], ...rest].join(" | ").slice(0, 400);
+        return null;
+      }
       flights.push({
         pilot: lines[i].slice(1), prefix, model, origin: rest[1], destination: rest[2], date: isoDay(day[1], day[2], day[3]),
         minutes: Number(time[1]) * 60 + Number(time[2]), nm: Math.round(Number(nm[1].replace(/,/g, "")) * 100) / 100,
@@ -173,10 +177,13 @@ async function section(tabId, name) {
     const [{ result }] = await chrome.scripting.executeScript({ target: { tabId }, func: () => {
       const body = document.body.innerText;
       const selected = document.querySelector('[role="tab"][aria-selected="true"]')?.innerText.trim() || "nenhuma";
+      const start = body.indexOf("Histórico de voos");
       return "aba aberta: " + selected + "; " + location.search + "; " +
-        body.split("\n").filter(t => /^@[\w.-]{1,40}$/.test(t.trim())).length + " linhas com @piloto";
+        body.split("\n").filter(t => /^@[\w.-]{1,40}$/.test(t.trim())).length + " linhas com @piloto" +
+        (window.__vortexRecusado ? "; bloco recusado: " + window.__vortexRecusado
+          : start >= 0 ? "; início do histórico: " + body.slice(start, start + 300).replace(/\n+/g, " | ") : "");
     } });
-    seen = " (" + result + ")";
+    seen = " (v" + chrome.runtime.getManifest().version + "; " + result + ")";
   } catch { /* sem diagnóstico */ }
   throw new Error("A aba " + name + " não carregou por completo" + seen + ".");
 }
