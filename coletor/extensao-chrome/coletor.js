@@ -113,20 +113,30 @@ function readCompany(section, openTab) {
   }
   if (section === "Voos") {
     // Histórico de voos (o PilOps mostra os 10 últimos): modelo, prefixo, @piloto, Rota, origem, destino,
-    // Data, duração, distância, carga e receita.
+    // data, duração, distância, carga e receita. O PilOps muda o layout conforme a largura da janela:
+    //   estreita: "Data: Nov 07, 2026", 08:27, …
+    //   larga:    "Data", "Nov 07, 2026", "Prefixo", "NTXJ5N", 08:27, …
+    // Por isso cada campo é procurado pelo formato dentro do bloco do voo, e não por posição.
+    // A aba também tem "Voos ativos" (em andamento, com data "--"): essa seção é cortada fora e
+    // qualquer bloco de voo em andamento é ignorado.
     const start = body.indexOf("Histórico de voos");
     if (start < 0) return null;
-    const lines = body.slice(start).split("\n").map(t => t.trim()).filter(Boolean);
+    const active = body.indexOf("Voos ativos", start);
+    const lines = body.slice(start, active < 0 ? undefined : active).split("\n").map(t => t.trim()).filter(Boolean);
     const flights = [];
     for (let i = 0; i < lines.length; i++) {
       if (!pilotLine.test(lines[i])) continue;
       const [prefix, model] = [lines[i - 1], lines[i - 2]];
-      const rest = lines.slice(i + 1, i + 10);
-      const day = /^Data:\s*([A-Za-z]{3})\w*\s+(\d{1,2}),\s+(\d{4})$/.exec(rest[3] || "");
-      const time = /^(\d+):(\d{2})$/.exec(rest[4] || "");
-      const nm = /^([\d.,]+)\s*nm$/i.exec(rest[5] || "");
-      const lbs = /^([\d.,]+)\s*lbs$/i.exec(rest[6] || "");
-      const money = /^P\$\s*(-?[\d,]+(?:\.\d+)?)$/.exec(rest[7] || "");
+      // Bloco deste voo: até o @piloto seguinte, sem as duas linhas (modelo e prefixo) do próximo voo.
+      const next = lines.findIndex((t, at) => at > i && pilotLine.test(t));
+      const rest = lines.slice(i + 1, next < 0 ? i + 16 : next - 2);
+      if (rest.some(t => /^(Data:?\s*)?-{2,}$/.test(t))) continue;
+      const find = pattern => rest.map(t => pattern.exec(t)).find(Boolean);
+      const day = find(/^(?:Data:\s*)?([A-Za-z]{3})\w*\s+(\d{1,2}),\s+(\d{4})$/);
+      const time = find(/^(\d+):(\d{2})$/);
+      const nm = find(/^([\d.,]+)\s*nm$/i);
+      const lbs = find(/^([\d.,]+)\s*lbs$/i);
+      const money = find(/^P\$\s*(-?[\d,]+(?:\.\d+)?)$/);
       if (rest[0] !== "Rota" || !/^[A-Z0-9]{3,5}$/.test(rest[1] || "") || !/^[A-Z0-9]{3,5}$/.test(rest[2] || "") ||
           !day || !isoDay(day[1], day[2], day[3]) || !time || !nm || !money || !/^[A-Z0-9-]{2,12}$/.test(prefix || "")) return null;
       flights.push({
