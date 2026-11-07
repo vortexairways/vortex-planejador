@@ -19,6 +19,16 @@ body { margin: 0; }
 .brand small { font-size: .68rem; letter-spacing: .3em; }
 .emblem { display: grid; place-items: center; background: #214fb9; border-radius: 50%; height: 2.6rem; width: 2.6rem; font-size: 1.4rem; font-weight: 800; }
 .top a { color: #ebf2ff; font-size: .85rem; text-align: right; }
+.top-actions { display: flex; align-items: center; gap: .9rem; }
+.lang { display: inline-flex; border: 1px solid #2e4590; border-radius: 999px; padding: 2px; background: #0b1a4d; flex-shrink: 0; }
+.lang button { border: 0; background: none; color: #9fb3d9; font-size: .75rem; font-weight: 800; letter-spacing: .08em;
+  padding: .28rem .6rem; border-radius: 999px; min-width: 2.4rem; }
+.lang button:hover { color: #ffffff; }
+.lang button[aria-pressed="true"] { background: #ffffff; color: #050b24; }
+@media (max-width: 520px) {
+  .top-actions { flex-direction: column; align-items: flex-end; gap: .35rem; padding: .4rem 0; }
+  .top a { font-size: .78rem; }
+}
 .intro { padding: 2rem 0 1.25rem; }
 h1, h2, p { margin: 0; }
 h1 { font-size: clamp(1.9rem, 4vw, 3.35rem); letter-spacing: -.045em; line-height: 1.12; }

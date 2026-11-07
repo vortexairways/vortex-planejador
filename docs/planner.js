@@ -23,11 +23,42 @@ let circuits = [];
 const ideas = { view: "circuitos", scope: "todas", limit: 12 };
 
 const state = { origin: "", prefix: "", plan: [], tab: "routes", focus: null };
-const number = new Intl.NumberFormat("pt-BR");
+
+// ---------- Idioma ----------
+// Português ou inglês. Ordem: ?lang= na URL, escolha salva no navegador, idioma do navegador (pt → português,
+// qualquer outro → inglês). Os textos fixos da página levam a versão em inglês no atributo data-en.
+const langKey = "vortex-lang";
+let lang = (() => {
+  const asked = new URLSearchParams(location.search).get("lang");
+  if (asked === "pt" || asked === "en") return asked;
+  try {
+    const saved = localStorage.getItem(langKey);
+    if (saved === "pt" || saved === "en") return saved;
+  } catch { /* navegador sem armazenamento */ }
+  return /^pt\b/i.test(navigator.language || "pt") ? "pt" : "en";
+})();
+const T = (pt, en) => lang === "en" ? en : pt;
+const locale = () => lang === "en" ? "en-GB" : "pt-BR";
+let number = new Intl.NumberFormat(locale());
+
+const staticTexts = [...document.querySelectorAll("[data-en]")].map(node => ({ node, pt: node.innerHTML, en: node.dataset.en }));
+const staticLabels = [...document.querySelectorAll("[data-en-label]")]
+  .map(node => ({ node, pt: node.getAttribute("aria-label"), en: node.dataset.enLabel }));
+const pageTitle = { pt: document.title, en: "Route planner | Vortex Airways" };
+
+function applyStaticTexts() {
+  document.documentElement.lang = lang === "en" ? "en" : "pt-BR";
+  document.title = pageTitle[lang];
+  for (const item of staticTexts) item.node.innerHTML = item[lang];
+  for (const item of staticLabels) item.node.setAttribute("aria-label", item[lang]);
+  for (const choice of document.querySelectorAll("#lang button")) {
+    choice.setAttribute("aria-pressed", String(choice.dataset.lang === lang));
+  }
+}
 
 // ---------- Cálculos ----------
 
-const airportName = code => airports[code]?.name || "Coordenadas pendentes";
+const airportName = code => airports[code]?.name || T("Coordenadas pendentes", "Coordinates pending");
 const placeName = code => airports[code]?.city || airportName(code);
 
 // Distância ortodrômica (grande círculo) em milhas náuticas.
@@ -41,7 +72,7 @@ function distance(from, to) {
   return 2 * 3440.065 * Math.asin(Math.sqrt(h));
 }
 
-const nm = value => value === null ? "distância indisponível" : number.format(Math.round(value)) + " nm";
+const nm = value => value === null ? T("distância indisponível", "distance unavailable") : number.format(Math.round(value)) + " nm";
 
 // Tempo de bloco estimado: cruzeiro + 30 min de táxi, subida e descida, sem vento.
 function blockMinutes(miles, plane) {
@@ -63,9 +94,13 @@ function reach(plane, miles) {
 
 const unavailable = plane => /em uso|manuten|em voo/i.test(plane.status);
 
+// Os estados vêm do PilOps em português; em inglês, cada parte conhecida é traduzida.
+const statusEnglish = { "MANUTENÇÃO": "Maintenance", "EM USO": "In use", "FORA DA ÁREA": "Out of area",
+  "Sem alerta no cartão": "No alerts on card", "Atenção em motor": "Attention: engine", "Atenção em freios": "Attention: brakes",
+  "Atenção em pneus": "Attention: tyres" };
 function statusLabel(status) {
-  return status.split(" · ").map(part => part === part.toUpperCase()
-    ? part.charAt(0) + part.slice(1).toLowerCase() : part).join(" · ");
+  return status.split(" · ").map(part => lang === "en" && statusEnglish[part] ? statusEnglish[part]
+    : part === part.toUpperCase() ? part.charAt(0) + part.slice(1).toLowerCase() : part).join(" · ");
 }
 
 const selectedPlane = () => fleet.find(plane => plane.prefix === state.prefix);
@@ -98,7 +133,8 @@ if (map) {
   worldView();
   zoomClass();
 } else {
-  mapContainer.textContent = "O mapa não carregou. Os filtros e as listas continuam disponíveis.";
+  mapContainer.textContent = T("O mapa não carregou. Os filtros e as listas continuam disponíveis.",
+    "The map did not load. Filters and lists are still available.");
 }
 
 // Arco de grande círculo com longitudes contínuas (podem passar de ±180), sem cortar o Pacífico.
@@ -224,8 +260,8 @@ function drawMap(listed) {
     const important = hubs.has(code) || code === origin || planStops.has(code) || destinations.has(code) || outside;
     const classes = ["efb-apt", hubs.has(code) ? "hub" : "", code === origin ? "origin" : "", planStops.has(code) ? "on-plan" : "",
       outside ? "alert" : "", important ? "" : "minor"].filter(Boolean).join(" ");
-    const tip = element("span", "", code + " · " + airports[code].name + (planes.length ? " · " + planes.length + " na frota" : "") +
-      (outside ? " · fora da rede" : ""));
+    const tip = element("span", "", code + " · " + airports[code].name + (planes.length ? " · " + planes.length + T(" na frota", " in fleet") : "") +
+      (outside ? T(" · fora da rede", " · outside the network") : ""));
     for (const offset of offsets) {
       const icon = element("div", classes);
       icon.append(element("i"), element("b", "", code));
@@ -269,19 +305,19 @@ function button(label, className, action) {
   return node;
 }
 
-const reachText = {
-  ok: ["Dentro do alcance", "ok"],
-  limite: ["No limite do alcance", "warn"],
-  fora: ["Fora do alcance", "bad"],
-  "sem-dados": ["Alcance não cadastrado", "neutral"],
-};
+const reachText = () => ({
+  ok: [T("Dentro do alcance", "Within range"), "ok"],
+  limite: [T("No limite do alcance", "At the edge of range"), "warn"],
+  fora: [T("Fora do alcance", "Out of range"), "bad"],
+  "sem-dados": [T("Alcance não cadastrado", "Range not on file"), "neutral"],
+});
 
 function reachTag(plane, miles) {
   const status = reach(plane, miles);
   const performance = performanceOf(plane.model);
-  const [label, tone] = reachText[status];
+  const [label, tone] = reachText()[status];
   return element("span", "tag " + tone, label +
-    (performance && status !== "ok" ? " · máx. ≈ " + number.format(performance.range) + " nm" : ""));
+    (performance && status !== "ok" ? T(" · máx. ≈ ", " · max ≈ ") + number.format(performance.range) + " nm" : ""));
 }
 
 function routeRow({ route, miles }) {
@@ -293,7 +329,7 @@ function routeRow({ route, miles }) {
     render(false);
     frame(listedRoutes());
   }));
-  if (currentOrigin()) head.append(button("Adicionar ao plano", "secondary small", () => addLeg(route)));
+  if (currentOrigin()) head.append(button(T("Adicionar ao plano", "Add to plan"), "secondary small", () => addLeg(route)));
   row.append(head);
   row.append(element("span", "meta", [route.code, placeName(route.destination), nm(miles),
     clock(blockMinutes(miles, plane))].filter(Boolean).join(" · ")));
@@ -303,11 +339,11 @@ function routeRow({ route, miles }) {
     const able = fleet.filter(item => item.airport === route.origin && !unavailable(item) &&
       ["ok", "limite"].includes(reach(item, miles)));
     row.append(element("span", "meta", able.length
-      ? "Aeronaves aqui que alcançam: " + able.map(item => item.prefix + " (" + item.model + ")").join(", ")
-      : "Nenhuma aeronave disponível aqui alcança este trecho."));
+      ? T("Aeronaves aqui que alcançam: ", "Aircraft here that can make it: ") + able.map(item => item.prefix + " (" + item.model + ")").join(", ")
+      : T("Nenhuma aeronave disponível aqui alcança este trecho.", "No available aircraft here can fly this leg.")));
   }
   const status = coverage.get(route)?.status;
-  if (!plane && status === "comprar") row.append(element("span", "tag bad", "Nenhuma aeronave da frota alcança esta rota"));
+  if (!plane && status === "comprar") row.append(element("span", "tag bad", T("Nenhuma aeronave da frota alcança esta rota", "No aircraft in the fleet can fly this route")));
   return row;
 }
 
@@ -315,8 +351,8 @@ function fleetRow(plane) {
   const row = element("li", unavailable(plane) ? "unavailable" : "");
   row.append(button(plane.prefix + " · " + plane.model, "item-heading", () => chooseAircraft(plane.prefix)));
   const performance = performanceOf(plane.model);
-  row.append(element("span", "meta", "Local exibido: " + plane.airport + " · Hangar: " + (plane.base || "não informado") +
-    (performance ? " · alcance ≈ " + number.format(performance.range) + " nm" : "")));
+  row.append(element("span", "meta", T("Local exibido: ", "Shown at: ") + plane.airport + " · Hangar: " + (plane.base || T("não informado", "not given")) +
+    (performance ? T(" · alcance ≈ ", " · range ≈ ") + number.format(performance.range) + " nm" : "")));
   row.append(element("span", "tag " + (unavailable(plane) ? "bad" : /atenção|fora/i.test(plane.status) ? "warn" : "neutral"),
     statusLabel(plane.status)));
   return row;
@@ -341,28 +377,30 @@ function renderPlan() {
   const legs = state.plan.map(route => ({ route, miles: distance(route.origin, route.destination) }));
   const heading = element("div", "plan-head");
   const title = element("div");
-  title.append(element("p", "eyebrow", "PLANO DE TRECHOS"),
+  title.append(element("p", "eyebrow", T("PLANO DE TRECHOS", "LEG PLAN")),
     element("strong", "", [state.plan[0].origin, ...state.plan.map(route => route.destination)].join(" → ")));
   const actions = element("div", "plan-actions");
-  actions.append(button("Desfazer último", "secondary small", () => {
+  actions.append(button(T("Desfazer último", "Undo last"), "secondary small", () => {
     state.plan.pop(); state.focus = null; render();
-  }), button("Limpar plano", "secondary small", () => {
+  }), button(T("Limpar plano", "Clear plan"), "secondary small", () => {
     state.plan = []; state.focus = null; render();
   }));
   heading.append(title, actions);
   const list = element("ol", "plan-legs");
   for (const { route, miles } of legs) {
     const item = element("li");
-    item.append(element("span", "", [route.code, route.origin + " → " + route.destination, nm(miles),
+    item.append(element("span", "", [route.code === "Traslado" ? T("Traslado", "Ferry") : route.code,
+      route.origin + " → " + route.destination, nm(miles),
       clock(blockMinutes(miles, plane))].filter(Boolean).join(" · ")));
     if (plane && reach(plane, miles) !== "ok") item.append(reachTag(plane, miles));
     list.append(item);
   }
   const total = legs.reduce((sum, leg) => sum + (leg.miles ?? 0), 0);
   const times = legs.map(leg => blockMinutes(leg.miles, plane));
-  const totalTime = times.every(value => value !== null) ? " · " + clock(times.reduce((a, b) => a + b, 0)) + " de bloco" : "";
-  planBox.append(heading, list, element("p", "meta", "Total: " + nm(total) + " em " + legs.length +
-    (legs.length > 1 ? " trechos" : " trecho") + (plane ? totalTime : " · escolha uma aeronave para checar alcance e tempo")));
+  const totalTime = times.every(value => value !== null) ? " · " + clock(times.reduce((a, b) => a + b, 0)) + T(" de bloco", " block time") : "";
+  planBox.append(heading, list, element("p", "meta", "Total: " + nm(total) + T(" em ", " in ") + legs.length +
+    (legs.length > 1 ? T(" trechos", " legs") : T(" trecho", " leg")) +
+    (plane ? totalTime : T(" · escolha uma aeronave para checar alcance e tempo", " · pick an aircraft to check range and time"))));
 }
 
 function render(moveMap = true) {
@@ -373,16 +411,17 @@ function render(moveMap = true) {
   airportSelect.value = state.origin;
   aircraftSelect.value = state.prefix;
   document.querySelector("#selection").textContent = [plane?.prefix,
-    origin && (plane || state.plan.length ? "a partir de " + origin : origin)].filter(Boolean).join(" ") || "Toda a rede";
-  let detail = origin ? airportName(origin) : "Rotas cadastradas e frota do levantamento";
+    origin && (plane || state.plan.length ? T("a partir de ", "from ") + origin : origin)].filter(Boolean).join(" ") || T("Toda a rede", "Whole network");
+  let detail = origin ? airportName(origin) : T("Rotas cadastradas e frota do levantamento", "Registered routes and fleet from the last sync");
   if (plane) {
     const performance = performanceOf(plane.model);
-    detail = plane.model + " · Posição no PilOps: " + plane.airport + " · Hangar: " + (plane.base || "não informado") +
+    detail = plane.model + T(" · Posição no PilOps: ", " · Position on PilOps: ") + plane.airport + " · Hangar: " + (plane.base || T("não informado", "not given")) +
       " · " + statusLabel(plane.status) + (performance
-        ? " · Alcance ≈ " + number.format(performance.range) + " nm, cruzeiro ≈ " + performance.speed + " kt"
-        : " · Alcance não cadastrado para este modelo") + ".";
-    if (unavailable(plane)) detail += " Aeronave indisponível agora.";
-    if (origin && origin !== plane.airport) detail += " Planejando a partir de " + origin + ", não da posição atual.";
+        ? T(" · Alcance ≈ ", " · Range ≈ ") + number.format(performance.range) + T(" nm, cruzeiro ≈ ", " nm, cruise ≈ ") + performance.speed + " kt"
+        : T(" · Alcance não cadastrado para este modelo", " · No range on file for this model")) + ".";
+    if (unavailable(plane)) detail += T(" Aeronave indisponível agora.", " Aircraft unavailable right now.");
+    if (origin && origin !== plane.airport) detail += T(" Planejando a partir de " + origin + ", não da posição atual.",
+      " Planning from " + origin + ", not from its current position.");
   }
   document.querySelector("#selection-detail").textContent = detail;
   document.querySelector("#route-count").textContent = listed.length;
@@ -393,8 +432,8 @@ function render(moveMap = true) {
   results.replaceChildren(...rows);
   if (rows.length === 0) {
     results.append(element("li", "", state.tab === "routes"
-      ? "Nenhuma rota cadastrada com partida de " + origin + "."
-      : "Nenhuma aeronave da Vortex está em " + origin + " neste levantamento."));
+      ? T("Nenhuma rota cadastrada com partida de " + origin + ".", "No registered route departs from " + origin + ".")
+      : T("Nenhuma aeronave da Vortex está em " + origin + " neste levantamento.", "No Vortex aircraft is at " + origin + " in this sync.")));
   }
   renderPlan();
   drawMap(listed);
@@ -488,88 +527,100 @@ function renderAlerts() {
   alert.replaceChildren();
   alert.hidden = !outside.length && !offRoute.length;
   if (!alert.hidden) {
-    alert.append(button("⚠ " + [outside.length && outside.length + (outside.length > 1 ? " aeronaves fora da rede" : " aeronave fora da rede"),
-      offRoute.length && offRoute.length + (offRoute.length > 1 ? " voos fora das rotas cadastradas" : " voo fora das rotas cadastradas")]
-      .filter(Boolean).join(" · ") + " — ver avisos", "alert-link",
+    alert.append(button("⚠ " + [outside.length && outside.length + (outside.length > 1 ? T(" aeronaves fora da rede", " aircraft outside the network")
+      : T(" aeronave fora da rede", " aircraft outside the network")),
+      offRoute.length && offRoute.length + (offRoute.length > 1 ? T(" voos fora das rotas cadastradas", " flights off the registered routes")
+        : T(" voo fora das rotas cadastradas", " flight off the registered routes"))]
+      .filter(Boolean).join(" · ") + T(" — ver avisos", " — see alerts"), "alert-link",
       () => document.querySelector("#alerts-card").scrollIntoView({ behavior: "smooth", block: "start" })));
   }
 
   document.querySelector("#alerts-summary").textContent = outside.length
-    ? outside.length + (outside.length > 1 ? " aeronaves estão em aeroportos" : " aeronave está em aeroporto") +
-      " sem nenhuma rota cadastrada de partida. Abaixo, quem levou cada uma até lá (quando o voo foi lido) e para onde reposicionar."
-    : "Todas as aeronaves estão em aeroportos com rotas cadastradas de partida.";
+    ? T(outside.length + (outside.length > 1 ? " aeronaves estão em aeroportos" : " aeronave está em aeroporto") +
+      " sem nenhuma rota cadastrada de partida. Abaixo, quem levou cada uma até lá (quando o voo foi lido) e para onde reposicionar.",
+      outside.length + (outside.length > 1 ? " aircraft are at airports" : " aircraft is at an airport") +
+      " with no registered departing route. Below: who flew each one there (when the flight was read) and where to reposition it.")
+    : T("Todas as aeronaves estão em aeroportos com rotas cadastradas de partida.", "All aircraft are at airports with registered departing routes.");
 
   const rows = [];
   for (const plane of outside) {
     const row = element("li");
     const head = element("div", "row-head");
     head.append(button(plane.prefix + " · " + plane.model, "item-heading", () => chooseAircraft(plane.prefix)));
-    head.append(element("span", "tag bad", "Fora da rede em " + plane.airport));
+    head.append(element("span", "tag bad", T("Fora da rede em ", "Outside the network at ") + plane.airport));
     row.append(head);
     const place = airports[plane.airport];
     row.append(element("span", "meta", (place ? place.name + " · " + countryName(place.country) : plane.airport) +
-      (hubs.has(plane.airport) ? " · hub sem rotas de partida" : "") + " · " + statusLabel(plane.status) +
-      (plane.base ? " · hangar em " + plane.base : "")));
+      (hubs.has(plane.airport) ? T(" · hub sem rotas de partida", " · hub with no departing routes") : "") + " · " + statusLabel(plane.status) +
+      (plane.base ? T(" · hangar em ", " · hangar at ") + plane.base : "")));
     const arrival = lastArrival(plane);
     row.append(element("span", "meta who", arrival
-      ? "Levada até " + plane.airport + " por @" + arrival.pilot + " em " + dayText(arrival.date) + " (voo " + arrival.origin + " → " +
-        arrival.destination + (isRegistered(arrival.origin, arrival.destination) ? ")." : ", fora das rotas cadastradas).")
-      : "Chegou a " + plane.airport + " antes dos voos lidos" + (flightsSince ? " (desde " + dayText(flightsSince) + ")" : "") +
-        ": o piloto responsável não aparece no histórico do PilOps."));
+      ? T("Levada até " + plane.airport + " por @" + arrival.pilot + " em " + dayText(arrival.date) + " (voo ",
+        "Flown to " + plane.airport + " by @" + arrival.pilot + " on " + dayText(arrival.date) + " (flight ") + arrival.origin + " → " +
+        arrival.destination + (isRegistered(arrival.origin, arrival.destination) ? ")." : T(", fora das rotas cadastradas).", ", off the registered routes)."))
+      : T("Chegou a " + plane.airport + " antes dos voos lidos" + (flightsSince ? " (desde " + dayText(flightsSince) + ")" : "") +
+        ": o piloto responsável não aparece no histórico do PilOps.",
+        "Reached " + plane.airport + " before the flights read" + (flightsSince ? " (since " + dayText(flightsSince) + ")" : "") +
+        ": the pilot responsible does not appear in the PilOps history.")));
     const options = repositionOptions(plane);
     const box = element("div", "ferries");
     if (!options.length) {
-      box.append(element("span", "meta", "Nenhum aeroporto da rede ao alcance desta aeronave sem escala."));
+      box.append(element("span", "meta", T("Nenhum aeroporto da rede ao alcance desta aeronave sem escala.",
+        "No network airport is within this aircraft's range without a stop.")));
     }
     for (const option of options) {
       const line = element("div", "ferry");
-      line.append(element("span", "", "Traslado para " + option.code + " (" + (airports[option.code].city || airportName(option.code)) + ") · " +
+      line.append(element("span", "", T("Traslado para ", "Ferry to ") + option.code + " (" + placeName(option.code) + ") · " +
         nm(option.miles) + (option.minutes ? " · " + clock(option.minutes) : "") + " · " +
-        (option.needed.length ? option.needed.length + (option.needed.length > 1 ? " rotas" : " rota") + " sem aeronave livre ali"
-          : option.flyable.length + (option.flyable.length > 1 ? " rotas de partida" : " rota de partida"))));
-      if (option.needed.length) line.append(element("span", "tag ok", "Necessária"));
-      if (option.hangar) line.append(element("span", "tag neutral", "Hangar da aeronave"));
-      line.append(button("Planejar traslado", "secondary small", () => planFerry(plane, option.code)));
+        (option.needed.length ? option.needed.length + (option.needed.length > 1 ? T(" rotas sem aeronave livre ali", " routes with no free aircraft there")
+          : T(" rota sem aeronave livre ali", " route with no free aircraft there"))
+          : option.flyable.length + (option.flyable.length > 1 ? T(" rotas de partida", " departing routes") : T(" rota de partida", " departing route")))));
+      if (option.needed.length) line.append(element("span", "tag ok", T("Necessária", "Needed")));
+      if (option.hangar) line.append(element("span", "tag neutral", T("Hangar da aeronave", "Aircraft's hangar")));
+      line.append(button(T("Planejar traslado", "Plan ferry"), "secondary small", () => planFerry(plane, option.code)));
       box.append(line);
     }
     row.append(box);
     rows.push(row);
   }
   if (offRoute.length) {
-    rows.push(element("li", "group", "Voos fora das rotas cadastradas"));
+    rows.push(element("li", "group", T("Voos fora das rotas cadastradas", "Flights off the registered routes")));
     for (const flight of offRoute) {
       const row = element("li");
       const head = element("div", "row-head");
       head.append(element("strong", "", flight.origin + " → " + flight.destination));
-      if (!network.has(flight.destination)) head.append(element("span", "tag bad", "Deixou a aeronave fora da rede"));
+      if (!network.has(flight.destination)) head.append(element("span", "tag bad", T("Deixou a aeronave fora da rede", "Left the aircraft outside the network")));
       row.append(head, element("span", "meta", dayText(flight.date) + " · @" + flight.pilot + " · " + flight.prefix + " (" + flight.model + ") · " +
         nm(flight.nm)));
       rows.push(row);
     }
   }
-  if (!rows.length) rows.push(element("li", "meta", "Nenhum aviso no momento."));
+  if (!rows.length) rows.push(element("li", "meta", T("Nenhum aviso no momento.", "No alerts right now.")));
   list.replaceChildren(...rows);
 }
 
 // ---------- Sugestões de rotas ----------
 
-const continentName = { SA: "Sul-americana", NA: "Norte-americana", EU: "Europeia", AS: "Asiática",
-  AF: "Africana", OC: "Oceânica", AN: "Antártica" };
-const countryName = (() => {
+const continentNames = {
+  pt: { SA: "Sul-americana", NA: "Norte-americana", EU: "Europeia", AS: "Asiática", AF: "Africana", OC: "Oceânica", AN: "Antártica" },
+  en: { SA: "South American", NA: "North American", EU: "European", AS: "Asian", AF: "African", OC: "Oceanian", AN: "Antarctic" },
+};
+const regionNames = {};
+function countryName(code) {
   try {
-    const names = new Intl.DisplayNames(["pt-BR"], { type: "region" });
-    return code => { try { return names.of(code); } catch { return code; } };
-  } catch { return code => code; }
-})();
+    regionNames[lang] ||= new Intl.DisplayNames([locale()], { type: "region" });
+    return regionNames[lang].of(code);
+  } catch { return code; }
+}
 
 // nacional: um só país · continental: um só continente · intercontinental: mais de um continente.
 function scopeOf(codes) {
   const places = codes.map(code => airports[code]);
-  if (places.some(place => !place?.country)) return { kind: "indefinida", label: "Sem classificação" };
+  if (places.some(place => !place?.country)) return { kind: "indefinida", label: T("Sem classificação", "Unclassified") };
   const countries = new Set(places.map(place => place.country));
   const continents = new Set(places.map(place => place.continent));
-  if (countries.size === 1) return { kind: "nacional", label: "Nacional · " + countryName([...countries][0]) };
-  if (continents.size === 1) return { kind: "continental", label: continentName[[...continents][0]] || "Continental" };
+  if (countries.size === 1) return { kind: "nacional", label: T("Nacional · ", "Domestic · ") + countryName([...countries][0]) };
+  if (continents.size === 1) return { kind: "continental", label: continentNames[lang][[...continents][0]] || "Continental" };
   return { kind: "intercontinental", label: "Intercontinental" };
 }
 
@@ -651,31 +702,32 @@ function circuitRow(circuit, pairs) {
   const head = element("div", "row-head");
   head.append(element("strong", "circuit", [circuit.start, ...circuit.legs.map(leg => leg.destination)].join(" → ")));
   const plane = circuit.ready[0] || circuit.capable[0] || null;
-  head.append(button("Montar no plano", "secondary small", () => {
+  head.append(button(T("Montar no plano", "Build plan"), "secondary small", () => {
     Object.assign(state, { origin: circuit.start, prefix: plane?.prefix || "", plan: [...circuit.legs], focus: null, tab: "routes" });
     render();
     document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
   }));
   row.append(head);
   const times = plane ? circuit.legs.map((leg, i) => blockMinutes(circuit.miles[i], plane)) : [];
-  const total = times.length && times.every(value => value !== null) ? clock(times.reduce((a, b) => a + b, 0)) + " de bloco com " + plane.model : "";
-  row.append(element("span", "meta", [circuit.legs.length + " trechos", nm(circuit.total), "maior trecho " + nm(circuit.longest), total]
-    .filter(Boolean).join(" · ")));
+  const total = times.length && times.every(value => value !== null)
+    ? clock(times.reduce((a, b) => a + b, 0)) + T(" de bloco com ", " block time with ") + plane.model : "";
+  row.append(element("span", "meta", [circuit.legs.length + T(" trechos", " legs"), nm(circuit.total),
+    T("maior trecho ", "longest leg ") + nm(circuit.longest), total].filter(Boolean).join(" · ")));
   const never = circuit.legs.filter(leg => !pairs.has(leg.origin + "-" + leg.destination)).length;
   const tags = element("div", "tags");
   tags.append(element("span", "tag neutral", circuit.scope.label));
   if (circuit.ready.length) {
-    tags.append(element("span", "tag ok", "Pronta em " + circuit.start + ": " + circuit.ready.map(p => p.prefix).join(", ")));
+    tags.append(element("span", "tag ok", T("Pronta em ", "Ready at ") + circuit.start + ": " + circuit.ready.map(p => p.prefix).join(", ")));
   } else if (circuit.capable.length) {
-    tags.append(element("span", "tag warn", "Aeronave capaz em outro aeroporto: " +
-      circuit.capable.slice(0, 3).map(p => p.prefix + " em " + p.airport).join(", ")));
+    tags.append(element("span", "tag warn", T("Aeronave capaz em outro aeroporto: ", "Capable aircraft at another airport: ") +
+      circuit.capable.slice(0, 3).map(p => p.prefix + T(" em ", " at ") + p.airport).join(", ")));
   } else if (circuit.anyCapable.length) {
-    tags.append(element("span", "tag warn", "Só com aeronave indisponível agora"));
+    tags.append(element("span", "tag warn", T("Só com aeronave indisponível agora", "Only with an aircraft that is unavailable now")));
   } else {
-    tags.append(element("span", "tag bad", "A frota não alcança o maior trecho"));
+    tags.append(element("span", "tag bad", T("A frota não alcança o maior trecho", "The fleet cannot fly the longest leg")));
   }
-  if (never) tags.append(element("span", "tag warn", never === circuit.legs.length ? "Nenhum trecho voado ainda"
-    : never + (never > 1 ? " trechos nunca voados" : " trecho nunca voado")));
+  if (never) tags.append(element("span", "tag warn", never === circuit.legs.length ? T("Nenhum trecho voado ainda", "No leg flown yet")
+    : never + (never > 1 ? T(" trechos nunca voados", " legs never flown") : T(" trecho nunca voado", " leg never flown"))));
   row.append(tags);
   return row;
 }
@@ -695,9 +747,9 @@ function renderSuggestions() {
       : airportCodes.filter(code => airports[code]).map(code => ({ kind: airportScope(code) }));
   const count = kind => scopeSource.filter(scope => kind === "todas" || scope.kind === kind).length;
   document.querySelector("#idea-scopes").replaceChildren(
-    suggestionChip("todas", "Todas", count("todas")), suggestionChip("nacional", "Nacionais", count("nacional")),
-    suggestionChip("continental", "Continentais", count("continental")),
-    suggestionChip("intercontinental", "Intercontinentais", count("intercontinental")));
+    suggestionChip("todas", T("Todas", "All"), count("todas")), suggestionChip("nacional", T("Nacionais", "Domestic"), count("nacional")),
+    suggestionChip("continental", T("Continentais", "Continental"), count("continental")),
+    suggestionChip("intercontinental", T("Intercontinentais", "Intercontinental"), count("intercontinental")));
   for (const tabButton of document.querySelectorAll("#idea-tabs button")) {
     tabButton.setAttribute("aria-pressed", String(tabButton.dataset.view === ideas.view));
   }
@@ -708,12 +760,14 @@ function renderSuggestions() {
     const order = circuit => circuit.ready.length ? 0 : circuit.capable.length ? 1 : circuit.anyCapable.length ? 2 : 3;
     const shown = visibleCircuits.filter(circuit => scopeMatches(circuit.scope))
       .sort((a, b) => order(a) - order(b) || b.legs.length - a.legs.length || a.total - b.total);
-    summary.textContent = (start ? "Circuitos que começam e terminam em " + start + ". " : "Escolha um aeroporto de partida no filtro acima para ver só os circuitos que saem e voltam a ele. ") +
-      shown.length + (shown.length === 1 ? " circuito fechado" : " circuitos fechados") + " com rotas já cadastradas na Vortex.";
+    summary.textContent = T((start ? "Circuitos que começam e terminam em " + start + ". " : "Escolha um aeroporto de partida no filtro acima para ver só os circuitos que saem e voltam a ele. ") +
+      shown.length + (shown.length === 1 ? " circuito fechado" : " circuitos fechados") + " com rotas já cadastradas na Vortex.",
+      (start ? "Circuits that start and end at " + start + ". " : "Pick a departure airport in the filter above to see only the circuits that leave from and return to it. ") +
+      shown.length + (shown.length === 1 ? " closed circuit" : " closed circuits") + " made of routes already registered at Vortex.");
     rows.push(...shown.slice(0, ideas.limit).map(circuit => circuitRow(circuit, pairs)));
     if (shown.length > ideas.limit) {
       const more = element("li", "more");
-      more.append(button("Mostrar mais " + Math.min(12, shown.length - ideas.limit) + " de " + (shown.length - ideas.limit),
+      more.append(button(T("Mostrar mais ", "Show ") + Math.min(12, shown.length - ideas.limit) + T(" de ", " more of ") + (shown.length - ideas.limit),
         "secondary small", () => { ideas.limit += 12; renderSuggestions(); }));
       rows.push(more);
     }
@@ -722,8 +776,10 @@ function renderSuggestions() {
     const waiting = routeScopes.filter(item => !pairs.has(item.route.origin + "-" + item.route.destination) && scopeMatches(item.scope))
       .map(item => ({ ...item, cover: coverage.get(item.route) }))
       .sort((a, b) => order[a.cover.status] - order[b.cover.status] || (b.cover.miles ?? 0) - (a.cover.miles ?? 0));
-    summary.textContent = "Rotas cadastradas sem nenhum voo registrado " + (flightsSince ? "desde " + dayText(flightsSince) : "nas coletas") +
-      ". As de aeronave pronta na origem só esperam um piloto.";
+    summary.textContent = T("Rotas cadastradas sem nenhum voo registrado " + (flightsSince ? "desde " + dayText(flightsSince) : "nas coletas") +
+      ". As de aeronave pronta na origem só esperam um piloto.",
+      "Registered routes with no flight recorded " + (flightsSince ? "since " + dayText(flightsSince) : "in the syncs") +
+      ". Those with an aircraft ready at the origin are just waiting for a pilot.");
     rows.push(...waiting.map(item => {
       const row = element("li");
       const head = element("div", "row-head");
@@ -733,12 +789,13 @@ function renderSuggestions() {
         frame(listedRoutes());
         document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
       }));
-      head.append(element("span", "tag " + coverageText[item.cover.status][1], coverageText[item.cover.status][0]));
+      const [coverLabel, coverTone] = coverageText()[item.cover.status];
+      head.append(element("span", "tag " + coverTone, coverLabel));
       row.append(head, element("span", "meta", item.route.code + " · " + nm(item.cover.miles) + " · " + item.scope.label +
-        (item.cover.here.length ? " · livre na origem: " + item.cover.here.map(p => p.prefix).join(", ") : "")));
+        (item.cover.here.length ? T(" · livre na origem: ", " · free at the origin: ") + item.cover.here.map(p => p.prefix).join(", ") : "")));
       return row;
     }));
-    if (!waiting.length) rows.push(element("li", "meta", "Todas as rotas deste tipo já têm voo registrado."));
+    if (!waiting.length) rows.push(element("li", "meta", T("Todas as rotas deste tipo já têm voo registrado.", "Every route of this type already has a recorded flight.")));
   } else {
     // Movimentos = pousos + decolagens nos voos lidos.
     const moves = new Map(airportCodes.map(code => [code, 0]));
@@ -752,22 +809,28 @@ function renderSuggestions() {
     const filtered = items.filter(item => ideas.scope === "todas" || airportScope(item.code) === ideas.scope);
     const most = [...filtered].filter(item => item.total).sort((a, b) => b.total - a.total).slice(0, 6);
     const least = [...filtered].sort((a, b) => a.total - b.total || b.departures - a.departures).slice(0, 8);
-    summary.textContent = "Pousos e decolagens nos " + flightLog.length + " voos lidos" +
+    summary.textContent = T("Pousos e decolagens nos " + flightLog.length + " voos lidos" +
       (flightsSince ? " desde " + dayText(flightsSince) : "") + ". Aeroportos pouco voados são boas oportunidades de voo." +
       (ideas.scope === "nacional" ? " Filtro: aeroportos no Brasil." : ideas.scope === "continental" ? " Filtro: resto da América do Sul." :
-        ideas.scope === "intercontinental" ? " Filtro: fora da América do Sul." : "");
+        ideas.scope === "intercontinental" ? " Filtro: fora da América do Sul." : ""),
+      "Landings and take-offs in the " + flightLog.length + " flights read" +
+      (flightsSince ? " since " + dayText(flightsSince) : "") + ". Rarely flown airports are good flight opportunities." +
+      (ideas.scope === "nacional" ? " Filter: airports in Brazil." : ideas.scope === "continental" ? " Filter: rest of South America." :
+        ideas.scope === "intercontinental" ? " Filter: outside South America." : ""));
     const airportRow = item => {
       const row = element("li");
       const head = element("div", "row-head");
-      head.append(button(item.code + " · " + (airports[item.code].city || airportName(item.code)), "item-heading", () => chooseAirport(item.code)));
-      head.append(element("span", "tag " + (item.total ? "neutral" : "warn"), item.total ? item.total + (item.total > 1 ? " movimentos" : " movimento") : "Nunca voado"));
+      head.append(button(item.code + " · " + placeName(item.code), "item-heading", () => chooseAirport(item.code)));
+      head.append(element("span", "tag " + (item.total ? "neutral" : "warn"), item.total
+        ? item.total + (item.total > 1 ? T(" movimentos", " movements") : T(" movimento", " movement")) : T("Nunca voado", "Never flown")));
       row.append(head, element("span", "meta", airportName(item.code) + " · " + countryName(airports[item.code].country) + " · " +
-        item.departures + (item.departures === 1 ? " rota de partida" : " rotas de partida") + " · " +
-        item.planes + (item.planes === 1 ? " aeronave aqui" : " aeronaves aqui")));
+        item.departures + (item.departures === 1 ? T(" rota de partida", " departing route") : T(" rotas de partida", " departing routes")) + " · " +
+        item.planes + (item.planes === 1 ? T(" aeronave aqui", " aircraft here") : T(" aeronaves aqui", " aircraft here"))));
       return row;
     };
-    rows.push(element("li", "group", "Mais voados"), ...(most.length ? most.map(airportRow) : [element("li", "meta", "Nenhum voo lido ainda.")]),
-      element("li", "group", "Menos voados"), ...least.map(airportRow));
+    rows.push(element("li", "group", T("Mais voados", "Most flown")),
+      ...(most.length ? most.map(airportRow) : [element("li", "meta", T("Nenhum voo lido ainda.", "No flights read yet."))]),
+      element("li", "group", T("Menos voados", "Least flown")), ...least.map(airportRow));
   }
   list.replaceChildren(...rows);
 }
@@ -780,8 +843,8 @@ for (const tabButton of document.querySelectorAll("#idea-tabs button")) {
 
 const money = value => {
   const abs = Math.abs(value);
-  const [div, unit] = abs >= 1e9 ? [1e9, " bi"] : abs >= 1e6 ? [1e6, " mi"] : abs >= 1e3 ? [1e3, " mil"] : [1, ""];
-  return "P$ " + new Intl.NumberFormat("pt-BR", { maximumFractionDigits: div === 1 ? 0 : 1 }).format(value / div) + unit;
+  const [div, unit] = abs >= 1e9 ? [1e9, T(" bi", " bn")] : abs >= 1e6 ? [1e6, T(" mi", " m")] : abs >= 1e3 ? [1e3, T(" mil", " k")] : [1, ""];
+  return "P$ " + new Intl.NumberFormat(locale(), { maximumFractionDigits: div === 1 ? 0 : 1 }).format(value / div) + unit;
 };
 
 // comprar: nenhum modelo da frota tem alcance · indisponivel: só aeronaves em uso/manutenção alcançam ·
@@ -797,22 +860,23 @@ function routeCoverage(route) {
   return { route, miles, capable, free, here, status, options };
 }
 
-const coverageText = {
-  comprar: ["Precisa comprar", "bad"],
-  indisponivel: ["Só com aeronave indisponível", "warn"],
-  reposicionar: ["Reposicionar aeronave", "warn"],
-  pronta: ["Pronta para voar", "ok"],
-};
+const coverageText = () => ({
+  comprar: [T("Precisa comprar", "Needs a purchase"), "bad"],
+  indisponivel: [T("Só com aeronave indisponível", "Only with an unavailable aircraft"), "warn"],
+  reposicionar: [T("Reposicionar aeronave", "Reposition an aircraft"), "warn"],
+  pronta: [T("Pronta para voar", "Ready to fly"), "ok"],
+});
 
 function renderCoverage() {
   const order = { comprar: 0, indisponivel: 1, reposicionar: 2, pronta: 3 };
   const items = [...coverage.values()].sort((a, b) => order[a.status] - order[b.status] || (b.miles ?? 0) - (a.miles ?? 0));
   const counts = items.reduce((acc, item) => (acc[item.status] = (acc[item.status] || 0) + 1, acc), {});
   document.querySelector("#coverage-summary").textContent = [
-    counts.comprar && counts.comprar + (counts.comprar > 1 ? " rotas precisam" : " rota precisa") + " de aeronave que a frota não tem",
-    counts.indisponivel && counts.indisponivel + " só com aeronave em uso ou manutenção",
-    counts.reposicionar && counts.reposicionar + " com aeronave capaz em outro aeroporto",
-    counts.pronta && counts.pronta + (counts.pronta > 1 ? " prontas" : " pronta") + " para voar",
+    counts.comprar && counts.comprar + (counts.comprar > 1 ? T(" rotas precisam de aeronave que a frota não tem", " routes need an aircraft the fleet does not have")
+      : T(" rota precisa de aeronave que a frota não tem", " route needs an aircraft the fleet does not have")),
+    counts.indisponivel && counts.indisponivel + T(" só com aeronave em uso ou manutenção", " only with an aircraft in use or in maintenance"),
+    counts.reposicionar && counts.reposicionar + T(" com aeronave capaz em outro aeroporto", " with a capable aircraft at another airport"),
+    counts.pronta && counts.pronta + (counts.pronta > 1 ? T(" prontas para voar", " ready to fly") : T(" pronta para voar", " ready to fly")),
   ].filter(Boolean).join(" · ") + ".";
   const list = document.querySelector("#coverage");
   list.replaceChildren(...items.map(item => {
@@ -824,23 +888,25 @@ function renderCoverage() {
       frame(listedRoutes());
       document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
     }));
-    head.append(element("span", "tag " + coverageText[item.status][1], coverageText[item.status][0]));
+    const [coverLabel, coverTone] = coverageText()[item.status];
+    head.append(element("span", "tag " + coverTone, coverLabel));
     row.append(head, element("span", "meta", item.route.code + " · " + nm(item.miles)));
     const models = list => [...new Set(list.map(plane => plane.model))].join(", ");
     let detail;
     if (item.status === "comprar") {
       const cheapest = item.options.slice(0, 5).map(option => option.name + " (" + money(option.price) + ")");
       detail = cheapest.length
-        ? "Nenhum modelo da frota tem esse alcance. No PilOps, alcançam: " + cheapest.join(", ") +
-          (item.options.length > 5 ? " e mais " + (item.options.length - 5) + " modelos" : "") + "."
-        : "Nenhum modelo do catálogo do PilOps tem esse alcance sem escala.";
+        ? T("Nenhum modelo da frota tem esse alcance. No PilOps, alcançam: ", "No model in the fleet has that range. On PilOps, these can make it: ") +
+          cheapest.join(", ") + (item.options.length > 5 ? T(" e mais ", " and ") + (item.options.length - 5) + T(" modelos", " more models") : "") + "."
+        : T("Nenhum modelo do catálogo do PilOps tem esse alcance sem escala.", "No model in the PilOps catalogue has that range non-stop.");
     } else if (item.status === "indisponivel") {
-      detail = "Alcançam, mas estão indisponíveis agora: " + item.capable.map(p => p.prefix + " (" + statusLabel(p.status).toLowerCase() + ")").join(", ") + ".";
+      detail = T("Alcançam, mas estão indisponíveis agora: ", "They can make it, but are unavailable now: ") +
+        item.capable.map(p => p.prefix + " (" + statusLabel(p.status).toLowerCase() + ")").join(", ") + ".";
     } else if (item.status === "reposicionar") {
-      detail = "Capazes e livres em outros aeroportos: " + item.free.map(p => p.prefix + " em " + p.airport).join(", ") +
-        ". Modelos: " + models(item.free) + ".";
+      detail = T("Capazes e livres em outros aeroportos: ", "Capable and free at other airports: ") +
+        item.free.map(p => p.prefix + T(" em ", " at ") + p.airport).join(", ") + T(". Modelos: ", ". Models: ") + models(item.free) + ".";
     } else {
-      detail = "Livres em " + item.route.origin + ": " + item.here.map(p => p.prefix + " (" + p.model + ")").join(", ") + ".";
+      detail = T("Livres em ", "Free at ") + item.route.origin + ": " + item.here.map(p => p.prefix + " (" + p.model + ")").join(", ") + ".";
     }
     row.append(element("span", "meta", detail));
     return row;
@@ -850,7 +916,9 @@ function renderCoverage() {
 // ---------- Ranking de pilotos ----------
 
 const hoursText = minutes => Math.floor(minutes / 60) + "h" + String(minutes % 60).padStart(2, "0");
-const dayText = iso => iso ? iso.split("-").reverse().join("/") : "—";
+const dayText = iso => !iso ? "—" : lang === "en"
+  ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(iso + "T12:00:00Z"))
+  : iso.split("-").reverse().join("/");
 const ranking = { key: "companyMinutes", desc: true };
 
 function pilotStats() {
@@ -873,15 +941,15 @@ function pilotStats() {
   return [...rows.values()].map(row => ({ ...row, vtxCount: row.vtx.size }));
 }
 
-const rankingColumns = [
-  ["name", "Piloto"],
-  ["companyMinutes", "Horas na Vortex (total)"],
-  ["flights", "Voos lidos*"],
-  ["minutes", "Horas nos voos lidos*"],
-  ["nm", "Distância*"],
-  ["revenue", "Receita*"],
-  ["vtxCount", "Rotas VTX*"],
-  ["last", "Último voo*"],
+const rankingColumns = () => [
+  ["name", T("Piloto", "Pilot")],
+  ["companyMinutes", T("Horas na Vortex (total)", "Hours at Vortex (total)")],
+  ["flights", T("Voos lidos*", "Flights read*")],
+  ["minutes", T("Horas nos voos lidos*", "Hours in flights read*")],
+  ["nm", T("Distância*", "Distance*")],
+  ["revenue", T("Receita*", "Revenue*")],
+  ["vtxCount", T("Rotas VTX*", "VTX routes*")],
+  ["last", T("Último voo*", "Last flight*")],
 ];
 
 function renderRanking() {
@@ -889,12 +957,12 @@ function renderRanking() {
   const rows = pilotStats().sort((a, b) => {
     const [x, y] = [a[ranking.key], b[ranking.key]];
     const result = typeof x === "string" || typeof y === "string"
-      ? String(x ?? "").localeCompare(String(y ?? ""), "pt-BR")
+      ? String(x ?? "").localeCompare(String(y ?? ""), locale())
       : (x ?? -1) - (y ?? -1);
     return (ranking.desc ? -result : result) || (b.companyMinutes ?? -1) - (a.companyMinutes ?? -1);
   });
   const head = element("tr");
-  for (const [key, title] of rankingColumns) {
+  for (const [key, title] of rankingColumns()) {
     const th = element("th");
     th.setAttribute("scope", "col");
     th.setAttribute("aria-sort", ranking.key === key ? (ranking.desc ? "descending" : "ascending") : "none");
@@ -909,7 +977,7 @@ function renderRanking() {
     const name = element("td");
     name.append(element("span", "rank", String(index + 1)), element("strong", "", "@" + row.name));
     if (row.role) name.append(element("span", "tag neutral", row.role));
-    if (!row.member) name.append(element("span", "tag warn", "fora do painel"));
+    if (!row.member) name.append(element("span", "tag warn", T("fora do painel", "not on the roster")));
     tr.append(name,
       element("td", "", row.companyMinutes === null ? "—" : hoursText(row.companyMinutes)),
       element("td", "", number.format(row.flights)),
@@ -926,11 +994,16 @@ function renderRanking() {
   tbody.append(...body);
   table.replaceChildren(thead, tbody);
 
-  document.querySelector("#ranking-note").textContent = (pilots.length ? pilots.length + " pilotos no painel do PilOps. " : "") +
+  document.querySelector("#ranking-note").textContent = T((pilots.length ? pilots.length + " pilotos no painel do PilOps. " : "") +
     "\"Horas na Vortex (total)\" vem do PilOps e soma tudo desde a entrada do piloto na companhia. " +
     "* As colunas com asterisco contam só os voos que o planejador já leu " +
     (flightsSince ? "desde " + dayText(flightsSince) : "nas sincronizações") + " (" + flightLog.length + " voos), " +
-    "por isso são bem menores: o PilOps mostra só os 10 voos mais recentes, e elas crescem a cada sincronização.";
+    "por isso são bem menores: o PilOps mostra só os 10 voos mais recentes, e elas crescem a cada sincronização.",
+    (pilots.length ? pilots.length + " pilots on the PilOps roster. " : "") +
+    "\"Hours at Vortex (total)\" comes from PilOps and adds up everything since the pilot joined the company. " +
+    "* Columns with an asterisk only count the flights the planner has already read " +
+    (flightsSince ? "since " + dayText(flightsSince) : "in the syncs") + " (" + flightLog.length + " flights), " +
+    "so they are much smaller: PilOps only shows the 10 most recent flights, and these columns grow with every sync.");
 
   const pairs = new Map();
   for (const flight of flightLog) {
@@ -944,12 +1017,16 @@ function renderRanking() {
   document.querySelector("#top-routes").replaceChildren(...(top.length ? top.map(item => {
     const li = element("li");
     li.append(element("strong", "", item.key), element("span", "meta",
-      item.count + (item.count > 1 ? " voos" : " voo") + " · " + nm(item.nm) + " · " + [...item.pilots].map(p => "@" + p).join(", ")));
+      item.count + (item.count > 1 ? T(" voos", " flights") : T(" voo", " flight")) + " · " + nm(item.nm) + " · " + [...item.pilots].map(p => "@" + p).join(", ")));
     return li;
-  }) : [element("li", "meta", "Nenhum voo lido ainda.")]));
+  }) : [element("li", "meta", T("Nenhum voo lido ainda.", "No flights read yet."))]));
 }
 
 async function start() {
+  applyStaticTexts();
+  document.querySelector("#snapshot-time").textContent = T("Carregando dados da Vortex…", "Loading Vortex data…");
+  document.querySelector("#snapshot-note").textContent = T("A frota e as rotas vêm da última coleta no PilOps.",
+    "Fleet and routes come from the last PilOps sync.");
   let data;
   try {
     // O parâmetro evita a cópia em cache do GitHub Pages e traz sempre a coleta mais recente.
@@ -957,8 +1034,8 @@ async function start() {
     if (!response.ok) throw new Error();
     data = await response.json();
   } catch {
-    document.querySelector("#snapshot-time").textContent = "Não foi possível carregar os dados da Vortex.";
-    document.querySelector("#snapshot-note").textContent = "Confira a conexão e recarregue a página.";
+    document.querySelector("#snapshot-time").textContent = T("Não foi possível carregar os dados da Vortex.", "Could not load the Vortex data.");
+    document.querySelector("#snapshot-note").textContent = T("Confira a conexão e recarregue a página.", "Check your connection and reload the page.");
     return;
   }
   fleet = data.fleet;
@@ -969,7 +1046,6 @@ async function start() {
   flightsSince = data.flightsSince || null;
   capturedAt = data.capturedAt || null;
   coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
-  circuits = findCircuits();
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
   airportCodes = [...new Set([
     ...hubs, ...fleet.map(plane => plane.airport),
@@ -979,31 +1055,57 @@ async function start() {
   document.querySelector("#total-fleet").textContent = fleet.length;
   document.querySelector("#total-routes").textContent = routes.length;
   document.querySelector("#total-hubs").textContent = hubs.size;
-  {
-    const date = new Intl.DateTimeFormat("pt-BR", {
-      dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo",
-    }).format(new Date(data.capturedAt));
-    document.querySelector("#snapshot-time").textContent = "Última coleta no PilOps · " + date + " (Brasília)";
-    document.querySelector("#snapshot-note").textContent = fleet.length + (fleet.length === 1 ? " aeronave" : " aeronaves") +
-      " e " + routes.length + (routes.length === 1 ? " rota mapeada" : " rotas mapeadas") + " nesta coleta.";
-  }
+  paintAll();
+}
 
+// Tudo o que depende do idioma: textos fixos, cabeçalho da coleta, listas dos filtros e todas as seções.
+function paintAll() {
+  applyStaticTexts();
+  if (!fleet.length) return;
+  // Em inglês a data sai por extenso ("7 Nov 2026"), sem a ambiguidade dia/mês do formato numérico.
+  const date = new Intl.DateTimeFormat(locale(), {
+    dateStyle: lang === "en" ? "medium" : "short", timeStyle: "short", timeZone: "America/Sao_Paulo",
+  }).format(new Date(capturedAt));
+  document.querySelector("#snapshot-time").textContent = T("Última coleta no PilOps · ", "Last PilOps sync · ") + date +
+    T(" (Brasília)", " (Brasília time)");
+  document.querySelector("#snapshot-note").textContent = T(
+    fleet.length + (fleet.length === 1 ? " aeronave" : " aeronaves") + " e " + routes.length +
+      (routes.length === 1 ? " rota mapeada" : " rotas mapeadas") + " nesta coleta.",
+    fleet.length + " aircraft and " + routes.length + (routes.length === 1 ? " route" : " routes") + " mapped in this sync.");
+
+  airportSelect.replaceChildren(new Option(T("Todos os aeroportos", "All airports"), ""));
   for (const code of airportCodes) {
     const planes = fleet.filter(plane => plane.airport === code).length;
     const departures = routes.filter(route => route.origin === code).length;
-    const counts = [planes && planes + (planes > 1 ? " aeronaves" : " aeronave"),
-      departures && departures + (departures > 1 ? " rotas" : " rota")].filter(Boolean).join(" · ");
+    const counts = [planes && planes + (planes > 1 ? T(" aeronaves", " aircraft") : T(" aeronave", " aircraft")),
+      departures && departures + (departures > 1 ? T(" rotas", " routes") : T(" rota", " route"))].filter(Boolean).join(" · ");
     airportSelect.add(new Option(code + " · " + airportName(code) + (counts ? " — " + counts : ""), code));
   }
+  aircraftSelect.replaceChildren(new Option(T("Toda a frota", "Whole fleet"), ""));
   for (const plane of [...fleet].sort((a, b) => a.prefix.localeCompare(b.prefix))) {
     aircraftSelect.add(new Option(plane.prefix + " · " + plane.model +
       (unavailable(plane) ? " (" + statusLabel(plane.status).toLowerCase() + ")" : ""), plane.prefix));
   }
+  circuits = findCircuits();
   render(false);
   renderCoverage();
   renderAlerts();
   renderRanking();
   renderRealloc();
+}
+
+function setLanguage(next) {
+  if (next === lang) return;
+  lang = next;
+  try { localStorage.setItem(langKey, lang); } catch { /* navegador sem armazenamento */ }
+  number = new Intl.NumberFormat(locale());
+  const url = new URL(location.href);
+  if (url.searchParams.has("lang")) { url.searchParams.set("lang", lang); history.replaceState(null, "", url); }
+  paintAll();
+}
+
+for (const choice of document.querySelectorAll("#lang button")) {
+  choice.addEventListener("click", () => setLanguage(choice.dataset.lang));
 }
 
 // ---------- Realocação de aeronaves ----------
@@ -1015,27 +1117,29 @@ const realloc = { view: "acoes", filter: "todas" };
 const daysBetween = (from, to) => Math.round((Date.parse(to + "T12:00:00Z") - Date.parse(from + "T12:00:00Z")) / 86_400_000);
 const referenceDay = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" })
   .format(capturedAt ? new Date(capturedAt) : new Date());
-const agoText = days => days <= 0 ? "hoje" : days === 1 ? "ontem" : "há " + days + " dias";
+const agoText = days => days <= 0 ? T("hoje", "today") : days === 1 ? T("ontem", "yesterday")
+  : T("há " + days + " dias", days + " days ago");
 const where = code => code + " (" + placeName(code) + ")";
 const plural = (count, one, many) => count + " " + (count === 1 ? one : many);
 const flyableFrom = (plane, code) => routes.filter(route => route.origin === code && canFly(plane, route.origin, route.destination));
 const legText = route => route.code + " " + route.origin + " → " + route.destination;
+const blockText = (miles, plane) => nm(miles) + (blockMinutes(miles, plane) ? ", " + clock(blockMinutes(miles, plane)) : "");
 
-const activityLevels = {
-  parada: ["Parada", "bad"],
-  pouco: ["Pouco usada", "warn"],
-  ativa: ["Ativa", "ok"],
-  muito: ["Muito usada", "hot"],
-  indisponivel: ["Indisponível", "neutral"],
-};
+const activityLevels = () => ({
+  parada: [T("Parada", "Idle"), "bad"],
+  pouco: [T("Pouco usada", "Little used"), "warn"],
+  ativa: [T("Ativa", "Active"), "ok"],
+  muito: [T("Muito usada", "Heavily used"), "hot"],
+  indisponivel: [T("Indisponível", "Unavailable"), "neutral"],
+});
 
-const reallocKinds = {
-  realocar: { tag: ["Realocar", "warn"], title: "Precisam ser realocadas", hint: "levar para onde falta aeronave" },
-  voar: { tag: ["Pronta para voar", "ok"], title: "Prontas para voar", hint: "já estão no lugar certo: só falta piloto" },
-  revezar: { tag: ["Revezar", "hot"], title: "Muito usadas", hint: "dividir os voos com uma aeronave parada" },
-  ok: { tag: ["Em boa rotação", "neutral"], title: "Em boa rotação", hint: "voando normalmente: nada a fazer" },
-  indisponivel: { tag: ["Indisponível", "neutral"], title: "Indisponíveis", hint: "em uso ou em manutenção agora" },
-};
+const reallocKinds = () => ({
+  realocar: { title: T("Precisam ser realocadas", "Need relocating"), hint: T("levar para onde falta aeronave", "take them where an aircraft is missing") },
+  voar: { title: T("Prontas para voar", "Ready to fly"), hint: T("já estão no lugar certo: só falta piloto", "already in the right place: just need a pilot") },
+  revezar: { title: T("Muito usadas", "Heavily used"), hint: T("dividir os voos com uma aeronave parada", "share the flying with an idle aircraft") },
+  ok: { title: T("Em boa rotação", "In good rotation"), hint: T("voando normalmente: nada a fazer", "flying normally: nothing to do") },
+  indisponivel: { title: T("Indisponíveis", "Unavailable"), hint: T("em uso ou em manutenção agora", "in use or in maintenance now") },
+});
 
 function fleetActivity() {
   const today = referenceDay();
@@ -1053,9 +1157,9 @@ function fleetActivity() {
 }
 
 const lastFlightText = item => item.last
-  ? "último voo " + agoText(item.idleDays) + " (" + dayText(item.last.date) + ") por @" + item.last.pilot + ", " +
+  ? T("último voo ", "last flight ") + agoText(item.idleDays) + " (" + dayText(item.last.date) + T(") por @", ") by @") + item.last.pilot + ", " +
     item.last.origin + " → " + item.last.destination
-  : "nenhum voo registrado" + (flightsSince ? " desde " + dayText(flightsSince) : "");
+  : T("nenhum voo registrado", "no flight recorded") + (flightsSince ? T(" desde ", " since ") + dayText(flightsSince) : "");
 
 function reallocCards() {
   const items = fleetActivity();
@@ -1085,9 +1189,12 @@ function reallocCards() {
     })).filter(target => target.needs.length && (target.via || target.direct))
       .sort((a, b) => b.needs.length - a.needs.length || Boolean(b.via) - Boolean(a.via) || a.miles - b.miles);
 
-    const why = outside ? "Ela está em " + where(plane.airport) + ", onde nenhuma rota da Vortex começa."
-      : !here.length ? "Nenhuma rota que sai de " + plane.airport + " está ao alcance deste modelo."
-        : surplus ? "Há " + crowd + " aeronaves livres em " + plane.airport + " para só " + plural(departures, "rota", "rotas") + " de partida."
+    const why = outside ? T("Ela está em " + where(plane.airport) + ", onde nenhuma rota da Vortex começa.",
+      "It is at " + where(plane.airport) + ", where no Vortex route starts.")
+      : !here.length ? T("Nenhuma rota que sai de " + plane.airport + " está ao alcance deste modelo.",
+        "No route departing " + plane.airport + " is within this model's range.")
+        : surplus ? T("Há " + crowd + " aeronaves livres em " + plane.airport + " para só " + plural(departures, "rota", "rotas") + " de partida.",
+          "There are " + crowd + " free aircraft at " + plane.airport + " for only " + plural(departures, "departing route", "departing routes") + ".")
           : "";
 
     if (outside || !here.length || (surplus && targets.length)) {
@@ -1096,28 +1203,33 @@ function reallocCards() {
       if (!target) fallback = repositionOptions(plane)[0] || null;
       const code = target?.code || fallback?.code;
       if (!code) {
-        cards.push({ kind: "realocar", item, action: "Planeje um traslado com escala: nenhum aeroporto da rede está ao alcance sem parar.",
-          why, button: ["Abrir no mapa", () => focusPlane(plane)] });
+        cards.push({ kind: "realocar", item, action: T("Planeje um traslado com escala: nenhum aeroporto da rede está ao alcance sem parar.",
+          "Plan a ferry with a stop: no network airport is within range non-stop."),
+          why, button: [T("Abrir no mapa", "Open on map"), () => focusPlane(plane)] });
         continue;
       }
       assigned.add(plane.prefix);
       const via = target?.via || null;
-      const miles = distance(plane.airport, code);
-      const leg = nm(miles) + (blockMinutes(miles, plane) ? ", " + clock(blockMinutes(miles, plane)) : "");
+      const leg = blockText(distance(plane.airport, code), plane);
       const action = via
-        ? "Voe a rota " + legText(via) + " (" + leg + "). Ela já deixa a aeronave em " + where(code) + "."
-        : "Faça um traslado até " + where(code) + " (" + leg + ").";
+        ? T("Voe a rota " + legText(via) + " (" + leg + "). Ela já deixa a aeronave em " + where(code) + ".",
+          "Fly route " + legText(via) + " (" + leg + "). It leaves the aircraft at " + where(code) + ".")
+        : T("Faça um traslado até " + where(code) + " (" + leg + ").", "Ferry it to " + where(code) + " (" + leg + ").");
       let reason;
       if (target) {
         target.needs.forEach(route => claimed.add(route));
-        reason = "Em " + code + ", " + (target.needs.length > 1 ? target.needs.length + " rotas esperam" : "1 rota espera") +
-          " uma aeronave que ela alcança: " + target.needs.slice(0, 3).map(route => route.origin + " → " + route.destination).join(", ") +
-          (target.needs.length > 3 ? " e mais " + (target.needs.length - 3) : "") + ".";
+        const listed = target.needs.slice(0, 3).map(route => route.origin + " → " + route.destination).join(", ");
+        const extra = target.needs.length > 3 ? T(" e mais ", " and ") + (target.needs.length - 3) + T("", " more") : "";
+        reason = T("Em " + code + ", " + (target.needs.length > 1 ? target.needs.length + " rotas esperam" : "1 rota espera") +
+          " uma aeronave que ela alcança: " + listed + extra + ".",
+          "At " + code + ", " + (target.needs.length > 1 ? target.needs.length + " routes are waiting" : "1 route is waiting") +
+          " for an aircraft that can fly them: " + listed + extra + ".");
       } else {
-        reason = "De " + code + " saem " + plural(fallback.flyable.length, "rota que ela alcança", "rotas que ela alcança") + ".";
+        reason = T("De " + code + " saem " + plural(fallback.flyable.length, "rota que ela alcança", "rotas que ela alcança") + ".",
+          code + " has " + plural(fallback.flyable.length, "departing route", "departing routes") + " within its range.");
       }
       cards.push({ kind: "realocar", item, action, why: [why, reason].filter(Boolean).join(" "), hangar: code === plane.base,
-        button: ["Ver no mapa", () => via ? showPlan(plane, [via]) : planFerry(plane, code)] });
+        button: [T("Ver no mapa", "Show on map"), () => via ? showPlan(plane, [via]) : planFerry(plane, code)] });
       continue;
     }
 
@@ -1130,16 +1242,18 @@ function reallocCards() {
       (distance(a.origin, a.destination) ?? 0) - (distance(b.origin, b.destination) ?? 0));
     const route = best[0];
     claimed.add(route);
-    const miles = distance(route.origin, route.destination);
     const notes = [];
-    if (!pairs.has(route.origin + "-" + route.destination)) notes.push("Essa rota ainda não tem voo registrado.");
-    if (needAirports.has(route.destination)) notes.push("E ela chega a " + route.destination + ", onde falta aeronave para outras rotas.");
+    if (!pairs.has(route.origin + "-" + route.destination)) notes.push(T("Essa rota ainda não tem voo registrado.", "This route has no recorded flight yet."));
+    if (needAirports.has(route.destination)) notes.push(T("E ela chega a " + route.destination + ", onde falta aeronave para outras rotas.",
+      "And it lands at " + route.destination + ", where other routes are missing an aircraft."));
     cards.push({ kind: "voar", item,
-      action: "Voe a rota " + legText(route) + " (" + nm(miles) + (blockMinutes(miles, plane) ? ", " + clock(blockMinutes(miles, plane)) : "") + ").",
-      why: [(item.level === "parada" ? "Está parada" : "Está sem voar " + agoText(item.idleDays)) + " em " + where(plane.airport) +
-        ", que tem rota ao alcance dela.", ...notes].join(" "),
+      action: T("Voe a rota ", "Fly route ") + legText(route) + " (" + blockText(distance(route.origin, route.destination), plane) + ").",
+      why: [T((item.level === "parada" ? "Está parada" : "Está sem voar " + agoText(item.idleDays)) + " em " + where(plane.airport) +
+        ", que tem rota ao alcance dela.",
+        (item.level === "parada" ? "It is idle at " : "Its last flight was " + agoText(item.idleDays) + " and it sits at ") + where(plane.airport) +
+        ", which has a route within its range."), ...notes].join(" "),
       others: best.slice(1, 4).map(other => other.origin + " → " + other.destination),
-      button: ["Ver no mapa", () => showPlan(plane, [route])] });
+      button: [T("Ver no mapa", "Show on map"), () => showPlan(plane, [route])] });
   }
 
   // 2. Muito usadas: indica uma substituta parada que alcança as mesmas distâncias.
@@ -1156,22 +1270,30 @@ function reallocCards() {
         (distance(plane.airport, a.plane.airport) ?? Infinity) - (distance(plane.airport, b.plane.airport) ?? Infinity));
     const sub = subs[0]?.plane;
     if (sub) usedSubs.add(sub.prefix);
-    const share = "Fez " + item.flights.length + " dos " + flightLog.length + " voos lidos (" + hoursText(item.minutes) + " de voo).";
+    const share = T("Fez " + item.flights.length + " dos " + flightLog.length + " voos lidos (" + hoursText(item.minutes) + " de voo).",
+      "Flew " + item.flights.length + " of the " + flightLog.length + " flights read (" + hoursText(item.minutes) + " in the air).");
     cards.push({ kind: "revezar", item,
       action: sub
-        ? "Ofereça o próximo voo para a " + sub.prefix + " (" + sub.model + ", " +
-          (sub.airport === plane.airport ? "parada no mesmo aeroporto, " + sub.airport : "parada em " + where(sub.airport)) + ")."
-        : "Siga usando, mas acompanhe o desgaste no PilOps: não há aeronave parada que cubra as mesmas distâncias.",
-      why: share + (sub ? " Dividir os voos espalha o desgaste e deixa a frota inteira em uso." : ""),
-      button: sub ? ["Ver a substituta", () => focusPlane(sub)] : ["Abrir no mapa", () => focusPlane(plane)] });
+        ? T("Ofereça o próximo voo para a " + sub.prefix + " (" + sub.model + ", " +
+          (sub.airport === plane.airport ? "parada no mesmo aeroporto, " + sub.airport : "parada em " + where(sub.airport)) + ").",
+          "Give the next flight to " + sub.prefix + " (" + sub.model + ", " +
+          (sub.airport === plane.airport ? "idle at the same airport, " + sub.airport : "idle at " + where(sub.airport)) + ").")
+        : T("Siga usando, mas acompanhe o desgaste no PilOps: não há aeronave parada que cubra as mesmas distâncias.",
+          "Keep using it, but watch its wear on PilOps: no idle aircraft covers the same distances."),
+      why: share + (sub ? T(" Dividir os voos espalha o desgaste e deixa a frota inteira em uso.",
+        " Sharing the flying spreads the wear and keeps the whole fleet in use.") : ""),
+      button: sub ? [T("Ver a substituta", "Show the substitute"), () => focusPlane(sub)] : [T("Abrir no mapa", "Open on map"), () => focusPlane(plane)] });
   }
 
   for (const item of items.filter(entry => entry.level === "ativa" && !idle.includes(entry))) {
-    cards.push({ kind: "ok", item, action: "está voando normalmente, nada a fazer.", why: "", button: ["Abrir no mapa", () => focusPlane(item.plane)] });
+    cards.push({ kind: "ok", item, action: T("está voando normalmente, nada a fazer.", "flying normally, nothing to do."), why: "",
+      button: [T("Abrir no mapa", "Open on map"), () => focusPlane(item.plane)] });
   }
   for (const item of items.filter(entry => entry.level === "indisponivel")) {
     cards.push({ kind: "indisponivel", item,
-      action: /manuten/i.test(item.plane.status) ? "em manutenção. Volta às sugestões quando sair." : "em uso por um piloto agora. Volta às sugestões quando pousar.",
+      action: /manuten/i.test(item.plane.status)
+        ? T("em manutenção. Volta às sugestões quando sair.", "in maintenance. It comes back to the suggestions when it is out.")
+        : T("em uso por um piloto agora. Volta às sugestões quando pousar.", "in use by a pilot right now. It comes back to the suggestions after landing."),
       why: "", button: null });
   }
   return { cards, items };
@@ -1194,20 +1316,22 @@ function reallocRow(card) {
   const head = element("div", "row-head");
   head.append(button(plane.prefix + " · " + plane.model, "item-heading", () => focusPlane(plane)));
   const tags = element("div", "tags");
-  const [levelLabel, levelTone] = activityLevels[card.item.level];
+  const [levelLabel, levelTone] = activityLevels()[card.item.level];
   tags.append(element("span", "tag " + levelTone, levelLabel));
-  if (card.hangar) tags.append(element("span", "tag neutral", "Volta ao hangar"));
+  if (card.hangar) tags.append(element("span", "tag neutral", T("Volta ao hangar", "Back to its hangar")));
   const attention = plane.status.split(" · ").filter(part => /atenção/i.test(part));
-  if (attention.length) tags.append(element("span", "tag warn", attention.join(" · ")));
+  if (attention.length) tags.append(element("span", "tag warn", statusLabel(attention.join(" · "))));
   head.append(tags);
   row.append(head);
-  row.append(element("span", "meta", "Agora em " + where(plane.airport) + " · hangar " + (plane.base || "não informado") +
+  row.append(element("span", "meta", T("Agora em ", "Now at ") + where(plane.airport) + " · hangar " + (plane.base || T("não informado", "not given")) +
     " · " + lastFlightText(card.item)));
   const action = element("p", "todo");
-  action.append(element("strong", "", card.kind === "ok" || card.kind === "indisponivel" ? "Situação: " : "O que fazer: "), card.action);
+  action.append(element("strong", "", card.kind === "ok" || card.kind === "indisponivel" ? T("Situação: ", "Status: ") : T("O que fazer: ", "What to do: ")),
+    card.action);
   row.append(action);
-  if (card.why) row.append(element("p", "why", "Por quê: " + card.why));
-  if (card.others?.length) row.append(element("span", "meta", "Outras rotas daqui ao alcance: " + card.others.join(", ") + "."));
+  if (card.why) row.append(element("p", "why", T("Por quê: ", "Why: ") + card.why));
+  if (card.others?.length) row.append(element("span", "meta", T("Outras rotas daqui ao alcance: ", "Other routes from here within range: ") +
+    card.others.join(", ") + "."));
   if (card.button) {
     const actions = element("div", "plan-actions");
     actions.append(button(card.button[0], "secondary small", card.button[1]));
@@ -1220,7 +1344,9 @@ function renderRealloc() {
   const list = document.querySelector("#realloc");
   if (!list || !fleet.length) return;
   const { cards, items } = reallocCards();
-  const order = Object.keys(reallocKinds);
+  const kinds = reallocKinds();
+  const levels = activityLevels();
+  const order = Object.keys(kinds);
 
   // Contadores que também servem de filtro.
   const stats = document.querySelector("#realloc-stats");
@@ -1232,32 +1358,38 @@ function renderRealloc() {
       renderRealloc();
     });
     tile.setAttribute("aria-pressed", String(realloc.filter === kind));
-    tile.append(element("strong", "", String(count)), element("span", "", reallocKinds[kind].title),
-      element("small", "", reallocKinds[kind].hint));
+    tile.append(element("strong", "", String(count)), element("span", "", kinds[kind].title),
+      element("small", "", kinds[kind].hint));
     return tile;
   }));
   for (const tab of document.querySelectorAll("#realloc-tabs button")) {
     tab.setAttribute("aria-pressed", String(tab.dataset.view === realloc.view));
   }
 
-  const period = flightsSince ? " desde " + dayText(flightsSince) + " (" + plural(daysBetween(flightsSince, referenceDay()) + 1, "dia", "dias") + ")" : "";
+  const days = flightsSince ? daysBetween(flightsSince, referenceDay()) + 1 : 0;
+  const period = flightsSince ? T(" desde ", " since ") + dayText(flightsSince) + " (" + plural(days, T("dia", "day"), T("dias", "days")) + ")" : "";
   const summary = document.querySelector("#realloc-summary");
   const rows = [];
   if (realloc.view === "acoes") {
-    summary.textContent = "Sugestões calculadas com a posição de cada aeronave na última coleta e os " + flightLog.length +
-      " voos lidos" + period + ". Os grupos de cima são os mais urgentes. Elas são recalculadas a cada sincronização." +
-      (realloc.filter !== "todas" ? " Filtro: " + reallocKinds[realloc.filter].title.toLowerCase() + " (clique de novo no quadro para ver tudo)." : "");
+    summary.textContent = T("Sugestões calculadas com a posição de cada aeronave na última coleta e os " + flightLog.length +
+      " voos lidos" + period + ". Os grupos de cima são os mais urgentes. Elas são recalculadas a cada sincronização.",
+      "Suggestions based on each aircraft's position in the last sync and the " + flightLog.length +
+      " flights read" + period + ". The groups at the top are the most urgent. They are recalculated with every sync.") +
+      (realloc.filter !== "todas" ? T(" Filtro: ", " Filter: ") + kinds[realloc.filter].title.toLowerCase() +
+        T(" (clique de novo no quadro para ver tudo).", " (click the box again to see everything).") : "");
     for (const kind of order) {
       if (realloc.filter !== "todas" && realloc.filter !== kind) continue;
       const group = cards.filter(card => card.kind === kind);
       if (!group.length) continue;
-      rows.push(element("li", "group", reallocKinds[kind].title + " · " + reallocKinds[kind].hint));
+      rows.push(element("li", "group", kinds[kind].title + " · " + kinds[kind].hint));
       rows.push(...group.map(reallocRow));
     }
-    if (!rows.length) rows.push(element("li", "meta", "Nenhuma aeronave neste grupo agora."));
+    if (!rows.length) rows.push(element("li", "meta", T("Nenhuma aeronave neste grupo agora.", "No aircraft in this group right now.")));
   } else {
-    summary.textContent = "Voos de cada aeronave" + period + ", da mais usada para a menos usada. O PilOps mostra só os 10 voos " +
-      "mais recentes da companhia, então a contagem cresce a cada sincronização.";
+    summary.textContent = T("Voos de cada aeronave" + period + ", da mais usada para a menos usada. O PilOps mostra só os 10 voos " +
+      "mais recentes da companhia, então a contagem cresce a cada sincronização.",
+      "Flights per aircraft" + period + ", from most to least used. PilOps only shows the company's 10 most recent " +
+      "flights, so the count grows with every sync.");
     const sorted = [...items].sort((a, b) => b.flights.length - a.flights.length || b.minutes - a.minutes ||
       a.plane.prefix.localeCompare(b.plane.prefix));
     const max = Math.max(1, ...sorted.map(item => item.flights.length));
@@ -1265,17 +1397,18 @@ function renderRealloc() {
       const row = element("li", "activity");
       const head = element("div", "row-head");
       head.append(button(item.plane.prefix + " · " + item.plane.model, "item-heading", () => focusPlane(item.plane)));
-      const [label, tone] = activityLevels[item.level];
+      const [label, tone] = levels[item.level];
       head.append(element("span", "tag " + tone, label));
+      const flightsText = plural(item.flights.length, T("voo", "flight"), T("voos", "flights"));
       const bar = element("div", "bar");
       bar.setAttribute("role", "img");
-      bar.setAttribute("aria-label", plural(item.flights.length, "voo", "voos"));
+      bar.setAttribute("aria-label", flightsText);
       const fill = element("i", "fill-" + item.level);
       fill.style.width = (item.flights.length / max * 100) + "%";
       bar.append(fill);
       row.append(head, bar, element("span", "meta", (item.flights.length
-        ? plural(item.flights.length, "voo", "voos") + " · " + hoursText(item.minutes) + " de voo · "
-        : "") + lastFlightText(item) + " · agora em " + item.plane.airport));
+        ? flightsText + " · " + hoursText(item.minutes) + T(" de voo · ", " flown · ")
+        : "") + lastFlightText(item) + T(" · agora em ", " · now at ") + item.plane.airport));
       rows.push(row);
     }
   }

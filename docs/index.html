@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Mapa, frota, rotas e planejamento de trechos da Vortex Airways no PilOps.">
+  <meta name="description" content="Mapa, frota, rotas e planejamento de trechos da Vortex Airways no PilOps. Map, fleet, routes and leg planning for Vortex Airways on PilOps.">
   <meta name="theme-color" content="#050b24">
   <title>Planejador de rotas | Vortex Airways</title>
   <link rel="icon" type="image/png" sizes="64x64" href="./img/favicon-64.png">
@@ -18,86 +18,106 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=7">
+  <link rel="stylesheet" href="./style.css?v=8">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
-  <script defer src="./planner.js?v=8"></script>
+  <script defer src="./planner.js?v=9"></script>
 </head>
 <body>
   <header class="top">
     <div class="shell top-inner">
       <div class="brand"><img class="emblem" src="./img/logo-192.webp" alt="" width="48" height="48"><div><strong>VORTEX</strong><small>AIRWAYS</small></div></div>
-      <a href="https://pilops.com/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1" target="_blank" rel="noopener noreferrer">Abrir Vortex no PilOps ↗</a>
+      <div class="top-actions">
+        <div id="lang" class="lang" role="group" aria-label="Idioma" data-en-label="Language">
+          <button type="button" data-lang="pt" aria-pressed="true" title="Português">PT</button>
+          <button type="button" data-lang="en" aria-pressed="false" title="English">EN</button>
+        </div>
+        <a href="https://pilops.com/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1" target="_blank" rel="noopener noreferrer" data-en="Open Vortex on PilOps ↗">Abrir Vortex no PilOps ↗</a>
+      </div>
     </div>
   </header>
   <main class="shell">
     <div class="intro hero">
       <img class="hero-logo" src="./img/logo-512.webp" alt="Logo da Vortex Airways" width="190" height="190">
       <div class="hero-text">
-        <p class="eyebrow">VTX / OPERAÇÕES</p>
-        <h1>Planejador de rotas</h1>
-        <p>Escolha uma aeronave ou um aeroporto, veja distância e alcance de cada rota e monte uma sequência de trechos.</p>
+        <p class="eyebrow" data-en="VTX / OPERATIONS">VTX / OPERAÇÕES</p>
+        <h1 data-en="Route planner">Planejador de rotas</h1>
+        <p data-en="Pick an aircraft or an airport, check the distance and range of each route and build a sequence of legs.">Escolha uma aeronave ou um aeroporto, veja distância e alcance de cada rota e monte uma sequência de trechos.</p>
       </div>
-      <div class="summary" aria-label="Totais da coleta">
-        <div><strong id="total-fleet">–</strong><span>Aeronaves</span></div>
-        <div><strong id="total-routes">–</strong><span>Rotas</span></div>
+      <div class="summary" aria-label="Totais da coleta" data-en-label="Sync totals">
+        <div><strong id="total-fleet">–</strong><span data-en="Aircraft">Aeronaves</span></div>
+        <div><strong id="total-routes">–</strong><span data-en="Routes">Rotas</span></div>
         <div><strong id="total-hubs">–</strong><span>Hubs</span></div>
       </div>
     </div>
-    <aside class="notice" aria-label="Situação dos dados">
+    <aside class="notice" aria-label="Situação dos dados" data-en-label="Data status">
       <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p><p id="fleet-alert" class="fleet-alert" hidden></p></div>
     </aside>
-    <section class="card filters" aria-label="Filtros">
-      <label>Aeroporto de partida <select id="airport"><option value="">Todos os aeroportos</option></select></label>
-      <label>Aeronave por prefixo <select id="aircraft"><option value="">Toda a frota</option></select></label>
-      <button id="reset" class="secondary" type="button">Limpar seleção</button>
+    <section class="card filters" aria-label="Filtros" data-en-label="Filters">
+      <label><span data-en="Departure airport">Aeroporto de partida</span> <select id="airport"><option value="">Todos os aeroportos</option></select></label>
+      <label><span data-en="Aircraft by registration">Aeronave por prefixo</span> <select id="aircraft"><option value="">Toda a frota</option></select></label>
+      <button id="reset" class="secondary" type="button" data-en="Clear selection">Limpar seleção</button>
     </section>
     <div class="layout">
       <section class="card map-card" aria-labelledby="map-title">
         <div class="section-heading">
-          <div><p class="eyebrow">REDE VTX</p><h2 id="map-title">Mapa mundial</h2></div>
-          <button id="world" class="secondary" type="button">Visão mundial</button>
+          <div><p class="eyebrow" data-en="VTX NETWORK">REDE VTX</p><h2 id="map-title" data-en="World map">Mapa mundial</h2></div>
+          <button id="world" class="secondary" type="button" data-en="World view">Visão mundial</button>
         </div>
-        <div id="map" aria-label="Mapa interativo de aeroportos e rotas"></div>
+        <div id="map" aria-label="Mapa interativo de aeroportos e rotas" data-en-label="Interactive map of airports and routes"></div>
         <div class="legend efb-legend">
           <span><i class="sym hub"></i> Hub</span>
-          <span><i class="sym"></i> Aeroporto</span>
-          <span><i class="sym alert"></i> Aeronave fora da rede</span>
-          <span><i class="ln" style="--c:#5b8db8"></i> Malha da Vortex</span>
-          <span><i class="ln" style="--c:#22d3ee"></i> Alcança / pronta</span>
-          <span><i class="ln" style="--c:#fbbf24"></i> No limite / reposicionar</span>
-          <span><i class="ln" style="--c:#fb7185"></i> Fora do alcance / comprar</span>
-          <span><i class="ln planline" style="--c:#e040fb"></i> Plano de voo</span>
+          <span><i class="sym"></i> <span data-en="Airport">Aeroporto</span></span>
+          <span><i class="sym alert"></i> <span data-en="Aircraft outside the network">Aeronave fora da rede</span></span>
+          <span><i class="ln" style="--c:#5b8db8"></i> <span data-en="Vortex network">Malha da Vortex</span></span>
+          <span><i class="ln" style="--c:#22d3ee"></i> <span data-en="In range / ready">Alcança / pronta</span></span>
+          <span><i class="ln" style="--c:#fbbf24"></i> <span data-en="At the limit / reposition">No limite / reposicionar</span></span>
+          <span><i class="ln" style="--c:#fb7185"></i> <span data-en="Out of range / buy">Fora do alcance / comprar</span></span>
+          <span><i class="ln planline" style="--c:#e040fb"></i> <span data-en="Flight plan">Plano de voo</span></span>
         </div>
       </section>
-      <section class="card results" aria-label="Resultados da busca">
-        <p class="eyebrow">SELEÇÃO</p>
+      <section class="card results" aria-label="Resultados da busca" data-en-label="Search results">
+        <p class="eyebrow" data-en="SELECTION">SELEÇÃO</p>
         <h2 id="selection">Toda a rede</h2>
         <p id="selection-detail" class="detail" aria-live="polite"></p>
         <div id="plan" class="plan" aria-live="polite" hidden></div>
-        <div class="tabs" aria-label="Tipo de resultado">
-          <button id="show-routes" type="button" aria-pressed="true">Rotas <span id="route-count"></span></button>
-          <button id="show-fleet" type="button" aria-pressed="false">Frota <span id="fleet-count"></span></button>
+        <div class="tabs" aria-label="Tipo de resultado" data-en-label="Result type">
+          <button id="show-routes" type="button" aria-pressed="true"><span data-en="Routes">Rotas</span> <span id="route-count"></span></button>
+          <button id="show-fleet" type="button" aria-pressed="false"><span data-en="Fleet">Frota</span> <span id="fleet-count"></span></button>
         </div>
         <ul id="results"></ul>
       </section>
     </div>
     <section id="alerts-card" class="card wide" aria-labelledby="alerts-title">
       <div class="section-heading">
-        <div><p class="eyebrow">AVISOS DA FROTA</p><h2 id="alerts-title">Aeronaves fora da rede</h2></div>
+        <div><p class="eyebrow" data-en="FLEET ALERTS">AVISOS DA FROTA</p><h2 id="alerts-title" data-en="Aircraft outside the network">Aeronaves fora da rede</h2></div>
       </div>
       <p id="alerts-summary" class="detail pad"></p>
       <ul id="alerts" class="list pad"></ul>
     </section>
     <section id="realloc-card" class="card wide" aria-labelledby="realloc-title">
       <div class="section-heading">
-        <div><p class="eyebrow">FROTA EM MOVIMENTO</p><h2 id="realloc-title">Realocação de aeronaves</h2></div>
+        <div><p class="eyebrow" data-en="FLEET ON THE MOVE">FROTA EM MOVIMENTO</p><h2 id="realloc-title" data-en="Aircraft relocation">Realocação de aeronaves</h2></div>
       </div>
       <div class="pad">
         <details class="explain" open>
-          <summary>Novo na Vortex? Entenda em 30 segundos</summary>
-          <div class="explain-body">
+          <summary data-en="New to Vortex? The basics in 30 seconds">Novo na Vortex? Entenda em 30 segundos</summary>
+          <div class="explain-body"
+            data-en="&lt;p&gt;&lt;strong&gt;On PilOps, an aircraft stays where it landed.&lt;/strong&gt; To fly a Vortex route, you need a &lt;em&gt;free&lt;/em&gt; aircraft at that route's departure airport.&lt;/p&gt;
+            &lt;p&gt;&lt;strong&gt;Relocating&lt;/strong&gt; means taking an aircraft from where it sits idle to where it is needed. Whenever possible, the suggestion uses a Vortex route on the way, so the flight also counts as a company flight. When there is no route, the trip is a &lt;strong&gt;ferry&lt;/strong&gt; (a direct flight outside the registered routes).&lt;/p&gt;
+            &lt;ol class=&quot;steps&quot;&gt;
+              &lt;li&gt;Pick a card under &lt;em&gt;What to do now&lt;/em&gt;, starting from the top: those are the most urgent.&lt;/li&gt;
+              &lt;li&gt;Click &lt;em&gt;Show on map&lt;/em&gt; to check the leg, its distance and the estimated time.&lt;/li&gt;
+              &lt;li&gt;On PilOps, pick the aircraft by its &lt;strong&gt;registration&lt;/strong&gt; (e.g. NK4I2I) and fly the suggested leg.&lt;/li&gt;
+            &lt;/ol&gt;
+            &lt;dl class=&quot;glossary&quot;&gt;
+              &lt;div&gt;&lt;dt&gt;&lt;span class=&quot;tag bad&quot;&gt;Idle&lt;/span&gt;&lt;/dt&gt;&lt;dd&gt;no flight recorded in the period&lt;/dd&gt;&lt;/div&gt;
+              &lt;div&gt;&lt;dt&gt;&lt;span class=&quot;tag warn&quot;&gt;Little used&lt;/span&gt;&lt;/dt&gt;&lt;dd&gt;last flight 3 or more days ago&lt;/dd&gt;&lt;/div&gt;
+              &lt;div&gt;&lt;dt&gt;&lt;span class=&quot;tag ok&quot;&gt;Active&lt;/span&gt;&lt;/dt&gt;&lt;dd&gt;flew recently, at a normal pace&lt;/dd&gt;&lt;/div&gt;
+              &lt;div&gt;&lt;dt&gt;&lt;span class=&quot;tag hot&quot;&gt;Heavily used&lt;/span&gt;&lt;/dt&gt;&lt;dd&gt;flies far more than the fleet average&lt;/dd&gt;&lt;/div&gt;
+              &lt;div&gt;&lt;dt&gt;&lt;span class=&quot;tag neutral&quot;&gt;Unavailable&lt;/span&gt;&lt;/dt&gt;&lt;dd&gt;in use by a pilot or in maintenance&lt;/dd&gt;&lt;/div&gt;
+            &lt;/dl&gt;">
             <p><strong>No PilOps, a aeronave fica onde pousou.</strong> Para voar uma rota da Vortex, você precisa de uma aeronave <em>livre</em> no aeroporto de partida dessa rota.</p>
             <p><strong>Realocar</strong> é levar uma aeronave de onde ela está parada para onde ela faz falta. Sempre que possível, a sugestão usa uma rota da Vortex no caminho, e assim o voo também conta como voo da companhia. Quando não existe rota, o trajeto é um <strong>traslado</strong> (voo direto, fora das rotas cadastradas).</p>
             <ol class="steps">
@@ -114,10 +134,10 @@
             </dl>
           </div>
         </details>
-        <div id="realloc-stats" class="stat-row" role="group" aria-label="Filtrar sugestões"></div>
-        <div id="realloc-tabs" class="tabs" role="group" aria-label="Tipo de visão">
-          <button type="button" data-view="acoes" aria-pressed="true">O que fazer agora</button>
-          <button type="button" data-view="atividade" aria-pressed="false">Atividade da frota</button>
+        <div id="realloc-stats" class="stat-row" role="group" aria-label="Filtrar sugestões" data-en-label="Filter suggestions"></div>
+        <div id="realloc-tabs" class="tabs" role="group" aria-label="Tipo de visão" data-en-label="View">
+          <button type="button" data-view="acoes" aria-pressed="true" data-en="What to do now">O que fazer agora</button>
+          <button type="button" data-view="atividade" aria-pressed="false" data-en="Fleet activity">Atividade da frota</button>
         </div>
         <p id="realloc-summary" class="detail"></p>
       </div>
@@ -125,38 +145,38 @@
     </section>
     <section class="card wide" aria-labelledby="ideas-title">
       <div class="section-heading">
-        <div><p class="eyebrow">SUGESTÕES</p><h2 id="ideas-title">Sugestões de rotas</h2></div>
+        <div><p class="eyebrow" data-en="SUGGESTIONS">SUGESTÕES</p><h2 id="ideas-title" data-en="Route suggestions">Sugestões de rotas</h2></div>
       </div>
       <div class="pad">
-        <div id="idea-tabs" class="tabs" role="group" aria-label="Tipo de sugestão">
-          <button type="button" data-view="circuitos" aria-pressed="true">Circuitos fechados</button>
-          <button type="button" data-view="pilotos" aria-pressed="false">Precisam de pilotos</button>
-          <button type="button" data-view="aeroportos" aria-pressed="false">Aeroportos</button>
+        <div id="idea-tabs" class="tabs" role="group" aria-label="Tipo de sugestão" data-en-label="Suggestion type">
+          <button type="button" data-view="circuitos" aria-pressed="true" data-en="Closed circuits">Circuitos fechados</button>
+          <button type="button" data-view="pilotos" aria-pressed="false" data-en="Waiting for pilots">Precisam de pilotos</button>
+          <button type="button" data-view="aeroportos" aria-pressed="false" data-en="Airports">Aeroportos</button>
         </div>
-        <div id="idea-scopes" class="chips" role="group" aria-label="Filtrar por tipo de rota"></div>
+        <div id="idea-scopes" class="chips" role="group" aria-label="Filtrar por tipo de rota" data-en-label="Filter by route type"></div>
         <p id="ideas-summary" class="detail"></p>
       </div>
       <ul id="ideas" class="list pad"></ul>
     </section>
     <section class="card wide" aria-labelledby="coverage-title">
       <div class="section-heading">
-        <div><p class="eyebrow">FROTA × ROTAS</p><h2 id="coverage-title">Cobertura das rotas</h2></div>
+        <div><p class="eyebrow" data-en="FLEET × ROUTES">FROTA × ROTAS</p><h2 id="coverage-title" data-en="Route coverage">Cobertura das rotas</h2></div>
       </div>
       <p id="coverage-summary" class="detail pad"></p>
       <ul id="coverage" class="list pad"></ul>
     </section>
     <section class="card wide" aria-labelledby="ranking-title">
       <div class="section-heading">
-        <div><p class="eyebrow">PILOTOS</p><h2 id="ranking-title">Ranking da Vortex</h2></div>
+        <div><p class="eyebrow" data-en="PILOTS">PILOTOS</p><h2 id="ranking-title" data-en="Vortex ranking">Ranking da Vortex</h2></div>
       </div>
       <p id="ranking-note" class="detail pad"></p>
       <div class="table-wrap pad"><table id="ranking"></table></div>
       <div class="pad">
-        <h3>Rotas mais voadas</h3>
+        <h3 data-en="Most flown routes">Rotas mais voadas</h3>
         <ol id="top-routes" class="list"></ol>
       </div>
     </section>
-    <footer>As linhas seguem o grande círculo entre os aeroportos. Distâncias são ortodrômicas, sem vento; alcance e tempo usam valores aproximados de catálogo por modelo e servem só para triagem. Confirme a disponibilidade da aeronave, a carga e a viabilidade do voo no PilOps antes de despachar. Coordenadas de <a href="https://ourairports.com/data/">OurAirports</a>.</footer>
+    <footer data-en="Lines follow the great circle between airports. Distances are great-circle, with no wind; range and time use approximate catalogue values per model and are only for screening. Confirm aircraft availability, load and flight feasibility on PilOps before dispatching. Coordinates from &lt;a href=&quot;https://ourairports.com/data/&quot;&gt;OurAirports&lt;/a&gt;.">As linhas seguem o grande círculo entre os aeroportos. Distâncias são ortodrômicas, sem vento; alcance e tempo usam valores aproximados de catálogo por modelo e servem só para triagem. Confirme a disponibilidade da aeronave, a carga e a viabilidade do voo no PilOps antes de despachar. Coordenadas de <a href="https://ourairports.com/data/">OurAirports</a>.</footer>
   </main>
 </body>
 </html>
