@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-07T22:32:10.761Z",
+ "capturedAt": "2026-11-08T01:43:09.931Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -61,7 +61,7 @@
   {
    "prefix": "NUTTBL",
    "model": "Airbus A220-300",
-   "airport": "OSDI",
+   "airport": "OTHH",
    "base": "EDDH",
    "status": "Sem alerta no cartão"
   },
@@ -306,8 +306,8 @@
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 18582,
-   "companyMinutes": 6469,
+   "totalMinutes": 18747,
+   "companyMinutes": 6634,
    "joined": "2026-10-20"
   },
   {
@@ -322,7 +322,7 @@
    "name": "Harris",
    "role": null,
    "level": null,
-   "totalMinutes": 4754,
+   "totalMinutes": 4765,
    "companyMinutes": 0,
    "joined": "2026-10-23"
   },
@@ -354,7 +354,7 @@
    "name": "PaxArcturia",
    "role": null,
    "level": null,
-   "totalMinutes": 254,
+   "totalMinutes": 335,
    "companyMinutes": 0,
    "joined": "2026-11-07"
   },
@@ -367,7 +367,7 @@
    "joined": "2026-11-07"
   }
  ],
- "pilotsCapturedAt": "2026-11-07T22:32:10.761Z",
+ "pilotsCapturedAt": "2026-11-08T01:43:09.931Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -403,6 +403,18 @@
    "minutes": 119,
    "nm": 593.38,
    "payload": 10097,
+   "revenue": 0
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NUTTBL",
+   "model": "Airbus A220-300",
+   "origin": "OSDI",
+   "destination": "OTHH",
+   "date": "2026-11-07",
+   "minutes": 164,
+   "nm": 926.59,
+   "payload": 9452,
    "revenue": 0
   },
   {
