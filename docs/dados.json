@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-08T01:43:09.931Z",
+ "capturedAt": "2026-11-09T16:53:09.506Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -47,7 +47,7 @@
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "KRDU",
+   "airport": "SBGL",
    "base": "LEMD",
    "status": "Sem alerta no cartão"
   },
@@ -91,14 +91,14 @@
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "OTHH",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NK4I2I",
    "model": "Douglas MD-11",
-   "airport": "OTHH",
+   "airport": "SBGL",
    "base": "SBGL",
-   "status": "EM USO"
+   "status": "Atenção em motor"
   },
   {
    "prefix": "NE2XUQ",
@@ -112,7 +112,7 @@
    "model": "Boeing 787-10 Dreamliner",
    "airport": "LEMD",
    "base": "SBGL",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   }
  ],
  "routes": [
@@ -298,8 +298,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 118010,
-   "companyMinutes": 107709,
+   "totalMinutes": 119628,
+   "companyMinutes": 109328,
    "joined": "2026-05-23"
   },
   {
@@ -319,10 +319,18 @@
    "joined": "2026-06-29"
   },
   {
+   "name": "marcelocanela",
+   "role": null,
+   "level": null,
+   "totalMinutes": 13119,
+   "companyMinutes": 0,
+   "joined": "2026-11-07"
+  },
+  {
    "name": "Harris",
    "role": null,
    "level": null,
-   "totalMinutes": 4765,
+   "totalMinutes": 5211,
    "companyMinutes": 0,
    "joined": "2026-10-23"
   },
@@ -335,12 +343,12 @@
    "joined": "2026-10-31"
   },
   {
-   "name": "Mathiasen",
+   "name": "RCassalati",
    "role": null,
    "level": null,
-   "totalMinutes": 574,
+   "totalMinutes": 7071,
    "companyMinutes": 0,
-   "joined": "2026-11-03"
+   "joined": "2026-11-09"
   },
   {
    "name": "claudiobastos",
@@ -351,24 +359,60 @@
    "joined": "2026-11-01"
   },
   {
+   "name": "Mathiasen",
+   "role": null,
+   "level": null,
+   "totalMinutes": 574,
+   "companyMinutes": 0,
+   "joined": "2026-11-03"
+  },
+  {
    "name": "PaxArcturia",
    "role": null,
    "level": null,
-   "totalMinutes": 335,
-   "companyMinutes": 0,
-   "joined": "2026-11-07"
-  },
-  {
-   "name": "marcelocanela",
-   "role": null,
-   "level": null,
-   "totalMinutes": 13119,
+   "totalMinutes": 438,
    "companyMinutes": 0,
    "joined": "2026-11-07"
   }
  ],
- "pilotsCapturedAt": "2026-11-08T01:43:09.931Z",
+ "pilotsCapturedAt": "2026-11-09T16:53:09.506Z",
  "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "NK4I2I",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "SBGL",
+   "date": "2026-11-08",
+   "minutes": 506,
+   "nm": 4395.57,
+   "payload": 105395,
+   "revenue": 9589854.42
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "KRDU",
+   "destination": "SBGL",
+   "date": "2026-11-08",
+   "minutes": 761,
+   "nm": 4057.65,
+   "payload": 98536,
+   "revenue": 8205300.06
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NK4I2I",
+   "model": "Douglas MD-11",
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "date": "2026-11-08",
+   "minutes": 349,
+   "nm": 2875.87,
+   "payload": 72812,
+   "revenue": 5828815.11
+  },
   {
    "pilot": "astronauta",
    "prefix": "NTXJ5N",
