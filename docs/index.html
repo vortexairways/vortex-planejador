@@ -18,11 +18,12 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=9">
+  <link rel="stylesheet" href="./style.css?v=10">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
-  <script defer src="./planner.js?v=10"></script>
+  <script defer src="./operacao.js?v=1"></script>
+  <script defer src="./planner.js?v=11"></script>
 </head>
 <body>
   <header class="top">
@@ -54,6 +55,23 @@
     <aside class="notice" aria-label="Situação dos dados" data-en-label="Data status">
       <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p><p id="fleet-alert" class="fleet-alert" hidden></p><p id="revenue-alert" class="fleet-alert" hidden></p></div>
     </aside>
+    <section id="operation-card" class="card operation-card" aria-labelledby="operation-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow" data-en="INDIVIDUAL FLIGHTS · WEEKLY CHALLENGE">VOOS INDIVIDUAIS · DESAFIO SEMANAL</p><h2 id="operation-heading" data-en="Operation of the week">Operação da semana</h2></div>
+        <a class="secondary small" href="https://github.com/vortexairways/vortex-planejador/edit/main/docs/operacao.json" target="_blank" rel="noopener noreferrer" data-en="Edit operation">Editar operação</a>
+      </div>
+      <div class="pad">
+        <h3 id="operation-title"></h3>
+        <p id="operation-period" class="meta"></p>
+        <p class="detail" data-en="Each pilot flies individually. Complete the featured routes and share your own flights on the Vortex Discord. The pilot with the most completed flights wins; different routes break ties.">Cada piloto voa individualmente. Complete as rotas em destaque e compartilhe seus próprios voos no Discord da Vortex. Vence quem concluir mais voos; a variedade de rotas desempata.</p>
+        <div id="operation-stats" class="stat-row"></div>
+        <div id="operation-routes" class="operation-routes"></div>
+        <h3 data-en="Weekly standings · partial">Classificação da semana · parcial</h3>
+        <div id="operation-ranking" class="table-wrap"></div>
+        <p id="operation-note" class="meta"></p>
+        <p class="meta" data-en="The administration publishes the dates, target and up to three routes through “Edit operation”, using a GitHub account with write access to the repository.">A administração publica as datas, a meta e até três rotas em “Editar operação”, usando uma conta do GitHub com acesso de edição ao repositório.</p>
+      </div>
+    </section>
     <section class="card filters" aria-label="Filtros" data-en-label="Filters">
       <label><span data-en="Departure airport">Aeroporto de partida</span> <select id="airport"><option value="">Todos os aeroportos</option></select></label>
       <label><span data-en="Aircraft by registration">Aeronave por prefixo</span> <select id="aircraft"><option value="">Toda a frota</option></select></label>
@@ -201,5 +219,19 @@
     </section>
     <footer data-en="Lines follow the great circle between airports. Distances are great-circle, with no wind; range and time use approximate catalogue values per model and are only for screening. Confirm aircraft availability, load and flight feasibility on PilOps before dispatching. Coordinates from &lt;a href=&quot;https://ourairports.com/data/&quot;&gt;OurAirports&lt;/a&gt;.">As linhas seguem o grande círculo entre os aeroportos. Distâncias são ortodrômicas, sem vento; alcance e tempo usam valores aproximados de catálogo por modelo e servem só para triagem. Confirme a disponibilidade da aeronave, a carga e a viabilidade do voo no PilOps antes de despachar. Coordenadas de <a href="https://ourairports.com/data/">OurAirports</a>.</footer>
   </main>
+  <dialog id="share-dialog" aria-labelledby="share-title">
+    <form method="dialog" class="share-close"><button class="secondary small" data-en="Close">Fechar</button></form>
+    <h2 id="share-title" data-en="Share your flight">Compartilhar seu voo</h2>
+    <p class="meta" data-en="Copy your message and post it on the Vortex Discord. Each pilot flies their own flight.">Copie sua mensagem e publique no Discord da Vortex. Cada piloto realiza seu próprio voo.</p>
+    <div class="share-options">
+      <label><span data-en="Pilot (optional)">Piloto (opcional)</span><input id="share-pilot" maxlength="40" autocomplete="off"></label>
+      <label><span data-en="Aircraft">Aeronave</span><select id="share-aircraft"></select></label>
+      <label><span data-en="Message">Mensagem</span><select id="share-status"><option value="today" data-en="My flight today">Meu voo de hoje</option><option value="planned" data-en="Next flight">Próximo voo</option><option value="airborne" data-en="Flight in progress">Voo em andamento</option><option value="completed" data-en="Completed flight">Voo concluído</option></select></label>
+    </div>
+    <label for="share-message" class="meta" data-en="Portuguese first, then English. You can edit the text.">Primeiro em português, depois em inglês. Você pode editar o texto.</label>
+    <textarea id="share-message" rows="15" spellcheck="true"></textarea>
+    <div class="plan-actions"><button id="share-copy" class="primary" type="button" data-en="Copy PT + EN">Copiar PT + EN</button><a class="secondary" href="https://discord.com/channels/1567263892584005743/1567263893485658144" target="_blank" rel="noopener noreferrer" data-en="Open Vortex Discord">Abrir Discord da Vortex</a></div>
+    <p id="share-feedback" class="meta" role="status" aria-live="polite"></p>
+  </dialog>
 </body>
 </html>

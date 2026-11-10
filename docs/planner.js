@@ -16,6 +16,8 @@ let pilots = [];
 let flightLog = [];
 let flightsSince = null;
 let capturedAt = null;
+let operationConfig = null;
+let shareLegs = [];
 // Cobertura de cada rota pela frota atual (preenchida em start()).
 let coverage = new Map();
 // Circuitos fechados formados por rotas cadastradas (preenchidos em start()).
@@ -344,6 +346,9 @@ function routeRow({ route, miles }) {
   }
   const status = coverage.get(route)?.status;
   if (!plane && status === "comprar") row.append(element("span", "tag bad", T("Nenhuma aeronave da frota alcança esta rota", "No aircraft in the fleet can fly this route")));
+  const actions = element("div", "plan-actions share-action");
+  actions.append(button(T("Compartilhar voo", "Share flight"), "secondary small", () => openShare([route], plane)));
+  row.append(actions);
   return row;
 }
 
@@ -385,6 +390,7 @@ function renderPlan() {
   }), button(T("Limpar plano", "Clear plan"), "secondary small", () => {
     state.plan = []; state.focus = null; render();
   }));
+  actions.append(button(T("Compartilhar plano", "Share plan"), "secondary small", () => openShare([...state.plan], plane)));
   heading.append(title, actions);
   const list = element("ol", "plan-legs");
   for (const { route, miles } of legs) {
@@ -1045,6 +1051,10 @@ async function start() {
   flightLog = data.flights || [];
   flightsSince = data.flightsSince || null;
   capturedAt = data.capturedAt || null;
+  try {
+    const response = await fetch("./operacao.json?t=" + Date.now(), { cache: "no-store" });
+    if (response.ok) operationConfig = VortexOperation.read(await response.json(), routes);
+  } catch { /* A operação é opcional; mapa, frota e demais seções continuam disponíveis. */ }
   coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
   airportCodes = [...new Set([
@@ -1055,6 +1065,20 @@ async function start() {
   document.querySelector("#total-fleet").textContent = fleet.length;
   document.querySelector("#total-routes").textContent = routes.length;
   document.querySelector("#total-hubs").textContent = hubs.size;
+  const shared = new URLSearchParams(location.search);
+  const sharedRoute = routes.find(route => route.origin === shared.get("from") && route.destination === shared.get("to"));
+  if (sharedRoute) {
+    state.origin = sharedRoute.origin;
+    state.focus = sharedRoute;
+    state.prefix = fleet.some(plane => plane.prefix === shared.get("aircraft")) ? shared.get("aircraft") : "";
+    const requestedLegs = (shared.get("legs") || "").split(",");
+    const sharedPlan = requestedLegs.slice(0, 30).map(pair => routes.find(route => VortexOperation.pair(route) === pair));
+    if (requestedLegs.length <= 30 && sharedPlan.length > 1 && sharedPlan[0] === sharedRoute &&
+        sharedPlan.every((route, index) => route && (!index || sharedPlan[index - 1]?.destination === route.origin))) {
+      state.plan = sharedPlan;
+      state.focus = null;
+    }
+  }
   paintAll();
 }
 
@@ -1093,6 +1117,7 @@ function paintAll() {
   renderRanking();
   renderRealloc();
   renderRevenue();
+  renderOperation();
 }
 
 function setLanguage(next) {
@@ -1602,5 +1627,144 @@ function renderRevenue() {
     "alert-link", () => document.querySelector("#revenue-card").scrollIntoView({ behavior: "smooth", block: "start" })));
   }
 }
+
+// ---------- Operação da semana e compartilhamento ----------
+
+function renderOperation() {
+  const title = document.querySelector("#operation-title");
+  const period = document.querySelector("#operation-period");
+  const stats = document.querySelector("#operation-stats");
+  const cards = document.querySelector("#operation-routes");
+  const standings = document.querySelector("#operation-ranking");
+  const note = document.querySelector("#operation-note");
+  stats.replaceChildren();
+  cards.replaceChildren();
+  standings.replaceChildren();
+  if (!operationConfig) {
+    title.textContent = T("Aguardando definição da administração", "Awaiting the administration’s selection");
+    period.textContent = "";
+    note.textContent = T("A configuração da operação está indisponível ou inválida. A administração pode publicá-la em Editar operação.",
+      "The operation configuration is unavailable or invalid. The administration can publish it through Edit operation.");
+    return;
+  }
+  const operation = operationConfig;
+  const { completed, ranking } = VortexOperation.progress(operation, flightLog);
+  const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo" }).format(new Date());
+  const phase = today < operation.start ? T("Agendada", "Scheduled") : today > operation.end ? T("Encerrada", "Finished") : T("Em andamento", "In progress");
+  title.textContent = operation.title[lang];
+  period.textContent = dayText(operation.start) + " → " + dayText(operation.end) + T(" · datas de Brasília · ", " · Brasília dates · ") + phase;
+  for (const [value, label] of [[completed.length + " / " + operation.goal, T("Meta de voos do grupo", "Group flight target")],
+    [ranking.length, T("Pilotos participantes", "Participating pilots")],
+    [new Set(completed.map(VortexOperation.pair)).size + " / " + operation.routes.length, T("Rotas realizadas", "Routes flown")]]) {
+    const tile = element("div", "stat");
+    tile.append(element("strong", "", String(value)), element("span", "", label));
+    stats.append(tile);
+  }
+  for (const item of operation.routes) {
+    const card = element("article", "operation-route");
+    card.append(element("h3", "", item.origin + " → " + item.destination));
+    const route = item.route;
+    if (!route) {
+      card.append(element("p", "meta", T("Rota fora da malha atual. A administração deve revisar a seleção.",
+        "Route outside the current network. The administration should review the selection.")));
+      cards.append(card);
+      continue;
+    }
+    const available = coverage.get(route);
+    const reference = available.here[0] || available.capable[0];
+    const minutes = blockMinutes(available.miles, reference);
+    card.append(element("p", "meta", route.code + " · " + nm(available.miles)),
+      element("span", "tag " + coverageText()[available.status][1], coverageText()[available.status][0]));
+    if (minutes !== null) card.append(element("p", "meta", clock(minutes) + T(" de bloco · referência ", " block time · reference ") + reference.model));
+    card.append(element("p", "meta", T("Voos lidos no período: ", "Flights read in the period: ") +
+      completed.filter(flight => VortexOperation.pair(flight) === VortexOperation.pair(route)).length));
+    const actions = element("div", "plan-actions");
+    actions.append(button(T("Ver rota", "View route"), "secondary small", () => {
+      Object.assign(state, { origin: route.origin, prefix: "", plan: [], focus: route, tab: "routes" });
+      render(false);
+      frame([available]);
+      document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
+    }), button(T("Compartilhar meu voo", "Share my flight"), "secondary small", () => openShare([route], available.here[0])));
+    card.append(actions);
+    cards.append(card);
+  }
+  if (ranking.length) {
+    const table = element("table", "weekly-ranking");
+    const head = element("tr");
+    for (const text of [T("Posição", "Place"), T("Piloto", "Pilot"), T("Voos", "Flights"), T("Rotas diferentes", "Different routes")]) {
+      const th = element("th", "", text);
+      th.scope = "col";
+      head.append(th);
+    }
+    const thead = element("thead");
+    thead.append(head);
+    const tbody = element("tbody");
+    for (const pilot of ranking) {
+      const row = element("tr");
+      row.append(element("td", "", String(pilot.rank)), element("td", "", "@" + pilot.name),
+        element("td", "", String(pilot.flights)), element("td", "", String(pilot.routes)));
+      tbody.append(row);
+    }
+    table.append(thead, tbody);
+    standings.append(table);
+  } else standings.append(element("p", "meta", T("O primeiro voo concluído e sincronizado abre a disputa.",
+    "The first completed and synced flight opens the standings.")));
+  note.textContent = T("Classificação parcial dos voos remunerados lidos nas rotas em destaque, até a última coleta. Voos em andamento entram depois da conclusão e sincronização. Empates em voos e variedade dividem a posição.",
+    "Partial standings from paid flights read on the featured routes, up to the last sync. Flights in progress appear after completion and sync. Ties in flights and route variety share a place.");
+}
+
+function openShare(legs, preferredPlane) {
+  shareLegs = legs;
+  const picker = document.querySelector("#share-aircraft");
+  picker.replaceChildren(new Option(T("Sem aeronave definida", "Aircraft not chosen"), ""));
+  for (const plane of fleet) picker.add(new Option(plane.prefix + " · " + plane.model + " · " + plane.airport + " · " + statusLabel(plane.status), plane.prefix));
+  picker.value = preferredPlane?.prefix || "";
+  document.querySelector("#share-status").value = "today";
+  document.querySelector("#share-feedback").textContent = "";
+  updateShare();
+  document.querySelector("#share-dialog").showModal();
+}
+
+function updateShare() {
+  if (!shareLegs.length) return;
+  const plane = fleet.find(item => item.prefix === document.querySelector("#share-aircraft").value);
+  const distances = shareLegs.map(leg => distance(leg.origin, leg.destination));
+  const times = distances.map(miles => blockMinutes(miles, plane));
+  const url = new URL("https://vortexairways.github.io/vortex-planejador/");
+  url.searchParams.set("from", shareLegs[0].origin);
+  url.searchParams.set("to", shareLegs[0].destination);
+  if (plane) url.searchParams.set("aircraft", plane.prefix);
+  if (shareLegs.length > 1) url.searchParams.set("legs", shareLegs.map(VortexOperation.pair).join(","));
+  url.hash = "map-title";
+  document.querySelector("#share-message").value = VortexOperation.share({ legs: shareLegs, plane,
+    pilot: document.querySelector("#share-pilot").value, status: document.querySelector("#share-status").value,
+    minutes: times.every(value => value !== null) ? times.reduce((sum, value) => sum + value, 0) : null,
+    miles: distances.every(value => value !== null) ? distances.reduce((sum, value) => sum + value, 0) : null,
+    url: url.href });
+  shareFeedback();
+}
+
+function shareFeedback() {
+  const length = document.querySelector("#share-message").value.length;
+  document.querySelector("#share-copy").disabled = !length || length > 2000;
+  document.querySelector("#share-feedback").textContent = length > 2000
+    ? T("O Discord aceita até 2.000 caracteres. Encurte o texto para copiar.", "Discord accepts up to 2,000 characters. Shorten the text to copy it.")
+    : T("Mensagem pronta para copiar e publicar no grupo.", "Message ready to copy and post to the group.");
+}
+
+for (const id of ["share-pilot", "share-aircraft", "share-status"]) document.getElementById(id).addEventListener("input", updateShare);
+document.querySelector("#share-message").addEventListener("input", shareFeedback);
+document.querySelector("#share-copy").addEventListener("click", async () => {
+  const message = document.querySelector("#share-message");
+  const feedback = document.querySelector("#share-feedback");
+  try {
+    await navigator.clipboard.writeText(message.value);
+    feedback.textContent = T("Copiado! Abra o Discord da Vortex e cole no canal desejado.", "Copied! Open the Vortex Discord and paste into your chosen channel.");
+  } catch {
+    message.focus();
+    message.select();
+    feedback.textContent = T("Selecionei o texto. Use Ctrl+C para copiar e cole no Discord.", "The text is selected. Use Ctrl+C to copy and paste it into Discord.");
+  }
+});
 
 start();

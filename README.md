@@ -29,6 +29,16 @@ O PilOps mostra só os 10 voos mais recentes da companhia. O coletor guarda todo
 
 Edite os arquivos em `docs/`, faça o commit e `git push`. O GitHub Pages publica sozinho.
 
+## Operação da semana e compartilhamento
+
+A operação fica no início do planejador. O botão **Editar operação** abre `docs/operacao.json` no GitHub. Uma conta com acesso de edição ao repositório pode alterar o título em português e inglês, as datas de início e fim (inclusive, no calendário de Brasília), a meta de voos e até três pares de origem/destino já cadastrados. Ao salvar no GitHub, o Pages publica a seleção para todos. A sincronização de dados preserva esse arquivo.
+
+A classificação considera os voos remunerados concluídos e lidos nas rotas em destaque dentro do período. Mais voos vêm primeiro. A variedade de rotas desempata e empates completos dividem a posição. A tela identifica a classificação como parcial porque depende do histórico que o coletor conseguiu ler. Uma operação encerrada mantém seus resultados até a administração publicar a próxima.
+
+Em uma rota ou plano, **Compartilhar voo/plano** abre uma mensagem editável em português e inglês. O piloto pode informar o nome, a aeronave e a situação do voo, copiar o texto e abrir o Discord da Vortex para publicar. O compartilhamento anuncia voos individuais. A duração usa a estimativa de bloco já existente no planejador.
+
+Validação da operação e da mensagem: `node --test tools/operacao.test.mjs`.
+
 ## Observação
 
 Os dados ficam públicos para quem tiver o link (não há login). Alcance e tempo de bloco são aproximações para triagem; combustível, carga e vento são decididos no PilOps/MSFS.
