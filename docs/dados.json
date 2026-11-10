@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T18:21:22.206Z",
+ "capturedAt": "2026-11-10T18:49:21.709Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -89,9 +89,9 @@
   {
    "prefix": "NUNFUD",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "RJTT",
    "base": "OTHH",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NK4I2I",
@@ -105,7 +105,7 @@
    "model": "Douglas MD-11",
    "airport": "KRDU",
    "base": "SUMU",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NLFTDW",
@@ -298,8 +298,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 120473,
-   "companyMinutes": 110173,
+   "totalMinutes": 121155,
+   "companyMinutes": 110855,
    "joined": "2026-05-23"
   },
   {
@@ -383,7 +383,24 @@
    "joined": "2026-11-10"
   }
  ],
- "pilotsCapturedAt": "2026-11-10T18:21:22.206Z",
+ "pilotsCapturedAt": "2026-11-10T18:49:21.709Z",
+ "activeFlights": [
+  {
+   "pilot": "nassis89",
+   "model": "Douglas MD-11",
+   "origin": "SBGL",
+   "destination": "LEMD",
+   "status": "Em voo"
+  },
+  {
+   "pilot": "Titanocs",
+   "model": "Boeing 787-10 Dreamliner",
+   "origin": "LEMD",
+   "destination": "KRDU",
+   "status": "Em voo"
+  }
+ ],
+ "activeFlightsCapturedAt": "2026-11-10T18:49:21.709Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -396,6 +413,18 @@
    "nm": 2875.87,
    "payload": 69034,
    "revenue": 5936235.18
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "RJTT",
+   "date": "2026-11-10",
+   "minutes": 681,
+   "nm": 5810.2,
+   "payload": 138842,
+   "revenue": 13072618.88
   },
   {
    "pilot": "astronauta",
