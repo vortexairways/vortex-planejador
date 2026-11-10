@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T12:20:34.247Z",
+ "capturedAt": "2026-11-10T17:54:35.187Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -49,7 +49,7 @@
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "LEMD",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N4XBCS",
@@ -112,7 +112,7 @@
    "model": "Boeing 787-10 Dreamliner",
    "airport": "LEMD",
    "base": "SBGL",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   }
  ],
  "routes": [
