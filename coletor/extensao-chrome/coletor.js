@@ -217,7 +217,21 @@ async function run() {
     // Pilotos e voos são opcionais: se a aba não carregar, a frota e as rotas são publicadas assim mesmo.
     const notes = [];
     const optional = name => section(tab.id, name).catch(error => { notes.push(error.message); return null; });
-    const pilots = await optional("Pilotos");
+    // O carregamento incremental depende da área visível. Em aba inativa, o Chrome pode suspender
+    // a observação da sentinela. Ativa só a leitura dos pilotos, sem trazer a janela à frente.
+    let previousTab;
+    let pilots;
+    try {
+      const current = await chrome.tabs.get(tab.id);
+      [previousTab] = await chrome.tabs.query({ windowId: current.windowId, active: true });
+      await chrome.tabs.update(tab.id, { active: true });
+      pilots = await optional("Pilotos");
+    } finally {
+      // Se o usuário escolheu outra aba nesse intervalo, sua escolha é preservada.
+      if (previousTab?.id !== tab.id && (await chrome.tabs.get(tab.id).catch(() => null))?.active) {
+        if (previousTab?.id) await chrome.tabs.update(previousTab.id, { active: true }).catch(() => {});
+      }
+    }
     const flights = await optional("Voos");
     await local("snapshot", {
       lease: job.lease,
