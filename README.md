@@ -29,7 +29,7 @@ O PilOps mostra só os 10 voos mais recentes da companhia. O coletor guarda todo
 
 ## Sincronização automática e reserva manual
 
-Execute `node coletor/configurar-automatico.mjs` uma vez para ativar a tarefa **Vortex - Sincronizar automaticamente** no Agendador de Tarefas do Windows. Ela tenta uma coleta a cada 10 minutos e ao entrar no Windows, com a sessão do usuário, sem guardar senha. Não desperta o computador nem abre o Chrome. Se o Chrome estiver fechado, aguarda o próximo horário. Enquanto o PC está desligado ou suspenso, o planejador permanece online com a última coleta.
+Execute `node coletor/configurar-automatico.mjs` uma vez para ativar a tarefa **Vortex - Sincronizar automaticamente** no Agendador de Tarefas do Windows. Ela tenta uma coleta a cada 10 minutos e ao entrar no Windows, com a sessão do usuário, sem guardar senha. É compatível com a extensão instalada no Chrome ou no Samsung Browser. Não desperta o computador nem abre o navegador. Se ambos estiverem fechados, aguarda o próximo horário. Enquanto o PC está desligado ou suspenso, o planejador permanece online com a última coleta.
 
 O atalho **Sincronizar Vortex** continua executando uma coleta manual independente da tarefa. Se já houver uma coleta em andamento, uma segunda não começa. A tarefa automática não publica alterações locais do projeto nem commits de código pendentes. Falhas são registradas em `%LOCALAPPDATA%\Vortex\sincronizacao.log` e uma nova tentativa acontece no próximo ciclo. Para desativar apenas o automático: `node coletor/configurar-automatico.mjs --desativar`.
 

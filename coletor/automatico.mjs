@@ -13,10 +13,13 @@ if (existsSync(logFile) && statSync(logFile).size > 2 * 1024 * 1024) {
 const stamp = () => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "medium", timeZone: "America/Sao_Paulo" }).format(new Date());
 const log = text => appendFileSync(logFile, "[" + stamp() + "] " + text + "\n", "utf8");
 try {
-  const tasks = execFileSync(path.join(process.env.WINDIR, "System32/tasklist.exe"),
-    ["/FI", "IMAGENAME eq chrome.exe", "/FO", "CSV", "/NH"], { encoding: "utf8", windowsHide: true, timeout: 10000 });
-  if (!/"chrome\.exe"/i.test(tasks)) {
-    log("Chrome fechado. A coleta sera tentada no proximo horario.");
+  const browserOpen = ["chrome.exe", "samsunginternet.exe"].some(name => {
+    const tasks = execFileSync(path.join(process.env.WINDIR, "System32/tasklist.exe"),
+      ["/FI", "IMAGENAME eq " + name, "/FO", "CSV", "/NH"], { encoding: "utf8", windowsHide: true, timeout: 10000 });
+    return tasks.toLowerCase().includes('"' + name + '"');
+  });
+  if (!browserOpen) {
+    log("Navegador fechado. A coleta sera tentada no proximo horario.");
     process.exit(0);
   }
   log("Iniciando sincronizacao automatica.");
