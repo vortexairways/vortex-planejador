@@ -16,6 +16,7 @@ let pilots = [];
 let flightLog = [];
 let flightsSince = null;
 let capturedAt = null;
+let pilotsCapturedAt = null;
 let operationConfig = null;
 let shareLegs = [];
 let activityConfig = null;
@@ -1033,6 +1034,12 @@ function renderRanking() {
     "* Columns with an asterisk only count the flights the planner has already read " +
     (flightsSince ? "since " + dayText(flightsSince) : "in the syncs") + " (" + flightLog.length + " flights), " +
     "so they are much smaller: PilOps only shows the 10 most recent flights, and these columns grow with every sync.");
+  const pilotsStamp = pilotsCapturedAt && Number.isFinite(Date.parse(pilotsCapturedAt))
+    ? new Intl.DateTimeFormat(locale(), { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(pilotsCapturedAt))
+    : null;
+  document.querySelector("#ranking-note").append(document.createTextNode(pilotsStamp
+    ? T(" Cadastro de pilotos lido em ", " Pilot roster read on ") + pilotsStamp + T(" (Brasília).", " (Brasília time).")
+    : T(" Data da leitura do cadastro de pilotos indisponível.", " Pilot roster read time unavailable.")));
 
   const pairs = new Map();
   for (const flight of flightLog) {
@@ -1100,6 +1107,7 @@ async function start() {
   flightLog = data.flights || [];
   flightsSince = data.flightsSince || null;
   capturedAt = data.capturedAt || null;
+  pilotsCapturedAt = data.pilotsCapturedAt || null;
   try {
     const response = await fetch("./operacao.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) operationConfig = VortexOperation.read(await response.json(), routes);

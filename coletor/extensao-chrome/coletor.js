@@ -100,7 +100,7 @@ function readCompany(section, openTab) {
       const labelled = name => { const at = own.findIndex(t => t.toUpperCase().startsWith(name)); return at < 0 ? null : clock(own[at + 1]); };
       const clocks = own.map(clock).filter(value => value !== null);
       const pilot = {
-        name: lines[i].slice(1), role: own.includes("ADMIN") ? "ADMIN" : null,
+        name: lines[i].slice(1), role: own.some(value => /^admin$/i.test(value)) ? "ADMIN" : null,
         level: Number(own.find(t => /^Nv\.\s*\d+$/.test(t))?.match(/\d+/)?.[0]) || null,
         totalMinutes: labelled("HORAS TOTAIS") ?? clocks[0] ?? null,
         companyMinutes: labelled("HORAS NA EMPRESA") ?? clocks[1] ?? null,
@@ -108,6 +108,13 @@ function readCompany(section, openTab) {
       };
       if (pilot.totalMinutes === null || pilot.companyMinutes === null) return null;
       pilots.push(pilot);
+    }
+    if (pilots.length && pilots.length < expected) {
+      // O PilOps carrega dez pilotos por vez. A sentinela no fim do painel solicita a próxima página
+      // quando entra na área visível. A leitura só é aceita quando alcança o total informado.
+      const panelHeading = [...document.querySelectorAll("h2")].find(el => el.innerText.trim() === "Painel de pilotos");
+      panelHeading?.parentElement?.parentElement?.lastElementChild?.scrollIntoView({ block: "end", behavior: "instant" });
+      return null;
     }
     return pilots.length && pilots.length === expected ? pilots : null;
   }
