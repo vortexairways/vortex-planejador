@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T18:53:20.121Z",
+ "capturedAt": "2026-11-10T19:00:51.076Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -397,7 +397,7 @@
    "model": "Douglas MD-11",
    "origin": "KRDU",
    "destination": "SBKP",
-   "status": "Taxiando"
+   "status": "Em voo"
   },
   {
    "pilot": "Titanocs",
@@ -407,7 +407,7 @@
    "status": "Em voo"
   }
  ],
- "activeFlightsCapturedAt": "2026-11-10T18:53:20.121Z",
+ "activeFlightsCapturedAt": "2026-11-10T19:00:51.076Z",
  "flights": [
   {
    "pilot": "astronauta",
