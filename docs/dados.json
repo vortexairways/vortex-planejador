@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T20:40:50.976Z",
+ "capturedAt": "2026-11-10T21:36:21.613Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -110,9 +110,9 @@
   {
    "prefix": "NLFTDW",
    "model": "Boeing 787-10 Dreamliner",
-   "airport": "LEMD",
+   "airport": "KRDU",
    "base": "SBGL",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   }
  ],
  "routes": [
@@ -306,8 +306,8 @@
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 18916,
-   "companyMinutes": 6802,
+   "totalMinutes": 19442,
+   "companyMinutes": 7328,
    "joined": "2026-10-20"
   },
   {
@@ -383,7 +383,7 @@
    "joined": "2026-11-10"
   }
  ],
- "pilotsCapturedAt": "2026-11-10T20:29:21.989Z",
+ "pilotsCapturedAt": "2026-11-10T21:36:21.613Z",
  "activeFlights": [
   {
    "pilot": "nassis89",
@@ -398,16 +398,9 @@
    "origin": "KRDU",
    "destination": "SBKP",
    "status": "Em voo"
-  },
-  {
-   "pilot": "Titanocs",
-   "model": "Boeing 787-10 Dreamliner",
-   "origin": "LEMD",
-   "destination": "KRDU",
-   "status": "Em voo"
   }
  ],
- "activeFlightsCapturedAt": "2026-11-10T20:40:50.976Z",
+ "activeFlightsCapturedAt": "2026-11-10T21:36:21.613Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -432,6 +425,18 @@
    "nm": 5810.2,
    "payload": 138842,
    "revenue": 13072618.88
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NLFTDW",
+   "model": "Boeing 787-10 Dreamliner",
+   "origin": "LEMD",
+   "destination": "KRDU",
+   "date": "2026-11-10",
+   "minutes": 525,
+   "nm": 3448.68,
+   "payload": 109854,
+   "revenue": 4934383.24
   },
   {
    "pilot": "astronauta",
