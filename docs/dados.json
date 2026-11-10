@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T19:09:21.043Z",
+ "capturedAt": "2026-11-10T19:19:21.212Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -383,7 +383,7 @@
    "joined": "2026-11-10"
   }
  ],
- "pilotsCapturedAt": "2026-11-10T19:09:21.043Z",
+ "pilotsCapturedAt": "2026-11-10T19:19:21.212Z",
  "activeFlights": [
   {
    "pilot": "nassis89",
@@ -407,7 +407,7 @@
    "status": "Em voo"
   }
  ],
- "activeFlightsCapturedAt": "2026-11-10T19:09:21.043Z",
+ "activeFlightsCapturedAt": "2026-11-10T19:19:21.212Z",
  "flights": [
   {
    "pilot": "astronauta",
