@@ -18,6 +18,8 @@ let flightsSince = null;
 let capturedAt = null;
 let operationConfig = null;
 let shareLegs = [];
+let activityConfig = null;
+let activityDay = null;
 // Cobertura de cada rota pela frota atual (preenchida em start()).
 let coverage = new Map();
 // Circuitos fechados formados por rotas cadastradas (preenchidos em start()).
@@ -949,6 +951,8 @@ function pilotStats() {
 
 const rankingColumns = () => [
   ["name", T("Piloto", "Pilot")],
+  ["cycleFlights", T("Voos na janela de 30 dias*", "Flights in the 30-day window*")],
+  ["cycleDays", T("Prazo da janela", "Window deadline")],
   ["companyMinutes", T("Horas na Vortex (total)", "Hours at Vortex (total)")],
   ["flights", T("Voos lidos*", "Flights read*")],
   ["minutes", T("Horas nos voos lidos*", "Hours in flights read*")],
@@ -960,7 +964,15 @@ const rankingColumns = () => [
 
 function renderRanking() {
   const table = document.querySelector("#ranking");
-  const rows = pilotStats().sort((a, b) => {
+  const currentDay = VortexActivity.today();
+  activityDay = currentDay;
+  const window = VortexActivity.period(activityConfig, currentDay);
+  const cycleCounts = VortexActivity.counts(window, flightLog, currentDay);
+  renderActivity(window, cycleCounts);
+  const rows = pilotStats().map(row => ({ ...row,
+    cycleFlights: row.member && window?.active ? cycleCounts.get(row.name) || 0 : null,
+    cycleDays: row.member && window?.active ? window.daysRemaining : null,
+  })).sort((a, b) => {
     const [x, y] = [a[ranking.key], b[ranking.key]];
     const result = typeof x === "string" || typeof y === "string"
       ? String(x ?? "").localeCompare(String(y ?? ""), locale())
@@ -984,7 +996,18 @@ function renderRanking() {
     name.append(element("span", "rank", String(index + 1)), element("strong", "", "@" + row.name));
     if (row.role) name.append(element("span", "tag neutral", row.role));
     if (!row.member) name.append(element("span", "tag warn", T("fora do painel", "not on the roster")));
-    tr.append(name,
+    const activityCell = element("td", row.cycleFlights === 0 ? "activity-zero" : "");
+    const deadlineCell = element("td", row.cycleFlights === 0 ? "activity-zero" : "");
+    if (row.cycleFlights === null) {
+      activityCell.textContent = "—";
+      deadlineCell.textContent = "—";
+    } else {
+      activityCell.append(element("strong", "", number.format(row.cycleFlights)), element("span", "tag " + (row.cycleFlights ? "ok" : "bad"),
+        row.cycleFlights ? T("Ativo na janela", "Active this window") : T("Nenhum voo registrado", "No flights recorded")));
+      deadlineCell.append(element("strong", "", row.cycleDays + T(" dias restantes", " days left")),
+        element("span", "meta", T("até ", "by ") + dayText(window.end)));
+    }
+    tr.append(name, activityCell, deadlineCell,
       element("td", "", row.companyMinutes === null ? "—" : hoursText(row.companyMinutes)),
       element("td", "", number.format(row.flights)),
       element("td", "", row.flights ? hoursText(row.minutes) : "—"),
@@ -1028,6 +1051,32 @@ function renderRanking() {
   }) : [element("li", "meta", T("Nenhum voo lido ainda.", "No flights read yet."))]));
 }
 
+function renderActivity(window, counts) {
+  const period = document.querySelector("#activity-period");
+  const summary = document.querySelector("#activity-summary");
+  const note = document.querySelector("#activity-note");
+  summary.replaceChildren();
+  if (!window) {
+    period.textContent = T("Contador indisponível. Confira a configuração da janela.", "Counter unavailable. Check the window configuration.");
+    note.textContent = "";
+    return;
+  }
+  period.textContent = dayText(window.start) + " → " + dayText(window.end) +
+    T(" · próxima janela: ", " · next window: ") + dayText(window.next) + T(" · datas de Brasília", " · Brasília dates");
+  const active = pilots.filter(pilot => counts.get(pilot.name) > 0).length;
+  if (window.active) {
+    for (const [value, label, zero] of [[active, T("Pilotos com voo na janela", "Pilots with a flight this window"), false],
+      [pilots.length - active, T("Pilotos sem voo registrado", "Pilots with no recorded flights"), pilots.length > active],
+      [window.daysRemaining, T("Dias restantes, incluindo hoje", "Days left, including today"), false]]) {
+      const tile = element("div", "stat" + (zero ? " activity-summary-zero" : ""));
+      tile.append(element("strong", "", String(value)), element("span", "", label));
+      summary.append(tile);
+    }
+  }
+  note.textContent = T("Contador independente do desafio semanal: conta os voos concluídos lidos no histórico da companhia nesta janela. Vermelho somente com zero; um voo registrado retira o alerta. A contagem zera automaticamente a cada 30 dias. Fechar a janela com zero pode levar à exclusão, por decisão da administração. Os dados são parciais e dependem da sincronização; confirme o histórico e a data de ingresso antes de decidir.",
+    "Independent of the weekly challenge: counts completed flights read from the company history in this window. Red only at zero; one recorded flight clears the alert. Counts reset automatically every 30 days. Finishing the window with zero may lead to removal at the administration’s discretion. Data is partial and depends on sync; verify the history and join date before deciding.");
+}
+
 async function start() {
   applyStaticTexts();
   document.querySelector("#snapshot-time").textContent = T("Carregando dados da Vortex…", "Loading Vortex data…");
@@ -1055,6 +1104,10 @@ async function start() {
     const response = await fetch("./operacao.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) operationConfig = VortexOperation.read(await response.json(), routes);
   } catch { /* A operação é opcional; mapa, frota e demais seções continuam disponíveis. */ }
+  try {
+    const response = await fetch("./atividade.json?t=" + Date.now(), { cache: "no-store" });
+    if (response.ok) activityConfig = VortexActivity.read(await response.json());
+  } catch { /* Sem configuração válida, não se atribui alerta de inatividade. */ }
   coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
   airportCodes = [...new Set([
@@ -1766,5 +1819,12 @@ document.querySelector("#share-copy").addEventListener("click", async () => {
     feedback.textContent = T("Selecionei o texto. Use Ctrl+C para copiar e cole no Discord.", "The text is selected. Use Ctrl+C to copy and paste it into Discord.");
   }
 });
+
+// Atualiza a janela na virada do dia, inclusive quando a aba volta do segundo plano.
+function refreshActivityDay() {
+  if (activityDay && activityDay !== VortexActivity.today()) renderRanking();
+}
+setInterval(refreshActivityDay, 60000);
+document.addEventListener("visibilitychange", refreshActivityDay);
 
 start();

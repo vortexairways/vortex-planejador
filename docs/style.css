@@ -17,6 +17,10 @@
 .weekly-ranking { width: 100%; border-collapse: collapse; font-size: .85rem; }
 .weekly-ranking th, .weekly-ranking td { text-align: left; border-bottom: 1px solid #e4eaf3; padding: .45rem .65rem; }
 .weekly-ranking th { background: #f4f7ff; }
+.activity-panel { background: #f4f7ff; border-bottom: 1px solid var(--border); }
+#ranking td.activity-zero { color: #951c2b; background: #fff0f2; font-weight: 700; }
+.activity-zero .meta { color: #951c2b; }
+.activity-panel .activity-summary-zero, .activity-panel .activity-summary-zero:hover { border-color: #d4939c; background: #fff0f2; color: #951c2b; }
 .share-action { margin-top: .45rem; }
 #share-dialog { width: min(760px, 94vw); max-height: 90vh; overflow: auto; border: 1px solid #bcc9de; border-radius: 1rem; color: #17243b; padding: 1.2rem; }
 #share-dialog::backdrop { background: #050b24b3; }

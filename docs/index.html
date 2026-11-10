@@ -18,12 +18,13 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=10">
+  <link rel="stylesheet" href="./style.css?v=11">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
   <script defer src="./operacao.js?v=1"></script>
-  <script defer src="./planner.js?v=11"></script>
+  <script defer src="./atividade.js?v=1"></script>
+  <script defer src="./planner.js?v=12"></script>
 </head>
 <body>
   <header class="top">
@@ -209,6 +210,12 @@
     <section class="card wide" aria-labelledby="ranking-title">
       <div class="section-heading">
         <div><p class="eyebrow" data-en="PILOTS">PILOTOS</p><h2 id="ranking-title" data-en="Vortex ranking">Ranking da Vortex</h2></div>
+      </div>
+      <div class="pad activity-panel">
+        <h3 data-en="Pilot activity · 30-day windows">Atividade dos pilotos · janelas de 30 dias</h3>
+        <p id="activity-period" class="detail"></p>
+        <div id="activity-summary" class="stat-row"></div>
+        <p id="activity-note" class="meta"></p>
       </div>
       <p id="ranking-note" class="detail pad"></p>
       <div class="table-wrap pad"><table id="ranking"></table></div>
