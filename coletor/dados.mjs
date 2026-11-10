@@ -31,6 +31,14 @@ function cleanFlights(flights) {
     ({ pilot, prefix, model, origin, destination, date, minutes, nm, payload, revenue }));
 }
 
+function cleanActiveFlights(flights) {
+  if (!Array.isArray(flights) || flights.length > 250 || !flights.every(f => isRecord(f) &&
+    pilotName.test(f.pilot || "") && label(f.model, 120) && label(f.status, 80) &&
+    validCode(f.origin) && validCode(f.destination) && f.origin !== f.destination) ||
+    new Set(flights.map(f => [f.pilot, f.origin, f.destination].join("|"))).size !== flights.length) return null;
+  return flights.map(({ pilot, model, origin, destination, status }) => ({ pilot, model, origin, destination, status }));
+}
+
 // input: leitura da extensão; previous: dados.json publicado (ou null).
 export function buildSnapshot(input, previous, now = new Date()) {
   const data = input;
@@ -49,6 +57,7 @@ export function buildSnapshot(input, previous, now = new Date()) {
   // Pilotos e voos são opcionais: se a leitura falhar, mantemos o que já estava publicado.
   const pilots = data.pilots === undefined || data.pilots === null ? null : cleanPilots(data.pilots);
   const newFlights = data.flights === undefined || data.flights === null ? null : cleanFlights(data.flights);
+  const activeFlights = data.activeFlights == null ? null : cleanActiveFlights(data.activeFlights);
   const merged = new Map((previous?.flights || []).map(f => [flightKey(f), f]));
   let added = 0;
   for (const f of newFlights || []) {
@@ -66,11 +75,14 @@ export function buildSnapshot(input, previous, now = new Date()) {
       hubs,
       pilots: pilots || previous?.pilots || [],
       pilotsCapturedAt: pilots ? now.toISOString() : previous?.pilotsCapturedAt || null,
+      activeFlights: activeFlights || previous?.activeFlights || [],
+      activeFlightsCapturedAt: activeFlights ? now.toISOString() : previous?.activeFlightsCapturedAt || null,
       flights,
       // Primeiro dia em que o histórico de voos foi lido: o ranking por voos vale a partir daqui.
       flightsSince: previous?.flightsSince || (newFlights ? (flights.at(-1)?.date || today) : null),
     },
     report: { pilotsRead: Boolean(pilots), pilotsInvalid: data.pilots != null && !pilots,
-      flightsRead: Boolean(newFlights), flightsInvalid: data.flights != null && !newFlights, flightsAdded: added },
+      flightsRead: Boolean(newFlights), flightsInvalid: data.flights != null && !newFlights, flightsAdded: added,
+      activeFlightsRead: Boolean(activeFlights), activeFlightsInvalid: data.activeFlights != null && !activeFlights },
   };
 }

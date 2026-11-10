@@ -17,6 +17,9 @@ let flightLog = [];
 let flightsSince = null;
 let capturedAt = null;
 let pilotsCapturedAt = null;
+let activeFlights = [];
+let activeFlightsCapturedAt = null;
+let refreshingData = false;
 let operationConfig = null;
 let shareLegs = [];
 let activityConfig = null;
@@ -1108,6 +1111,8 @@ async function start() {
   flightsSince = data.flightsSince || null;
   capturedAt = data.capturedAt || null;
   pilotsCapturedAt = data.pilotsCapturedAt || null;
+  activeFlights = data.activeFlights || [];
+  activeFlightsCapturedAt = data.activeFlightsCapturedAt || null;
   try {
     const response = await fetch("./operacao.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) operationConfig = VortexOperation.read(await response.json(), routes);
@@ -1179,6 +1184,7 @@ function paintAll() {
   renderRealloc();
   renderRevenue();
   renderOperation();
+  renderLive();
 }
 
 function setLanguage(next) {
@@ -1691,6 +1697,59 @@ function renderRevenue() {
 
 // ---------- Operação da semana e compartilhamento ----------
 
+function renderLive() {
+  const status = document.querySelector("#live-freshness");
+  const cards = document.querySelector("#live-flights");
+  const freshness = VortexActivity.liveState(activeFlightsCapturedAt);
+  cards.replaceChildren();
+  if (freshness === "unknown") {
+    status.textContent = T("Aguardando a primeira leitura dos voos em andamento.", "Awaiting the first flight-status sync.");
+    return;
+  }
+  const stamp = new Intl.DateTimeFormat(locale(), { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(activeFlightsCapturedAt));
+  status.textContent = (freshness === "recent" ? T("Última verificação: ", "Last checked: ")
+    : T("Dados desatualizados. Situação atual não confirmada. Última verificação: ", "Outdated data. Current status unconfirmed. Last checked: ")) + stamp + T(" (Brasília).", " (Brasília time).");
+  if (!activeFlights.length) {
+    cards.append(element("p", "meta", T("Nenhum voo em andamento registrado nessa coleta.", "No flights in progress recorded in that sync.")));
+  }
+  for (const flight of activeFlights) {
+    const card = element("article", "operation-route");
+    card.append(element("h3", "", "@" + flight.pilot), element("strong", "", flight.origin + " → " + flight.destination),
+      element("p", "meta", flight.model), element("span", "tag " + (freshness === "recent" ? "ok" : "warn"),
+        freshness === "recent" ? T("Em andamento na coleta", "In progress at sync time") : T("Registro antigo", "Older record")));
+    cards.append(card);
+  }
+}
+
+async function refreshData() {
+  if (!fleet.length || refreshingData || document.hidden || document.querySelector("dialog[open]")) return;
+  refreshingData = true;
+  try {
+    const response = await fetch("./dados.json?t=" + Date.now(), { cache: "no-store" });
+    if (!response.ok) return;
+    const data = await response.json();
+    if (!Array.isArray(data.fleet) || !data.fleet.length || !Array.isArray(data.routes) || !Array.isArray(data.hubs) ||
+        data.capturedAt === capturedAt || !Number.isFinite(Date.parse(data.capturedAt))) return;
+    fleet = data.fleet; routes = data.routes; hubs = new Set(data.hubs);
+    pilots = data.pilots || []; flightLog = data.flights || []; flightsSince = data.flightsSince || null;
+    capturedAt = data.capturedAt; pilotsCapturedAt = data.pilotsCapturedAt || null;
+    activeFlights = data.activeFlights || []; activeFlightsCapturedAt = data.activeFlightsCapturedAt || null;
+    const currentRoute = old => routes.find(route => VortexOperation.pair(route) === VortexOperation.pair(old));
+    state.plan = state.plan.map(route => currentRoute(route) || (route.code === "Traslado" ? route : null)).filter(Boolean);
+    state.focus = state.focus ? currentRoute(state.focus) || null : null;
+    if (!fleet.some(plane => plane.prefix === state.prefix)) state.prefix = "";
+    coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
+    airportCodes = [...new Set([...hubs, ...fleet.map(plane => plane.airport), ...routes.flatMap(route => [route.origin, route.destination])])].filter(Boolean).sort();
+    if (!airportCodes.includes(state.origin)) state.origin = "";
+    if (operationConfig) operationConfig = VortexOperation.read(operationConfig, routes);
+    document.querySelector("#total-fleet").textContent = fleet.length;
+    document.querySelector("#total-routes").textContent = routes.length;
+    document.querySelector("#total-hubs").textContent = hubs.size;
+    paintAll();
+  } catch { /* Mantém a coleta anterior, seu horário e o aviso de dados antigos. */ }
+  finally { refreshingData = false; }
+}
+
 function renderOperation() {
   const title = document.querySelector("#operation-title");
   const period = document.querySelector("#operation-period");
@@ -1770,8 +1829,8 @@ function renderOperation() {
     standings.append(table);
   } else standings.append(element("p", "meta", T("O primeiro voo concluído e sincronizado abre a disputa.",
     "The first completed and synced flight opens the standings.")));
-  note.textContent = T("Classificação parcial dos voos remunerados lidos nas rotas em destaque, até a última coleta. Voos em andamento entram depois da conclusão e sincronização. Empates em voos e variedade dividem a posição.",
-    "Partial standings from paid flights read on the featured routes, up to the last sync. Flights in progress appear after completion and sync. Ties in flights and route variety share a place.");
+  note.textContent = T("Classificação parcial dos voos remunerados lidos nas rotas em destaque, até a última coleta. Voos em andamento entram depois da conclusão e sincronização. Mais voos vêm primeiro; a variedade de rotas e depois a ordem alfabética desempata. Posições consecutivas, sem repetição.",
+    "Partial standings from paid flights read on the featured routes, up to the last sync. Flights in progress appear after completion and sync. Most flights comes first; route variety, then alphabetical order break ties. Places are consecutive, with no shared positions.");
 }
 
 function openShare(legs, preferredPlane) {
@@ -1831,8 +1890,9 @@ document.querySelector("#share-copy").addEventListener("click", async () => {
 // Atualiza a janela na virada do dia, inclusive quando a aba volta do segundo plano.
 function refreshActivityDay() {
   if (activityDay && activityDay !== VortexActivity.today()) renderRanking();
+  if (fleet.length) renderLive();
 }
-setInterval(refreshActivityDay, 60000);
-document.addEventListener("visibilitychange", refreshActivityDay);
+setInterval(() => { refreshActivityDay(); void refreshData(); }, 60000);
+document.addEventListener("visibilitychange", () => { refreshActivityDay(); void refreshData(); });
 
 start();

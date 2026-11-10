@@ -22,9 +22,9 @@
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=2"></script>
-  <script defer src="./operacao.js?v=1"></script>
-  <script defer src="./atividade.js?v=1"></script>
-  <script defer src="./planner.js?v=13"></script>
+  <script defer src="./operacao.js?v=2"></script>
+  <script defer src="./atividade.js?v=2"></script>
+  <script defer src="./planner.js?v=14"></script>
 </head>
 <body>
   <header class="top">
@@ -56,6 +56,10 @@
     <aside class="notice" aria-label="Situação dos dados" data-en-label="Data status">
       <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p><p id="fleet-alert" class="fleet-alert" hidden></p><p id="revenue-alert" class="fleet-alert" hidden></p></div>
     </aside>
+    <section id="live-card" class="card operation-card" aria-labelledby="live-title">
+      <div class="section-heading"><div><p class="eyebrow" data-en="VORTEX IN THE AIR">VORTEX NO AR</p><h2 id="live-title" data-en="Flights in progress">Voos em andamento</h2></div><a class="secondary small" href="https://pilops.com/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1?tab=overview" target="_blank" rel="noopener noreferrer" data-en="Check PilOps">Conferir no PilOps</a></div>
+      <div class="pad"><p id="live-freshness" class="detail" role="status"></p><div id="live-flights" class="operation-routes"></div><p class="meta" data-en="Updated periodically. Flight status may have changed since the sync. Flights in progress only count in the standings after completion and sync.">Atualizado periodicamente. A situação dos voos pode ter mudado após a coleta. Voos em andamento só contam no ranking após a conclusão e sincronização.</p></div>
+    </section>
     <section id="operation-card" class="card operation-card" aria-labelledby="operation-heading">
       <div class="section-heading">
         <div><p class="eyebrow" data-en="INDIVIDUAL FLIGHTS · WEEKLY CHALLENGE">VOOS INDIVIDUAIS · DESAFIO SEMANAL</p><h2 id="operation-heading" data-en="Operation of the week">Operação da semana</h2></div>

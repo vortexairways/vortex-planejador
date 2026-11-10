@@ -33,5 +33,11 @@ const VortexActivity = (() => {
     return totals;
   }
 
-  return { read, period, counts, today };
+  function liveState(capturedAt, now = new Date()) {
+    const age = capturedAt ? now.getTime() - Date.parse(capturedAt) : NaN;
+    if (!Number.isFinite(age) || age < -60000) return "unknown";
+    return age <= 20 * 60000 ? "recent" : "stale";
+  }
+
+  return { read, period, counts, today, liveState };
 })();

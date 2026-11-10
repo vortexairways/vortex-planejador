@@ -27,6 +27,14 @@ O painel carrega pilotos em lotes de dez. O coletor percorre a lista até atingi
 
 O PilOps mostra só os 10 voos mais recentes da companhia. O coletor guarda todos os que já leu, então sincronize com frequência (por exemplo, uma vez por dia) para o ranking não perder voos.
 
+## Sincronização automática e reserva manual
+
+Execute `powershell -NoProfile -File coletor/configurar-automatico.ps1` uma vez para ativar a tarefa **Vortex - Sincronizar automaticamente** no Agendador de Tarefas do Windows. Ela tenta uma coleta a cada 10 minutos e ao entrar no Windows, com a sessão do usuário, sem guardar senha. Não desperta o computador nem abre o Chrome. Se o Chrome estiver fechado, aguarda o próximo horário. Enquanto o PC está desligado ou suspenso, o planejador permanece online com a última coleta.
+
+O atalho **Sincronizar Vortex** continua executando uma coleta manual independente da tarefa. Se já houver uma coleta em andamento, uma segunda não começa. A tarefa automática não publica alterações locais do projeto nem commits de código pendentes. Falhas são registradas em `%LOCALAPPDATA%\Vortex\sincronizacao.log` e uma nova tentativa acontece no próximo ciclo. Para desativar apenas o automático: `powershell -NoProfile -File coletor/configurar-automatico.ps1 -Desativar`.
+
+O bloco **Voos em andamento** mostra pilotos, rotas e aeronaves da última leitura da visão geral do PilOps. É um registro periódico, separado dos voos concluídos. Após 20 minutos sem leitura válida, o painel avisa que os dados estão desatualizados. A página consulta o arquivo publicado a cada minuto, preservando a seleção e o plano em uso; diálogos de compartilhamento abertos não são interrompidos. Uma leitura indisponível conserva os voos em andamento anteriores com seu horário; uma leitura válida de zero voos limpa a lista.
+
 ## Publicar mudanças no site
 
 Edite os arquivos em `docs/`, faça o commit e `git push`. O GitHub Pages publica sozinho.
@@ -35,7 +43,7 @@ Edite os arquivos em `docs/`, faça o commit e `git push`. O GitHub Pages public
 
 A operação fica no início do planejador. O botão **Editar operação** abre `docs/operacao.json` no GitHub. Uma conta com acesso de edição ao repositório pode alterar o título em português e inglês, as datas de início e fim (inclusive, no calendário de Brasília), a meta de voos e até três pares de origem/destino já cadastrados. Ao salvar no GitHub, o Pages publica a seleção para todos. A sincronização de dados preserva esse arquivo.
 
-A classificação considera os voos remunerados concluídos e lidos nas rotas em destaque dentro do período. Mais voos vêm primeiro. A variedade de rotas desempata e empates completos dividem a posição. A tela identifica a classificação como parcial porque depende do histórico que o coletor conseguiu ler. Uma operação encerrada mantém seus resultados até a administração publicar a próxima.
+A classificação considera os voos remunerados concluídos e lidos nas rotas em destaque dentro do período. Mais voos vêm primeiro. A variedade de rotas desempata; persistindo o empate, usa a ordem alfabética dos nomes. As posições são sempre consecutivas (1, 2, 3), sem repetição. A tela identifica a classificação como parcial porque depende do histórico que o coletor conseguiu ler. Uma operação encerrada mantém seus resultados até a administração publicar a próxima.
 
 Em uma rota ou plano, **Compartilhar voo/plano** abre uma mensagem editável em português e inglês. O piloto pode informar o nome, a aeronave e a situação do voo, copiar o texto e abrir o Discord da Vortex para publicar. O compartilhamento anuncia voos individuais. A duração usa a estimativa de bloco já existente no planejador.
 

@@ -14,12 +14,29 @@ const hex = createHash("sha256").update(Buffer.from(manifest.key, "base64")).dig
 const extensionOrigin = "chrome-extension://" + [...hex].map(n => String.fromCharCode(97 + parseInt(n, 16))).join("");
 const waitMinutes = 5;
 const maxAttempts = 2;
+const port = Number(process.env.VORTEX_COLLECTOR_PORT || 8768);
+if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error("Porta local inválida.");
+const automatic = process.argv.includes("--automatic");
+const gitEnv = automatic ? { ...process.env, GIT_TERMINAL_PROMPT: "0", GCM_INTERACTIVE: "Never" } : process.env;
 
 function git(...args) {
-  return execFileSync("git", ["-C", repo, ...args], { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] }).trim();
+  return execFileSync("git", ["-C", repo, ...args], { encoding: "utf8", env: gitEnv, timeout: 60_000,
+    windowsHide: true, stdio: ["ignore", "pipe", "inherit"] }).trim();
 }
 
 function publish(snapshot, report) {
+  // A coleta nunca inclui arquivos editados pelo usuário no seu commit.
+  if (git("status", "--porcelain")) throw new Error("Há alterações locais no projeto. Foram preservadas; tente sincronizar após salvá-las.");
+  if (automatic && git("branch", "--show-current") !== "main") throw new Error("A coleta automática só publica a branch main.");
+  if (automatic) {
+    const ahead = git("log", "--format=%H", "origin/main..HEAD").split("\n").filter(Boolean);
+    for (const commit of ahead) {
+      const paths = git("diff-tree", "--no-commit-id", "--name-only", "-r", commit).split("\n").filter(Boolean);
+      if (!paths.length || paths.some(path => path !== "docs/dados.json")) {
+        throw new Error("Há mudanças do projeto ainda não publicadas. A coleta automática não vai enviá-las.");
+      }
+    }
+  }
   writeFileSync(dataFile, JSON.stringify(snapshot, null, 1) + "\n");
   console.log("Coleta gravada: " + snapshot.fleet.length + " aeronaves, " + snapshot.routes.length +
     " rotas e " + snapshot.hubs.length + " hubs.");
@@ -27,6 +44,8 @@ function publish(snapshot, report) {
     : "Pilotos: " + (report.pilotsInvalid ? "leitura inválida" : "aba não lida") + "; mantidos os da coleta anterior.");
   console.log(report.flightsRead ? "Voos: " + report.flightsAdded + " novos (total guardado: " + snapshot.flights.length + ")."
     : "Voos: " + (report.flightsInvalid ? "leitura inválida" : "aba não lida") + "; histórico guardado mantido.");
+  console.log(report.activeFlightsRead ? "Voos em andamento: " + snapshot.activeFlights.length + " lidos."
+    : "Voos em andamento: leitura indisponível; mantido o último registro e seu horário.");
   if (snapshot.reportedFleet !== snapshot.fleet.length) {
     // Em 04/11/2026 a API do PilOps listava 15 aeronaves com o contador em 16: a diferença é do PilOps.
     console.log("Observação: o contador do PilOps mostra " + snapshot.reportedFleet + " aeronaves, mas o PilOps lista " +
@@ -38,7 +57,7 @@ function publish(snapshot, report) {
   git("commit", "-q", "-m", "Dados da Vortex · coleta de " + stamp);
   console.log("Enviando ao GitHub…");
   // stdio herdado: na primeira vez o Git abre o login do GitHub no navegador.
-  execFileSync("git", ["-C", repo, "push", "-q"], { stdio: "inherit" });
+  execFileSync("git", ["-C", repo, "push", "-q"], { env: gitEnv, timeout: 60_000, windowsHide: true, stdio: "inherit" });
   console.log("Publicado. O site atualiza em 1 a 2 minutos.");
 }
 
@@ -72,7 +91,7 @@ async function body(req) {
 
 const server = createServer(async (req, res) => {
   // Só a extensão da Vortex, por 127.0.0.1, conversa com este serviço.
-  if (req.headers.origin !== extensionOrigin || req.headers.host !== "127.0.0.1:8768") {
+  if (req.headers.origin !== extensionOrigin || req.headers.host !== "127.0.0.1:" + port) {
     json(res, 403, { error: "Acesso restrito ao coletor Chrome." });
     return;
   }
@@ -93,7 +112,7 @@ const server = createServer(async (req, res) => {
       console.log("A extensão começou a ler a Vortex no PilOps…");
       return json(res, 200, { lease: lease.id });
     }
-    if (input.lease !== lease.id) return json(res, 409, { error: "Pedido de coleta vencido." });
+    if (finished || !lease.given || input.lease !== lease.id) return json(res, 409, { error: "Pedido de coleta vencido." });
     if (req.url === "/failed") {
       lease = { id: randomUUID(), given: false, attempts: lease.attempts + 1 };
       json(res, 200, {});
@@ -104,13 +123,13 @@ const server = createServer(async (req, res) => {
       }
       return;
     }
-    const { fleet, routes, hubs, reportedFleet, pilots, flights, notes } = input;
+    const { fleet, routes, hubs, reportedFleet, pilots, flights, activeFlights, notes } = input;
     if (Array.isArray(notes)) {
       for (const note of notes.slice(0, 5)) if (typeof note === "string") console.log("Extensão: " + note.slice(0, 300));
     }
     let previous = null;
     try { previous = JSON.parse(readFileSync(dataFile, "utf8")); } catch { /* primeira coleta */ }
-    const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights }, previous);
+    const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights, activeFlights }, previous);
     if (!built) {
       json(res, 422, { error: "Leitura incompleta." });
       return finish(1, "A leitura veio incompleta ou inválida. Os dados publicados foram mantidos.");
@@ -127,12 +146,12 @@ const server = createServer(async (req, res) => {
 
 server.on("error", error => {
   console.log(error.code === "EADDRINUSE"
-    ? "A porta 8768 já está em uso. Feche outro coletor da Vortex aberto e tente de novo."
+    ? "Já existe uma sincronização da Vortex em andamento. Aguarde sua conclusão; nenhuma coleta paralela foi iniciada."
     : "Não foi possível iniciar o coletor: " + error.message);
-  process.exit(1);
+  process.exit(error.code === "EADDRINUSE" ? 75 : 1);
 });
 server.requestTimeout = 20_000;
-server.listen(8768, "127.0.0.1", () => {
+server.listen(port, "127.0.0.1", () => {
   console.log("Coletor da Vortex pronto. Deixe o Chrome aberto e logado no PilOps.");
   console.log("A extensão começa a leitura em até 1 minuto (limite de " + waitMinutes + " minutos).");
 });

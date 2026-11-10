@@ -23,13 +23,13 @@ test("conta apenas voos pagos das rotas em destaque dentro das datas inclusivas"
   assert.equal(progress.ranking[0].flights, 2);
 });
 
-test("desempata pela variedade e mantém posições compartilhadas em empates completos", () => {
+test("desempata pela variedade e pelo nome, com posições consecutivas sem repetição", () => {
   const progress = operation.progress(operation.read(config, routes), [
     flight("B", "2026-11-10"), flight("B", "2026-11-11"),
     flight("A", "2026-11-10"), flight("A", "2026-11-11", routes[1]),
     flight("C", "2026-11-10"), flight("C", "2026-11-11", routes[1]),
   ]);
-  assert.equal(JSON.stringify(progress.ranking.map(p => [p.name, p.rank])), JSON.stringify([["A", 1], ["C", 1], ["B", 3]]));
+  assert.equal(JSON.stringify(progress.ranking.map(p => [p.name, p.rank])), JSON.stringify([["A", 1], ["C", 2], ["B", 3]]));
 });
 
 test("operações antigas com rota removida exibem o problema e excluem essa rota da contagem", () => {

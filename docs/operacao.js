@@ -29,11 +29,7 @@ const VortexOperation = (() => {
     }
     const ranking = [...pilots.values()].map(pilot => ({ ...pilot, routes: pilot.routes.size }))
       .sort((a, b) => b.flights - a.flights || b.routes - a.routes || a.name.localeCompare(b.name));
-    for (let i = 0; i < ranking.length; i++) {
-      const previous = ranking[i - 1];
-      ranking[i].rank = previous && previous.flights === ranking[i].flights && previous.routes === ranking[i].routes
-        ? previous.rank : i + 1;
-    }
+    for (let i = 0; i < ranking.length; i++) ranking[i].rank = i + 1;
     return { completed, ranking };
   }
 
