@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-09T16:53:09.506Z",
+ "capturedAt": "2026-11-10T12:20:34.247Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -42,7 +42,7 @@
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "KJFK",
-   "status": "MANUTENÇÃO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N2IUPG",
@@ -75,7 +75,7 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SBRF",
+   "airport": "SBGL",
    "base": "SBGL",
    "status": "Sem alerta no cartão"
   },
@@ -112,7 +112,7 @@
    "model": "Boeing 787-10 Dreamliner",
    "airport": "LEMD",
    "base": "SBGL",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   }
  ],
  "routes": [
@@ -377,6 +377,54 @@
  ],
  "pilotsCapturedAt": "2026-11-09T16:53:09.506Z",
  "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "date": "2026-11-10",
+   "minutes": 386,
+   "nm": 2875.87,
+   "payload": 69034,
+   "revenue": 5936235.18
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-09",
+   "minutes": 272,
+   "nm": 2372.45,
+   "payload": 57001,
+   "revenue": 5941415.97
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SBRF",
+   "destination": "SBGL",
+   "date": "2026-11-09",
+   "minutes": 168,
+   "nm": 1003.22,
+   "payload": 33242,
+   "revenue": 2462856.13
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-09",
+   "minutes": 186,
+   "nm": 1590.35,
+   "payload": 39114,
+   "revenue": 4694487.24
+  },
   {
    "pilot": "astronauta",
    "prefix": "NK4I2I",
