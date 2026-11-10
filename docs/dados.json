@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T18:51:21.795Z",
+ "capturedAt": "2026-11-10T18:53:20.121Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -383,7 +383,7 @@
    "joined": "2026-11-10"
   }
  ],
- "pilotsCapturedAt": "2026-11-10T18:51:21.795Z",
+ "pilotsCapturedAt": "2026-11-10T18:53:20.121Z",
  "activeFlights": [
   {
    "pilot": "nassis89",
@@ -393,6 +393,13 @@
    "status": "Em voo"
   },
   {
+   "pilot": "astronauta",
+   "model": "Douglas MD-11",
+   "origin": "KRDU",
+   "destination": "SBKP",
+   "status": "Taxiando"
+  },
+  {
    "pilot": "Titanocs",
    "model": "Boeing 787-10 Dreamliner",
    "origin": "LEMD",
@@ -400,7 +407,7 @@
    "status": "Em voo"
   }
  ],
- "activeFlightsCapturedAt": "2026-11-10T18:51:21.795Z",
+ "activeFlightsCapturedAt": "2026-11-10T18:53:20.121Z",
  "flights": [
   {
    "pilot": "astronauta",
