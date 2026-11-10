@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T19:50:51.459Z",
+ "capturedAt": "2026-11-10T20:00:49.971Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -407,7 +407,7 @@
    "status": "Em voo"
   }
  ],
- "activeFlightsCapturedAt": "2026-11-10T19:50:51.459Z",
+ "activeFlightsCapturedAt": "2026-11-10T20:00:49.971Z",
  "flights": [
   {
    "pilot": "astronauta",
