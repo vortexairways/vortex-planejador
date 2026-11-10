@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T18:18:33.915Z",
+ "capturedAt": "2026-11-10T18:21:22.206Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -298,16 +298,16 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 119628,
-   "companyMinutes": 109328,
+   "totalMinutes": 120473,
+   "companyMinutes": 110173,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 18747,
-   "companyMinutes": 6634,
+   "totalMinutes": 18916,
+   "companyMinutes": 6802,
    "joined": "2026-10-20"
   },
   {
@@ -317,6 +317,14 @@
    "totalMinutes": 218,
    "companyMinutes": 218,
    "joined": "2026-06-29"
+  },
+  {
+   "name": "PaxArcturia",
+   "role": null,
+   "level": null,
+   "totalMinutes": 510,
+   "companyMinutes": 0,
+   "joined": "2026-11-07"
   },
   {
    "name": "marcelocanela",
@@ -338,7 +346,7 @@
    "name": "PonAir",
    "role": null,
    "level": null,
-   "totalMinutes": 2535,
+   "totalMinutes": 2595,
    "companyMinutes": 0,
    "joined": "2026-10-31"
   },
@@ -367,15 +375,15 @@
    "joined": "2026-11-03"
   },
   {
-   "name": "PaxArcturia",
+   "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 438,
+   "totalMinutes": 4720,
    "companyMinutes": 0,
-   "joined": "2026-11-07"
+   "joined": "2026-11-10"
   }
  ],
- "pilotsCapturedAt": "2026-11-09T16:53:09.506Z",
+ "pilotsCapturedAt": "2026-11-10T18:21:22.206Z",
  "flights": [
   {
    "pilot": "astronauta",
