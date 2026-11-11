@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-11T11:42:23.205Z",
+ "capturedAt": "2026-11-11T16:47:22.269Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -47,7 +47,7 @@
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "EFHK",
+   "airport": "OTHH",
    "base": "LEMD",
    "status": "EM USO · Atenção em motor"
   },
@@ -89,9 +89,9 @@
   {
    "prefix": "NUNFUD",
    "model": "Douglas MD-11",
-   "airport": "RJTT",
+   "airport": "OMDM",
    "base": "OTHH",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NK4I2I",
@@ -323,8 +323,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 121613,
-   "companyMinutes": 111313,
+   "totalMinutes": 122096,
+   "companyMinutes": 111796,
    "joined": "2026-05-23"
   },
   {
@@ -339,8 +339,8 @@
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 5528,
-   "companyMinutes": 808,
+   "totalMinutes": 6021,
+   "companyMinutes": 1301,
    "joined": "2026-11-10"
   },
   {
@@ -408,7 +408,7 @@
    "joined": "2026-10-31"
   }
  ],
- "pilotsCapturedAt": "2026-11-11T11:42:23.205Z",
+ "pilotsCapturedAt": "2026-11-11T16:47:22.269Z",
  "flights": [
   {
    "pilot": "nassis89",
@@ -419,6 +419,28 @@
    "date": "2026-11-11",
    "minutes": 248,
    "nm": 1590.35,
+   "paid": true
+  },
+  {
+   "pilot": "nassis89",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-11",
+   "minutes": 492,
+   "nm": 2372.45,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "RJTT",
+   "destination": "OMDM",
+   "date": "2026-11-11",
+   "minutes": 483,
+   "nm": 4288.27,
    "paid": true
   },
   {
@@ -798,7 +820,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 33,
+  "readCount": 35,
   "groups": [
    {
     "origin": "LEMD",
@@ -831,10 +853,10 @@
     "origin": "EFHK",
     "destination": "OTHH",
     "model": "Douglas MD-11",
-    "count": 4,
-    "lastDate": "2026-11-09",
-    "change": 0.018039,
-    "state": "recuperada"
+    "count": 5,
+    "lastDate": "2026-11-11",
+    "change": -0.146896,
+    "state": "queda"
    },
    {
     "origin": "OTHH",
@@ -968,6 +990,15 @@
     "model": "Boeing 787-10 Dreamliner",
     "count": 1,
     "lastDate": "2026-11-10",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "RJTT",
+    "destination": "OMDM",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-11",
     "change": null,
     "state": "unico"
    }
