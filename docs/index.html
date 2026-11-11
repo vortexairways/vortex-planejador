@@ -18,13 +18,14 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=12">
+  <link rel="stylesheet" href="./style.css?v=13">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=3"></script>
   <script defer src="./operacao.js?v=4"></script>
   <script defer src="./atividade.js?v=3"></script>
-  <script defer src="./planner.js?v=16"></script>
+  <script defer src="./movimentacoes.js?v=1"></script>
+  <script defer src="./planner.js?v=17"></script>
 </head>
 <body>
   <header class="top">
@@ -111,7 +112,7 @@
     </div>
     <section id="alerts-card" class="card wide" aria-labelledby="alerts-title">
       <div class="section-heading">
-        <div><p class="eyebrow" data-en="FLEET ALERTS">AVISOS DA FROTA</p><h2 id="alerts-title" data-en="Aircraft outside the network">Aeronaves fora da rede</h2></div>
+        <div><p class="eyebrow" data-en="ALERTS AND NETWORK RETURNS">AVISOS E RETORNOS À MALHA</p><h2 id="alerts-title" data-en="Fleet movements">Movimentações da frota</h2></div>
       </div>
       <p id="alerts-summary" class="detail pad"></p>
       <ul id="alerts" class="list pad"></ul>

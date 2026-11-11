@@ -2,6 +2,8 @@
 
 Site estático (GitHub Pages) com o mapa, a frota e as rotas da Vortex no PilOps: distância e alcance de cada rota, tempo estimado, montagem de planos de trechos, sugestões de rotas (circuitos fechados com rotas cadastradas, classificados em nacionais, continentais e intercontinentais; rotas sem voo que só esperam piloto; aeroportos mais e menos voados), avisos de aeronaves fora da rede (com o piloto que as levou até lá e sugestões de traslado), cobertura das rotas pela frota (o que comprar ou reposicionar) e ranking de pilotos.
 
+Em **Movimentações da frota**, voos não cadastrados que chegam fora da malha recebem advertência; retornos de fora para um aeroporto com rota de partida recebem selo verde **✓ Retorno à malha**, também junto ao piloto. Traslados entre aeroportos da malha são neutros. Retornos e reposicionamentos não entram no contador de advertências. Rotas cadastradas não atribuem advertência ao piloto. A classificação usa a malha atual, sem inferir intenção ou autorização. Validação: `node --test tools/movimentacoes.test.mjs`.
+
 ## Estrutura
 
 - `docs/`: o site publicado pelo GitHub Pages.

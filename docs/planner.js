@@ -526,9 +526,14 @@ function planFerry(plane, code) {
   document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function pilotAlert(name) {
-  const badge = element("strong", "pilot-alert", "⚠ @" + name);
-  badge.title = T("Piloto identificado no voo registrado", "Pilot identified in the recorded flight");
+function pilotBadge(name, kind) {
+  const warning = kind === "outside", approved = kind === "return";
+  const badge = element("strong", warning ? "pilot-alert" : approved ? "pilot-approved" : "",
+    (warning ? "⚠ " : approved ? "✓ " : "") + "@" + name);
+  badge.title = warning ? T("Voo deixou a aeronave fora da malha", "Flight left the aircraft outside the network")
+    : approved ? T("Retorno à malha: aeronave trazida de volta para um aeroporto com rotas da Vortex",
+      "Network return: aircraft brought back to an airport with Vortex routes")
+    : T("Piloto identificado no voo registrado", "Pilot identified in the recorded flight");
   return badge;
 }
 
@@ -537,27 +542,30 @@ function renderAlerts() {
   if (!list) return;
   const network = networkAirports();
   const outside = fleet.filter(plane => !network.has(plane.airport));
-  const offRoute = flightLog.filter(flight => !isRegistered(flight.origin, flight.destination))
-    .sort((a, b) => b.date.localeCompare(a.date));
+  const movements = flightLog.map(flight => ({ flight, kind: VortexMovements.classify(flight, routes) }))
+    .filter(item => item.kind !== "registered").sort((a, b) => b.flight.date.localeCompare(a.flight.date));
+  const warnings = movements.filter(item => item.kind === "outside");
 
   const alert = document.querySelector("#fleet-alert");
   alert.replaceChildren();
-  alert.hidden = !outside.length && !offRoute.length;
+  alert.hidden = !outside.length && !warnings.length;
   if (!alert.hidden) {
     alert.append(button("⚠ " + [outside.length && outside.length + (outside.length > 1 ? T(" aeronaves fora da rede", " aircraft outside the network")
       : T(" aeronave fora da rede", " aircraft outside the network")),
-      offRoute.length && offRoute.length + (offRoute.length > 1 ? T(" voos fora das rotas cadastradas", " flights off the registered routes")
-        : T(" voo fora das rotas cadastradas", " flight off the registered routes"))]
+      warnings.length && warnings.length + (warnings.length > 1 ? T(" voos deixaram aeronaves fora da rede", " flights left aircraft outside the network")
+        : T(" voo deixou aeronave fora da rede", " flight left an aircraft outside the network"))]
       .filter(Boolean).join(" · ") + T(" — ver avisos", " — see alerts"), "alert-link",
       () => document.querySelector("#alerts-card").scrollIntoView({ behavior: "smooth", block: "start" })));
   }
 
-  document.querySelector("#alerts-summary").textContent = outside.length
+  document.querySelector("#alerts-summary").textContent = (outside.length
     ? T(outside.length + (outside.length > 1 ? " aeronaves estão em aeroportos" : " aeronave está em aeroporto") +
       " sem nenhuma rota cadastrada de partida. Abaixo, quem levou cada uma até lá (quando o voo foi lido) e para onde reposicionar.",
       outside.length + (outside.length > 1 ? " aircraft are at airports" : " aircraft is at an airport") +
       " with no registered departing route. Below: who flew each one there (when the flight was read) and where to reposition it.")
-    : T("Todas as aeronaves estão em aeroportos com rotas cadastradas de partida.", "All aircraft are at airports with registered departing routes.");
+    : T("Todas as aeronaves estão em aeroportos com rotas cadastradas de partida.", "All aircraft are at airports with registered departing routes.")) +
+      T(" Retornos de aeroportos fora da malha recebem selo verde de aprovação; traslados entre aeroportos da malha são neutros. A classificação usa a malha atual e não presume intenção ou autorização do piloto.",
+        " Returns from airports outside the network receive a green approval badge; ferries between network airports are neutral. Classification uses the current network and does not assume the pilot’s intent or authorization.");
 
   const rows = [];
   for (const plane of outside) {
@@ -573,7 +581,8 @@ function renderAlerts() {
     const arrival = lastArrival(plane);
     const who = element("span", "meta who");
     if (arrival) {
-      who.append(T("Levada até " + plane.airport + " por ", "Flown to " + plane.airport + " by "), pilotAlert(arrival.pilot),
+      who.append(T("Levada até " + plane.airport + " por ", "Flown to " + plane.airport + " by "),
+        pilotBadge(arrival.pilot, VortexMovements.classify(arrival, routes)),
         T(" em ", " on ") + dayText(arrival.date) + T(" (voo ", " (flight ") + arrival.origin + " → " +
         arrival.destination + (isRegistered(arrival.origin, arrival.destination) ? ")." : T(", fora das rotas cadastradas).", ", off the registered routes).")));
     } else {
@@ -604,15 +613,23 @@ function renderAlerts() {
     row.append(box);
     rows.push(row);
   }
-  if (offRoute.length) {
-    rows.push(element("li", "group", T("Voos fora das rotas cadastradas", "Flights off the registered routes")));
-    for (const flight of offRoute) {
+  for (const [kind, label, english] of [
+    ["outside", "Voos que deixaram aeronaves fora da malha", "Flights that left aircraft outside the network"],
+    ["return", "✓ Retornos à malha · aprovação", "✓ Network returns · approval"],
+    ["reposition", "Traslados entre aeroportos da malha · sem advertência", "Ferries between network airports · no warning"],
+  ]) {
+    const group = movements.filter(item => item.kind === kind);
+    if (!group.length) continue;
+    rows.push(element("li", "group", T(label, english)));
+    for (const { flight } of group) {
       const row = element("li");
       const head = element("div", "row-head");
       head.append(element("strong", "", flight.origin + " → " + flight.destination));
-      if (!network.has(flight.destination)) head.append(element("span", "tag bad", T("Deixou a aeronave fora da rede", "Left the aircraft outside the network")));
+      if (kind === "outside") head.append(element("span", "tag bad", T("Deixou a aeronave fora da rede", "Left the aircraft outside the network")));
+      else if (kind === "return") head.append(element("span", "tag ok", T("✓ Retorno à malha", "✓ Network return")));
+      else head.append(element("span", "tag neutral", T("Reposicionamento na malha", "Network repositioning")));
       const details = element("span", "meta");
-      details.append(dayText(flight.date) + " · ", pilotAlert(flight.pilot), " · " + flight.prefix + " (" + flight.model + ") · " + nm(flight.nm));
+      details.append(dayText(flight.date) + " · ", pilotBadge(flight.pilot, kind), " · " + flight.prefix + " (" + flight.model + ") · " + nm(flight.nm));
       row.append(head, details);
       rows.push(row);
     }
