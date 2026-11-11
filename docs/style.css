@@ -13,6 +13,8 @@
 .operation-routes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; margin-bottom: 1rem; }
 .operation-route { background: #f4f7ff; border: 1px solid #d9e1ef; border-radius: .7rem; padding: .85rem; }
 .operation-route h3 { margin-top: 0; }
+.operation-path { color: #123c99; background: #e9efff; border-left: 4px solid #184ccc; border-radius: .35rem; padding: .7rem .85rem; font-weight: 750; overflow-wrap: anywhere; }
+.pilot-alert { display: inline-flex; align-items: center; gap: .25rem; color: #951c2b; background: #fff0f2; border: 1px solid #d4939c; border-radius: .35rem; padding: .1rem .4rem; font-weight: 800; }
 .operation-route .plan-actions { margin-top: .7rem; }
 .weekly-ranking { width: 100%; border-collapse: collapse; font-size: .85rem; }
 .weekly-ranking th, .weekly-ranking td { text-align: left; border-bottom: 1px solid #e4eaf3; padding: .45rem .65rem; }

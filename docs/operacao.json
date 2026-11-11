@@ -1,11 +1,13 @@
 {
-  "title": { "pt": "Vortex em movimento", "en": "Vortex on the move" },
+  "title": { "pt": "Novo circuito VTX2222", "en": "New VTX2222 circuit" },
   "start": "2026-11-09",
   "end": "2026-11-15",
   "goal": 10,
   "routes": [
-    { "origin": "SBRF", "destination": "SBGL" },
-    { "origin": "LEMD", "destination": "EFHK" },
-    { "origin": "LEMD", "destination": "KRDU" }
+    { "origin": "LTAI", "destination": "GCTS" },
+    { "origin": "GCTS", "destination": "CYYT" },
+    { "origin": "CYYT", "destination": "KMKE" },
+    { "origin": "KMKE", "destination": "SBSP" },
+    { "origin": "SBSP", "destination": "LTAI" }
   ]
 }

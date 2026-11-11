@@ -8,7 +8,7 @@ const VortexOperation = (() => {
     if (!config || !validDay(config.start) || !validDay(config.end) || config.start > config.end ||
         !Number.isInteger(config.goal) || config.goal < 1 || config.goal > 10000 ||
         ![config.title?.pt, config.title?.en].every(value => typeof value === "string" && value.trim() && value.length <= 100) ||
-        !Array.isArray(config.routes) || !config.routes.length || config.routes.length > 3 ||
+        !Array.isArray(config.routes) || !config.routes.length || config.routes.length > 5 ||
         !config.routes.every(route => route && /^[A-Z0-9]{3,5}$/.test(route.origin || "") &&
           /^[A-Z0-9]{3,5}$/.test(route.destination || "") && route.origin !== route.destination) ||
         new Set(config.routes.map(pair)).size !== config.routes.length) return null;

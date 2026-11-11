@@ -526,6 +526,12 @@ function planFerry(plane, code) {
   document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function pilotAlert(name) {
+  const badge = element("strong", "pilot-alert", "⚠ @" + name);
+  badge.title = T("Piloto identificado no voo registrado", "Pilot identified in the recorded flight");
+  return badge;
+}
+
 function renderAlerts() {
   const list = document.querySelector("#alerts");
   if (!list) return;
@@ -565,14 +571,18 @@ function renderAlerts() {
       (hubs.has(plane.airport) ? T(" · hub sem rotas de partida", " · hub with no departing routes") : "") + " · " + statusLabel(plane.status) +
       (plane.base ? T(" · hangar em ", " · hangar at ") + plane.base : "")));
     const arrival = lastArrival(plane);
-    row.append(element("span", "meta who", arrival
-      ? T("Levada até " + plane.airport + " por @" + arrival.pilot + " em " + dayText(arrival.date) + " (voo ",
-        "Flown to " + plane.airport + " by @" + arrival.pilot + " on " + dayText(arrival.date) + " (flight ") + arrival.origin + " → " +
-        arrival.destination + (isRegistered(arrival.origin, arrival.destination) ? ")." : T(", fora das rotas cadastradas).", ", off the registered routes)."))
-      : T("Chegou a " + plane.airport + " antes dos voos lidos" + (flightsSince ? " (desde " + dayText(flightsSince) + ")" : "") +
+    const who = element("span", "meta who");
+    if (arrival) {
+      who.append(T("Levada até " + plane.airport + " por ", "Flown to " + plane.airport + " by "), pilotAlert(arrival.pilot),
+        T(" em ", " on ") + dayText(arrival.date) + T(" (voo ", " (flight ") + arrival.origin + " → " +
+        arrival.destination + (isRegistered(arrival.origin, arrival.destination) ? ")." : T(", fora das rotas cadastradas).", ", off the registered routes).")));
+    } else {
+      who.textContent = T("Chegou a " + plane.airport + " antes dos voos lidos" + (flightsSince ? " (desde " + dayText(flightsSince) + ")" : "") +
         ": o piloto responsável não aparece no histórico do PilOps.",
         "Reached " + plane.airport + " before the flights read" + (flightsSince ? " (since " + dayText(flightsSince) + ")" : "") +
-        ": the pilot responsible does not appear in the PilOps history.")));
+        ": the pilot responsible does not appear in the PilOps history.");
+    }
+    row.append(who);
     const options = repositionOptions(plane);
     const box = element("div", "ferries");
     if (!options.length) {
@@ -601,8 +611,9 @@ function renderAlerts() {
       const head = element("div", "row-head");
       head.append(element("strong", "", flight.origin + " → " + flight.destination));
       if (!network.has(flight.destination)) head.append(element("span", "tag bad", T("Deixou a aeronave fora da rede", "Left the aircraft outside the network")));
-      row.append(head, element("span", "meta", dayText(flight.date) + " · @" + flight.pilot + " · " + flight.prefix + " (" + flight.model + ") · " +
-        nm(flight.nm)));
+      const details = element("span", "meta");
+      details.append(dayText(flight.date) + " · ", pilotAlert(flight.pilot), " · " + flight.prefix + " (" + flight.model + ") · " + nm(flight.nm));
+      row.append(head, details);
       rows.push(row);
     }
   }
@@ -1585,6 +1596,7 @@ async function refreshData() {
 function renderOperation() {
   const title = document.querySelector("#operation-title");
   const period = document.querySelector("#operation-period");
+  const path = document.querySelector("#operation-path");
   const stats = document.querySelector("#operation-stats");
   const cards = document.querySelector("#operation-routes");
   const standings = document.querySelector("#operation-ranking");
@@ -1592,6 +1604,8 @@ function renderOperation() {
   stats.replaceChildren();
   cards.replaceChildren();
   standings.replaceChildren();
+  path.hidden = true;
+  path.textContent = "";
   if (!operationConfig) {
     title.textContent = T("Aguardando definição da administração", "Awaiting the administration’s selection");
     period.textContent = "";
@@ -1605,6 +1619,11 @@ function renderOperation() {
   const phase = today < operation.start ? T("Agendada", "Scheduled") : today > operation.end ? T("Encerrada", "Finished") : T("Em andamento", "In progress");
   title.textContent = operation.title[lang];
   period.textContent = dayText(operation.start) + " → " + dayText(operation.end) + T(" · datas de Brasília · ", " · Brasília dates · ") + phase;
+  if (operation.routes.length > 1 && operation.routes.every((item, index) => item.route &&
+      (!index || operation.routes[index - 1].destination === item.origin))) {
+    path.textContent = [operation.routes[0].origin, ...operation.routes.map(item => item.destination)].join(" → ");
+    path.hidden = false;
+  }
   for (const [value, label] of [[completed.length + " / " + operation.goal, T("Meta de voos do grupo", "Group flight target")],
     [ranking.length, T("Pilotos participantes", "Participating pilots")],
     [new Set(completed.map(VortexOperation.pair)).size + " / " + operation.routes.length, T("Rotas realizadas", "Routes flown")]]) {
@@ -1612,9 +1631,9 @@ function renderOperation() {
     tile.append(element("strong", "", String(value)), element("span", "", label));
     stats.append(tile);
   }
-  for (const item of operation.routes) {
+  for (const [index, item] of operation.routes.entries()) {
     const card = element("article", "operation-route");
-    card.append(element("h3", "", item.origin + " → " + item.destination));
+    card.append(element("h3", "", (index + 1) + ". " + item.origin + " → " + item.destination));
     const route = item.route;
     if (!route) {
       card.append(element("p", "meta", T("Rota fora da malha atual. A administração deve revisar a seleção.",

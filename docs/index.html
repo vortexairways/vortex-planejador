@@ -18,13 +18,13 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=11">
+  <link rel="stylesheet" href="./style.css?v=12">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=3"></script>
-  <script defer src="./operacao.js?v=3"></script>
+  <script defer src="./operacao.js?v=4"></script>
   <script defer src="./atividade.js?v=3"></script>
-  <script defer src="./planner.js?v=15"></script>
+  <script defer src="./planner.js?v=16"></script>
 </head>
 <body>
   <header class="top">
@@ -64,13 +64,14 @@
       <div class="pad">
         <h3 id="operation-title"></h3>
         <p id="operation-period" class="meta"></p>
+        <p id="operation-path" class="operation-path" hidden></p>
         <p class="detail" data-en="Each pilot flies individually. Complete the featured routes and share your own flights on the Vortex Discord. The pilot with the most completed flights wins; different routes break ties.">Cada piloto voa individualmente. Complete as rotas em destaque e compartilhe seus próprios voos no Discord da Vortex. Vence quem concluir mais voos; a variedade de rotas desempata.</p>
         <div id="operation-stats" class="stat-row"></div>
         <div id="operation-routes" class="operation-routes"></div>
         <h3 data-en="Weekly standings · partial">Classificação da semana · parcial</h3>
         <div id="operation-ranking" class="table-wrap"></div>
         <p id="operation-note" class="meta"></p>
-        <p class="meta" data-en="The administration publishes the dates, target and up to three routes through “Edit operation”, using a GitHub account with write access to the repository.">A administração publica as datas, a meta e até três rotas em “Editar operação”, usando uma conta do GitHub com acesso de edição ao repositório.</p>
+        <p class="meta" data-en="The administration publishes the dates, target and up to five routes through “Edit operation”, using a GitHub account with write access to the repository.">A administração publica as datas, a meta e até cinco rotas em “Editar operação”, usando uma conta do GitHub com acesso de edição ao repositório.</p>
       </div>
     </section>
     <section class="card filters" aria-label="Filtros" data-en-label="Filters">

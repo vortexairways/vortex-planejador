@@ -280,6 +280,31 @@
    "origin": "OMDM",
    "destination": "RJTT",
    "code": "VTX5555"
+  },
+  {
+   "origin": "LTAI",
+   "destination": "GCTS",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "GCTS",
+   "destination": "CYYT",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "CYYT",
+   "destination": "KMKE",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "KMKE",
+   "destination": "SBSP",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "SBSP",
+   "destination": "LTAI",
+   "code": "VTX2222"
   }
  ],
  "hubs": [

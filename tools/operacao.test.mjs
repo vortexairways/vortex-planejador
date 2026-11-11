@@ -45,6 +45,20 @@ test("configuração incompleta ou com datas inválidas não interrompe o restan
   }
 });
 
+test("desafio publicado aceita os cinco trechos do circuito e limita a seleção a cinco rotas", () => {
+  const published = JSON.parse(readFileSync(new URL("../docs/operacao.json", import.meta.url), "utf8"));
+  const network = JSON.parse(readFileSync(new URL("../docs/dados.json", import.meta.url), "utf8")).routes;
+  const parsed = operation.read(published, network);
+  assert.ok(parsed);
+  assert.equal(parsed.routes.length, 5);
+  for (const [index, item] of parsed.routes.entries()) {
+    assert.equal(item.route?.code, "VTX2222");
+    assert.equal(item.destination, parsed.routes[(index + 1) % parsed.routes.length].origin);
+  }
+  const sixth = { origin: "ZZZZ", destination: "YYYY" };
+  assert.equal(operation.read({ ...published, routes: [...published.routes, sixth] }, [...network, sixth]), null);
+});
+
 test("mensagem bilíngue mantém o mesmo voo, duração estimada e convite a voos individuais", () => {
   const text = operation.share({ legs: [routes[0]], plane: { prefix: "NLFTDW", model: "Boeing 787-10 Dreamliner" },
     pilot: "Titanocs", miles: 3450, minutes: 450, url: "https://vortexairways.github.io/vortex-planejador/" });

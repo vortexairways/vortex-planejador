@@ -44,7 +44,7 @@ Edite os arquivos em `docs/`, faça o commit e `git push`. O GitHub Pages public
 
 ## Operação da semana e compartilhamento
 
-A operação fica no início do planejador. O botão **Editar operação** abre `docs/operacao.json` no GitHub. Uma conta com acesso de edição ao repositório pode alterar o título em português e inglês, as datas de início e fim (inclusive, no calendário de Brasília), a meta de voos e até três pares de origem/destino já cadastrados. Ao salvar no GitHub, o Pages publica a seleção para todos. A sincronização de dados preserva esse arquivo.
+A operação fica no início do planejador. O botão **Editar operação** abre `docs/operacao.json` no GitHub. Uma conta com acesso de edição ao repositório pode alterar o título em português e inglês, as datas de início e fim (inclusive, no calendário de Brasília), a meta de voos e até cinco pares de origem/destino já cadastrados. Os trechos são numerados na ordem da seleção; uma sequência contínua também mostra o percurso completo em destaque. Ao salvar no GitHub, o Pages publica a seleção para todos. A sincronização de dados preserva esse arquivo.
 
 A classificação considera os voos remunerados concluídos e lidos nas rotas em destaque dentro do período. Mais voos vêm primeiro. A variedade de rotas desempata; persistindo o empate, usa a ordem alfabética dos nomes. As posições são sempre consecutivas (1, 2, 3), sem repetição. A tela identifica a classificação como parcial porque depende do histórico que o coletor conseguiu ler. Uma operação encerrada mantém seus resultados até a administração publicar a próxima.
 
