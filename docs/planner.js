@@ -23,9 +23,6 @@ let operationConfig = null;
 let shareLegs = [];
 let activityConfig = null;
 let activityDay = null;
-let sharedTimes = [], importedTimes = [];
-let simbriefBusy = false, simbriefFeedback = null;
-const simbriefKey = "vortex-simbrief-v1";
 // Cobertura de cada rota pela frota atual (preenchida em start()).
 let coverage = new Map();
 // Circuitos fechados formados por rotas cadastradas (preenchidos em start()).
@@ -84,92 +81,21 @@ function distance(from, to) {
 
 const nm = value => value === null ? T("distância indisponível", "distance unavailable") : number.format(Math.round(value)) + " nm";
 
-// O SimBrief só substitui o catálogo para a mesma direção e o mesmo tipo de aeronave.
+// Usa a duração concluída registrada no PilOps para a mesma rota e modelo.
 function blockEstimate(miles, plane, origin, destination) {
-  return VortexTimes.estimate({ miles, plane, origin, destination, performance: plane && performanceOf(plane.model),
-    references: [...importedTimes, ...sharedTimes] });
+  return VortexTimes.estimate({ miles, plane, origin, destination, performance: plane && performanceOf(plane.model), flights: flightLog });
 }
 const blockMinutes = (miles, plane, origin, destination) => blockEstimate(miles, plane, origin, destination).minutes;
 function blockLabel(miles, plane, origin, destination) {
   const estimate = blockEstimate(miles, plane, origin, destination);
-  return estimate.minutes === null ? "" : clock(estimate.minutes) + (estimate.source === "simbrief"
-    ? T(" · bloco SimBrief · plano de ", " · SimBrief block · plan from ") + dayText(simbriefDay(estimate.record.generatedAt))
+  return estimate.minutes === null ? "" : clock(estimate.minutes) + (estimate.source === "pilops"
+    ? " · PilOps · " + estimate.count + (estimate.count === 1 ? T(" voo registrado", " recorded flight") : T(" voos registrados", " recorded flights")) +
+      T(" · último em ", " · latest on ") + dayText(estimate.lastDate)
     : T(" · estimativa de catálogo", " · catalogue estimate"));
 }
-const timeBasis = summary => summary.source === "simbrief" ? "SimBrief" : summary.source === "mixed"
-  ? T("SimBrief em ", "SimBrief on ") + summary.count + "/" + summary.total + T(" trechos; demais por catálogo", " legs; others from catalogue")
+const timeBasis = summary => summary.source === "pilops" ? T("histórico do PilOps", "PilOps history") : summary.source === "mixed"
+  ? T("PilOps em ", "PilOps on ") + summary.count + "/" + summary.total + T(" trechos; demais por catálogo", " legs; others from catalogue")
   : T("estimativa de catálogo", "catalogue estimate");
-const simbriefDay = timestamp => new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo" }).format(new Date(timestamp));
-
-function loadSimBrief() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(simbriefKey) || "null");
-    importedTimes = VortexTimes.records(saved?.references);
-    document.querySelector("#simbrief-user").value = typeof saved?.identifier === "string" ? saved.identifier.slice(0, 80) : "";
-  } catch { importedTimes = []; }
-}
-
-function renderSimBrief() {
-  const items = VortexTimes.records([...importedTimes, ...sharedTimes]);
-  const valid = items.filter(item => VortexTimes.active(item));
-  document.querySelector("#simbrief-summary").textContent = valid.length + T(" referência(s) de tempo disponível(is) · ver rotas e datas",
-    " time reference(s) available · view routes and dates");
-  document.querySelector("#simbrief-references").replaceChildren(...items.map(item => {
-    const row = element("li", "meta");
-    row.textContent = item.origin + " → " + item.destination + " · " + item.aircraftType + " · " + clock(Math.ceil(item.blockSeconds / 60)) +
-      T(" de bloco · plano de ", " block time · plan from ") + dayText(simbriefDay(item.generatedAt)) +
-      (VortexTimes.active(item) ? "" : T(" · vencida: importe um plano recente", " · expired: import a recent plan"));
-    return row;
-  }));
-  document.querySelector("#simbrief-feedback").textContent = simbriefBusy ? T("Consultando seu último plano…", "Fetching your latest plan…")
-    : simbriefFeedback ? T(...simbriefFeedback) : T("Importe quando quiser atualizar os tempos do seu plano.", "Import whenever you want to update your plan’s times.");
-  document.querySelector("#simbrief-import").disabled = simbriefBusy;
-  document.querySelector("#simbrief-clear").disabled = simbriefBusy;
-  document.querySelector("#simbrief-user").disabled = simbriefBusy;
-}
-
-document.querySelector("#simbrief-form").addEventListener("submit", async event => {
-  event.preventDefault();
-  if (simbriefBusy) return;
-  const identifier = document.querySelector("#simbrief-user").value.trim();
-  const url = VortexTimes.endpoint(identifier);
-  if (!url) { simbriefFeedback = ["Informe seu usuário ou Pilot ID válido.", "Enter a valid username or Pilot ID."]; renderSimBrief(); return; }
-  simbriefBusy = true;
-  renderSimBrief();
-  try {
-    const response = await fetch(url, { cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: AbortSignal.timeout(20000) });
-    if (!response.ok) throw new Error();
-    const record = VortexTimes.readOFP(await response.json());
-    if (!record) throw new Error();
-    importedTimes = VortexTimes.records([record, ...importedTimes]);
-    let saved = true;
-    try { localStorage.setItem(simbriefKey, JSON.stringify({ identifier, references: importedTimes })); } catch { saved = false; }
-    simbriefFeedback = VortexTimes.active(record)
-      ? ["Plano importado: " + record.origin + " → " + record.destination + ". O tempo será usado na mesma rota e modelo.",
-        "Plan imported: " + record.origin + " → " + record.destination + ". Its time will be used for the same route and model."]
-      : ["Plano importado, mas está fora da validade de 30 dias. Gere um plano recente no SimBrief e importe novamente.",
-        "Plan imported, but it is outside the 30-day validity. Generate a recent SimBrief plan and import again."];
-    if (!saved) simbriefFeedback = simbriefFeedback.map((text, index) => text + (index ? " Browser storage unavailable: this import lasts for this page only."
-      : " Armazenamento indisponível: esta importação vale somente nesta página."));
-  } catch {
-    simbriefFeedback = ["Não foi possível importar. Confira o usuário/ID, gere um plano no SimBrief e tente novamente. As referências anteriores foram mantidas.",
-      "Could not import. Check your username/ID, generate a SimBrief plan and try again. Previous references were kept."];
-  } finally {
-    simbriefBusy = false;
-    paintAll();
-    if (document.querySelector("#share-dialog").open) updateShare();
-  }
-});
-
-document.querySelector("#simbrief-clear").addEventListener("click", () => {
-  importedTimes = [];
-  document.querySelector("#simbrief-user").value = "";
-  try { localStorage.removeItem(simbriefKey); } catch { /* A sessão também pode funcionar sem armazenamento. */ }
-  simbriefFeedback = ["Suas importações foram limpas. As referências publicadas pela companhia continuam disponíveis.",
-    "Your imports were cleared. Company-published references remain available."];
-  paintAll();
-  if (document.querySelector("#share-dialog").open) updateShare();
-});
 
 const clock = minutes => minutes === null ? "" :
   "≈ " + Math.floor(minutes / 60) + "h" + String(minutes % 60).padStart(2, "0");
@@ -491,7 +417,7 @@ function renderPlan() {
   }
   const total = legs.reduce((sum, leg) => sum + (leg.miles ?? 0), 0);
   const times = VortexTimes.summary(legs.map(leg => blockEstimate(leg.miles, plane, leg.route.origin, leg.route.destination)));
-  const totalTime = times.minutes !== null ? " · " + clock(times.minutes) + T(" de bloco · ", " block time · ") + timeBasis(times) : "";
+  const totalTime = times.minutes !== null ? " · " + clock(times.minutes) + T(" de duração estimada · ", " estimated duration · ") + timeBasis(times) : "";
   planBox.append(heading, list, element("p", "meta", "Total: " + nm(total) + T(" em ", " in ") + legs.length +
     (legs.length > 1 ? T(" trechos", " legs") : T(" trecho", " leg")) +
     (plane ? totalTime : T(" · escolha uma aeronave para checar alcance e tempo", " · pick an aircraft to check range and time"))));
@@ -832,7 +758,7 @@ function circuitRow(circuit, pairs) {
   row.append(head);
   const times = VortexTimes.summary(plane ? circuit.legs.map((leg, i) => blockEstimate(circuit.miles[i], plane, leg.origin, leg.destination)) : []);
   const total = times.minutes !== null
-    ? clock(times.minutes) + T(" de bloco com ", " block time with ") + plane.model + " · " + timeBasis(times) : "";
+    ? clock(times.minutes) + T(" de duração estimada com ", " estimated duration with ") + plane.model + " · " + timeBasis(times) : "";
   row.append(element("span", "meta", [circuit.legs.length + T(" trechos", " legs"), nm(circuit.total),
     T("maior trecho ", "longest leg ") + nm(circuit.longest), total].filter(Boolean).join(" · ")));
   const never = circuit.legs.filter(leg => !pairs.has(leg.origin + "-" + leg.destination)).length;
@@ -1190,8 +1116,7 @@ function renderActivity(window, counts) {
 
 async function start() {
   applyStaticTexts();
-  loadSimBrief();
-  renderSimBrief();
+  try { localStorage.removeItem("vortex-simbrief-v1"); } catch { /* Limpa a integração descontinuada sem afetar a página. */ }
   document.querySelector("#snapshot-time").textContent = T("Carregando dados da Vortex…", "Loading Vortex data…");
   document.querySelector("#snapshot-note").textContent = T("A frota e as rotas vêm da última coleta no PilOps.",
     "Fleet and routes come from the last PilOps sync.");
@@ -1223,10 +1148,6 @@ async function start() {
     const response = await fetch("./atividade.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) activityConfig = VortexActivity.read(await response.json());
   } catch { /* Sem configuração válida, não se atribui alerta de inatividade. */ }
-  try {
-    const response = await fetch("./tempos-simbrief.json?t=" + Date.now(), { cache: "no-store" });
-    if (response.ok) sharedTimes = VortexTimes.records((await response.json()).references);
-  } catch { /* O catálogo e as importações locais continuam disponíveis. */ }
   coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
   airportCodes = [...new Set([
@@ -1257,7 +1178,6 @@ async function start() {
 // Tudo o que depende do idioma: textos fixos, cabeçalho da coleta, listas dos filtros e todas as seções.
 function paintAll() {
   applyStaticTexts();
-  renderSimBrief();
   if (!fleet.length) return;
   // Em inglês a data sai por extenso ("7 Nov 2026"), sem a ambiguidade dia/mês do formato numérico.
   const date = new Intl.DateTimeFormat(locale(), {
@@ -1722,7 +1642,9 @@ function renderOperation() {
     return;
   }
   const operation = operationConfig;
-  const { completed, ranking } = VortexOperation.progress(operation, flightLog);
+  const challenge = VortexOperation.progress(operation, flightLog);
+  const { completed } = challenge;
+  const { ranking } = VortexOperation.weekly(operation, flightLog, routes);
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo" }).format(new Date());
   const phase = today < operation.start ? T("Agendada", "Scheduled") : today > operation.end ? T("Encerrada", "Finished") : T("Em andamento", "In progress");
   title.textContent = operation.title[lang];
@@ -1732,9 +1654,9 @@ function renderOperation() {
     path.textContent = [operation.routes[0].origin, ...operation.routes.map(item => item.destination)].join(" → ");
     path.hidden = false;
   }
-  for (const [value, label] of [[completed.length + " / " + operation.goal, T("Meta de voos do grupo", "Group flight target")],
-    [ranking.length, T("Pilotos participantes", "Participating pilots")],
-    [new Set(completed.map(VortexOperation.pair)).size + " / " + operation.routes.length, T("Rotas realizadas", "Routes flown")]]) {
+  for (const [value, label] of [[completed.length + " / " + operation.goal, T("Meta de voos do desafio", "Challenge flight target")],
+    [challenge.ranking.length, T("Pilotos no desafio", "Pilots in the challenge")],
+    [new Set(completed.map(VortexOperation.pair)).size + " / " + operation.routes.length, T("Rotas do desafio realizadas", "Challenge routes flown")]]) {
     const tile = element("div", "stat");
     tile.append(element("strong", "", String(value)), element("span", "", label));
     stats.append(tile);
@@ -1786,10 +1708,10 @@ function renderOperation() {
     }
     table.append(thead, tbody);
     standings.append(table);
-  } else standings.append(element("p", "meta", T("O primeiro voo concluído e sincronizado abre a disputa.",
-    "The first completed and synced flight opens the standings.")));
-  note.textContent = T("Classificação parcial dos voos remunerados lidos nas rotas em destaque, até a última coleta. Voos em andamento entram depois da conclusão e sincronização. Mais voos vêm primeiro; a variedade de rotas e depois a ordem alfabética desempata. Posições consecutivas, sem repetição.",
-    "Partial standings from paid flights read on the featured routes, up to the last sync. Flights in progress appear after completion and sync. Most flights comes first; route variety, then alphabetical order break ties. Places are consecutive, with no shared positions.");
+  } else standings.append(element("p", "meta", T("Nenhum voo remunerado concluído e sincronizado nas rotas da Vortex neste período.",
+    "No completed and synced paid flights on Vortex routes in this period.")));
+  note.textContent = T("Ranking semanal parcial: conta os voos remunerados concluídos e lidos em todas as rotas cadastradas da Vortex no período acima, até a última coleta. O desafio das rotas em destaque tem contagem separada. Mais voos vêm primeiro; a variedade de rotas e depois a ordem alfabética desempata. Posições consecutivas, sem repetição.",
+    "Partial weekly ranking: counts completed paid flights read on all registered Vortex routes within the period above, up to the last sync. The featured-route challenge has separate counts. Most flights comes first; route variety, then alphabetical order break ties. Places are consecutive, with no shared positions.");
 }
 
 function openShare(legs, preferredPlane) {
@@ -1817,7 +1739,7 @@ function updateShare() {
   url.hash = "map-title";
   document.querySelector("#share-message").value = VortexOperation.share({ legs: shareLegs, plane,
     pilot: document.querySelector("#share-pilot").value, status: document.querySelector("#share-status").value,
-    minutes: times.minutes, timeSource: times.source, simbriefLegs: times.count,
+    minutes: times.minutes, timeSource: times.source, pilopsLegs: times.count,
     miles: distances.every(value => value !== null) ? distances.reduce((sum, value) => sum + value, 0) : null,
     url: url.href });
   shareFeedback();

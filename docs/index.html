@@ -18,15 +18,15 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=14">
+  <link rel="stylesheet" href="./style.css?v=15">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=3"></script>
-  <script defer src="./operacao.js?v=5"></script>
+  <script defer src="./operacao.js?v=6"></script>
   <script defer src="./atividade.js?v=3"></script>
   <script defer src="./movimentacoes.js?v=1"></script>
-  <script defer src="./tempos.js?v=1"></script>
-  <script defer src="./planner.js?v=18"></script>
+  <script defer src="./tempos.js?v=2"></script>
+  <script defer src="./planner.js?v=19"></script>
 </head>
 <body>
   <header class="top">
@@ -67,33 +67,20 @@
         <h3 id="operation-title"></h3>
         <p id="operation-period" class="meta"></p>
         <p id="operation-path" class="operation-path" hidden></p>
-        <p class="detail" data-en="Each pilot flies individually. Complete the featured routes and share your own flights on the Vortex Discord. The pilot with the most completed flights wins; different routes break ties.">Cada piloto voa individualmente. Complete as rotas em destaque e compartilhe seus próprios voos no Discord da Vortex. Vence quem concluir mais voos; a variedade de rotas desempata.</p>
+        <p class="detail" data-en="Each pilot flies individually. Complete the featured-route challenge and share your flights on the Vortex Discord. The weekly ranking below counts completed paid flights on all Vortex routes, independently of the challenge.">Cada piloto voa individualmente. Complete o desafio das rotas em destaque e compartilhe seus voos no Discord da Vortex. O ranking semanal abaixo conta os voos remunerados concluídos em todas as rotas da Vortex, independentemente do desafio.</p>
         <div id="operation-stats" class="stat-row"></div>
         <div id="operation-routes" class="operation-routes"></div>
-        <h3 data-en="Weekly standings · partial">Classificação da semana · parcial</h3>
+        <h3 data-en="Vortex weekly ranking · partial">Ranking semanal da Vortex · parcial</h3>
         <div id="operation-ranking" class="table-wrap"></div>
         <p id="operation-note" class="meta"></p>
         <p class="meta" data-en="The administration publishes the dates, target and up to five routes through “Edit operation”, using a GitHub account with write access to the repository.">A administração publica as datas, a meta e até cinco rotas em “Editar operação”, usando uma conta do GitHub com acesso de edição ao repositório.</p>
-      </div>
-    </section>
-    <section id="simbrief-card" class="card simbrief-card" aria-labelledby="simbrief-title">
-      <div class="section-heading"><h2 id="simbrief-title" data-en="SimBrief flight times">Tempos do SimBrief</h2></div>
-      <div class="pad">
-        <p class="detail" data-en="The same route and aircraft model use the planned block time from SimBrief, including taxi. This is a plan, not the actual PilOps flight time. References are dated and valid for 30 days; other legs show a catalogue estimate.">A mesma rota e modelo de aeronave usam o tempo de bloco planejado no SimBrief, incluindo táxi. É um planejamento, não o tempo realizado no PilOps. As referências têm data e valem por 30 dias; os demais trechos mostram estimativa de catálogo.</p>
-        <form id="simbrief-form" class="simbrief-form">
-          <label><span data-en="Your SimBrief username or Pilot ID">Seu usuário ou Pilot ID do SimBrief</span><input id="simbrief-user" maxlength="80" autocomplete="off" spellcheck="false" required></label>
-          <button id="simbrief-import" class="primary" type="submit" data-en="Import latest plan">Importar último plano</button>
-          <button id="simbrief-clear" class="secondary" type="button" data-en="Clear my imports">Limpar minhas importações</button>
-        </form>
-        <p id="simbrief-feedback" class="meta" role="status" aria-live="polite"></p>
-        <p class="meta" data-en="Your username/ID and imports stay in this browser. No password is needed. Only the flight times are retained; the full plan is not published. Import again after generating a new SimBrief plan.">Seu usuário/ID e suas importações ficam neste navegador. Não é necessária senha. Apenas os tempos são guardados; o plano completo não é publicado. Importe novamente depois de gerar um novo plano no SimBrief.</p>
-        <details><summary id="simbrief-summary"></summary><ul id="simbrief-references" class="list"></ul></details>
       </div>
     </section>
     <section class="card filters" aria-label="Filtros" data-en-label="Filters">
       <label><span data-en="Departure airport">Aeroporto de partida</span> <select id="airport"><option value="">Todos os aeroportos</option></select></label>
       <label><span data-en="Aircraft by registration">Aeronave por prefixo</span> <select id="aircraft"><option value="">Toda a frota</option></select></label>
       <button id="reset" class="secondary" type="button" data-en="Clear selection">Limpar seleção</button>
+      <p class="meta time-note" data-en="Times use the median of up to 10 completed PilOps flights on the same route and aircraft model. Without valid history, a catalogue estimate is shown. References update after manual Vortex sync.">Os tempos usam a mediana de até 10 voos concluídos no PilOps na mesma rota e modelo. Sem histórico válido, aparece a estimativa de catálogo. As referências são atualizadas após a sincronização manual da Vortex.</p>
     </section>
     <div class="layout">
       <section class="card map-card" aria-labelledby="map-title">
@@ -235,7 +222,7 @@
         <ol id="top-routes" class="list"></ol>
       </div>
     </section>
-    <footer data-en="Lines and distances follow the great circle between airports. Range uses approximate catalogue values. Times use a dated SimBrief block-time reference for the same route and model when available; otherwise they are catalogue estimates without wind. Confirm aircraft availability, load and flight feasibility on PilOps before dispatching. Coordinates from &lt;a href=&quot;https://ourairports.com/data/&quot;&gt;OurAirports&lt;/a&gt;.">Linhas e distâncias seguem o grande círculo entre os aeroportos. O alcance usa valores aproximados de catálogo. Os tempos usam uma referência datada de bloco do SimBrief para a mesma rota e modelo, quando disponível; nos demais casos, são estimativas de catálogo sem vento. Confirme a disponibilidade da aeronave, a carga e a viabilidade do voo no PilOps antes de despachar. Coordenadas de <a href="https://ourairports.com/data/">OurAirports</a>.</footer>
+    <footer data-en="Lines and distances follow the great circle between airports. Range uses approximate catalogue values. Times use completed PilOps flight history for the same route and model when available; otherwise they are catalogue estimates without wind. Historical duration is a reference, not a guarantee. Confirm aircraft availability, load and flight feasibility on PilOps before dispatching. Coordinates from &lt;a href=&quot;https://ourairports.com/data/&quot;&gt;OurAirports&lt;/a&gt;.">Linhas e distâncias seguem o grande círculo entre os aeroportos. O alcance usa valores aproximados de catálogo. Os tempos usam o histórico de voos concluídos no PilOps na mesma rota e modelo, quando disponível; nos demais casos, são estimativas de catálogo sem vento. A duração histórica é uma referência, não uma garantia. Confirme a disponibilidade da aeronave, a carga e a viabilidade do voo no PilOps antes de despachar. Coordenadas de <a href="https://ourairports.com/data/">OurAirports</a>.</footer>
   </main>
   <dialog id="share-dialog" aria-labelledby="share-title">
     <form method="dialog" class="share-close"><button class="secondary small" data-en="Close">Fechar</button></form>

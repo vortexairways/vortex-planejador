@@ -32,6 +32,28 @@ test("desempata pela variedade e pelo nome, com posições consecutivas sem repe
   assert.equal(JSON.stringify(progress.ranking.map(p => [p.name, p.rank])), JSON.stringify([["A", 1], ["C", 2], ["B", 3]]));
 });
 
+test("ranking semanal não desaparece ao trocar as rotas do desafio", () => {
+  const flights = [flight("A", "2026-11-10", routes[0]), flight("B", "2026-11-10", routes[1])];
+  const first = operation.read({ ...config, routes: [routes[0]] }, routes);
+  const changed = operation.read({ ...config, routes: [routes[1]] }, routes);
+  assert.equal(operation.progress(first, flights).completed.length, 1);
+  assert.equal(operation.progress(changed, flights).completed.length, 1);
+  const ranking = operation.weekly(first, flights, routes);
+  assert.equal(ranking.completed.length, 2);
+  assert.equal(JSON.stringify(ranking.ranking), JSON.stringify(operation.weekly(changed, flights, routes).ranking));
+  assert.equal(JSON.stringify(ranking.ranking.map(p => p.rank)), "[1,2]");
+});
+
+test("ranking semanal exclui voos fora das rotas Vortex, não pagos, sem duração ou fora do período", () => {
+  const parsed = operation.read(config, routes);
+  const weekly = operation.weekly(parsed, [flight("A", "2026-11-09"), flight("B", "2026-11-15", routes[1]),
+    flight("C", "2026-11-08"), flight("C", "2026-11-16"), flight("C", "2026-11-10", routes[0], { paid: false }),
+    flight("C", "2026-11-10", routes[0], { minutes: 0 }),
+    flight("C", "2026-11-10", { origin: "KRDU", destination: "LEMD" })], routes);
+  assert.equal(weekly.completed.length, 2);
+  assert.equal(weekly.ranking.length, 2);
+});
+
 test("operações antigas com rota removida exibem o problema e excluem essa rota da contagem", () => {
   const parsed = operation.read(config, [routes[0]]);
   assert.equal(parsed.routes[1].route, null);
@@ -76,12 +98,12 @@ test("sem aeronave ou coordenadas, o compartilhamento não inventa duração ou 
   assert.ok(!text.includes("null") && !text.includes("undefined"));
 });
 
-test("compartilhamento informa bloco SimBrief e identifica fontes mistas", () => {
+test("compartilhamento informa referência do PilOps e identifica fontes mistas", () => {
   const base = { legs: routes, minutes: 525, miles: 3450, url: "https://example.com/" };
-  const direct = operation.share({ ...base, timeSource: "simbrief" });
-  assert.ok(direct.includes("bloco planejado no SimBrief ≈ 8h45"));
-  assert.ok(direct.includes("SimBrief planned block time ≈ 8h45"));
-  const mixed = operation.share({ ...base, timeSource: "mixed", simbriefLegs: 1 });
-  assert.ok(mixed.includes("SimBrief em 1/2 trechos; demais por catálogo"));
-  assert.ok(mixed.includes("SimBrief on 1/2 legs; others from catalogue"));
+  const direct = operation.share({ ...base, timeSource: "pilops" });
+  assert.ok(direct.includes("duração estimada pelo histórico do PilOps ≈ 8h45"));
+  assert.ok(direct.includes("estimated duration from PilOps history ≈ 8h45"));
+  const mixed = operation.share({ ...base, timeSource: "mixed", pilopsLegs: 1 });
+  assert.ok(mixed.includes("PilOps em 1/2 trechos; demais por catálogo"));
+  assert.ok(mixed.includes("PilOps on 1/2 legs; others from catalogue"));
 });

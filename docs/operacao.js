@@ -20,6 +20,16 @@ const VortexOperation = (() => {
     const eligible = new Set(operation.routes.filter(item => item.route).map(pair));
     const completed = flights.filter(flight => eligible.has(pair(flight)) && flight.date >= operation.start &&
       flight.date <= operation.end && flight.paid === true && flight.minutes > 0);
+    return standings(completed);
+  }
+
+  function weekly(operation, flights, routes) {
+    const eligible = new Set(routes.map(pair));
+    return standings(flights.filter(flight => eligible.has(pair(flight)) && flight.date >= operation.start &&
+      flight.date <= operation.end && flight.paid === true && flight.minutes > 0));
+  }
+
+  function standings(completed) {
     const pilots = new Map();
     for (const flight of completed) {
       const pilot = pilots.get(flight.pilot) || { name: flight.pilot, flights: 0, routes: new Set() };
@@ -33,7 +43,7 @@ const VortexOperation = (() => {
     return { completed, ranking };
   }
 
-  function share({ legs, plane, pilot, status = "today", minutes, miles, url, timeSource = "catalog", simbriefLegs = 0 }) {
+  function share({ legs, plane, pilot, status = "today", minutes, miles, url, timeSource = "catalog", pilopsLegs = 0 }) {
     const name = String(pilot || "").trim().replace(/^@/, "").replace(/[@`*<>\r\n]/g, "").slice(0, 40);
     const headings = legs.length > 1 ? {
       today: ["Meu plano de voos pela Vortex", "My Vortex flight plan"],
@@ -52,10 +62,10 @@ const VortexOperation = (() => {
     const duration = Number.isFinite(minutes) ? Math.floor(minutes / 60) + "h" + String(minutes % 60).padStart(2, "0") : null;
     const distance = Number.isFinite(miles) ? Math.round(miles) + " nm" : null;
     const facts = [name && "@" + name, routeLines, aircraft].filter(Boolean).join("\n");
-    const basisPT = timeSource === "simbrief" ? "bloco planejado no SimBrief ≈ " : "duração estimada ≈ ";
-    const basisEN = timeSource === "simbrief" ? "SimBrief planned block time ≈ " : "estimated duration ≈ ";
-    const mixedPT = timeSource === "mixed" ? "SimBrief em " + simbriefLegs + "/" + legs.length + " trechos; demais por catálogo" : null;
-    const mixedEN = timeSource === "mixed" ? "SimBrief on " + simbriefLegs + "/" + legs.length + " legs; others from catalogue" : null;
+    const basisPT = timeSource === "pilops" ? "duração estimada pelo histórico do PilOps ≈ " : "duração estimada ≈ ";
+    const basisEN = timeSource === "pilops" ? "estimated duration from PilOps history ≈ " : "estimated duration ≈ ";
+    const mixedPT = timeSource === "mixed" ? "PilOps em " + pilopsLegs + "/" + legs.length + " trechos; demais por catálogo" : null;
+    const mixedEN = timeSource === "mixed" ? "PilOps on " + pilopsLegs + "/" + legs.length + " legs; others from catalogue" : null;
     const estimatePT = [distance, duration && basisPT + duration, duration && mixedPT].filter(Boolean).join(" · ");
     const estimateEN = [distance, duration && basisEN + duration, duration && mixedEN].filter(Boolean).join(" · ");
     return ["✈️ " + heading[0], facts, estimatePT,
@@ -65,5 +75,5 @@ const VortexOperation = (() => {
       "Planejador / Planner · " + url].filter(line => line !== null).join("\n");
   }
 
-  return { read, progress, share, pair };
+  return { read, progress, weekly, share, pair };
 })();
