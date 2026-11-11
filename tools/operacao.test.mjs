@@ -75,3 +75,13 @@ test("sem aeronave ou coordenadas, o compartilhamento não inventa duração ou 
   assert.ok(!text.includes("estimated duration"));
   assert.ok(!text.includes("null") && !text.includes("undefined"));
 });
+
+test("compartilhamento informa bloco SimBrief e identifica fontes mistas", () => {
+  const base = { legs: routes, minutes: 525, miles: 3450, url: "https://example.com/" };
+  const direct = operation.share({ ...base, timeSource: "simbrief" });
+  assert.ok(direct.includes("bloco planejado no SimBrief ≈ 8h45"));
+  assert.ok(direct.includes("SimBrief planned block time ≈ 8h45"));
+  const mixed = operation.share({ ...base, timeSource: "mixed", simbriefLegs: 1 });
+  assert.ok(mixed.includes("SimBrief em 1/2 trechos; demais por catálogo"));
+  assert.ok(mixed.includes("SimBrief on 1/2 legs; others from catalogue"));
+});

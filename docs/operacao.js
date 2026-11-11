@@ -33,7 +33,7 @@ const VortexOperation = (() => {
     return { completed, ranking };
   }
 
-  function share({ legs, plane, pilot, status = "today", minutes, miles, url }) {
+  function share({ legs, plane, pilot, status = "today", minutes, miles, url, timeSource = "catalog", simbriefLegs = 0 }) {
     const name = String(pilot || "").trim().replace(/^@/, "").replace(/[@`*<>\r\n]/g, "").slice(0, 40);
     const headings = legs.length > 1 ? {
       today: ["Meu plano de voos pela Vortex", "My Vortex flight plan"],
@@ -52,8 +52,12 @@ const VortexOperation = (() => {
     const duration = Number.isFinite(minutes) ? Math.floor(minutes / 60) + "h" + String(minutes % 60).padStart(2, "0") : null;
     const distance = Number.isFinite(miles) ? Math.round(miles) + " nm" : null;
     const facts = [name && "@" + name, routeLines, aircraft].filter(Boolean).join("\n");
-    const estimatePT = [distance, duration && "duração estimada ≈ " + duration].filter(Boolean).join(" · ");
-    const estimateEN = [distance, duration && "estimated duration ≈ " + duration].filter(Boolean).join(" · ");
+    const basisPT = timeSource === "simbrief" ? "bloco planejado no SimBrief ≈ " : "duração estimada ≈ ";
+    const basisEN = timeSource === "simbrief" ? "SimBrief planned block time ≈ " : "estimated duration ≈ ";
+    const mixedPT = timeSource === "mixed" ? "SimBrief em " + simbriefLegs + "/" + legs.length + " trechos; demais por catálogo" : null;
+    const mixedEN = timeSource === "mixed" ? "SimBrief on " + simbriefLegs + "/" + legs.length + " legs; others from catalogue" : null;
+    const estimatePT = [distance, duration && basisPT + duration, duration && mixedPT].filter(Boolean).join(" · ");
+    const estimateEN = [distance, duration && basisEN + duration, duration && mixedEN].filter(Boolean).join(" · ");
     return ["✈️ " + heading[0], facts, estimatePT,
       "Quem vai somar mais um trecho hoje? Escolham suas rotas e compartilhem seus próprios voos no grupo!", "",
       "✈️ " + heading[1], facts, estimateEN,

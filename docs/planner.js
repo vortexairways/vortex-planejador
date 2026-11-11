@@ -23,6 +23,9 @@ let operationConfig = null;
 let shareLegs = [];
 let activityConfig = null;
 let activityDay = null;
+let sharedTimes = [], importedTimes = [];
+let simbriefBusy = false, simbriefFeedback = null;
+const simbriefKey = "vortex-simbrief-v1";
 // Cobertura de cada rota pela frota atual (preenchida em start()).
 let coverage = new Map();
 // Circuitos fechados formados por rotas cadastradas (preenchidos em start()).
@@ -81,12 +84,92 @@ function distance(from, to) {
 
 const nm = value => value === null ? T("distância indisponível", "distance unavailable") : number.format(Math.round(value)) + " nm";
 
-// Tempo de bloco estimado: cruzeiro + 30 min de táxi, subida e descida, sem vento.
-function blockMinutes(miles, plane) {
-  const performance = plane && performanceOf(plane.model);
-  if (!performance || miles === null) return null;
-  return Math.round((miles / performance.speed + 0.5) * 12) * 5;
+// O SimBrief só substitui o catálogo para a mesma direção e o mesmo tipo de aeronave.
+function blockEstimate(miles, plane, origin, destination) {
+  return VortexTimes.estimate({ miles, plane, origin, destination, performance: plane && performanceOf(plane.model),
+    references: [...importedTimes, ...sharedTimes] });
 }
+const blockMinutes = (miles, plane, origin, destination) => blockEstimate(miles, plane, origin, destination).minutes;
+function blockLabel(miles, plane, origin, destination) {
+  const estimate = blockEstimate(miles, plane, origin, destination);
+  return estimate.minutes === null ? "" : clock(estimate.minutes) + (estimate.source === "simbrief"
+    ? T(" · bloco SimBrief · plano de ", " · SimBrief block · plan from ") + dayText(simbriefDay(estimate.record.generatedAt))
+    : T(" · estimativa de catálogo", " · catalogue estimate"));
+}
+const timeBasis = summary => summary.source === "simbrief" ? "SimBrief" : summary.source === "mixed"
+  ? T("SimBrief em ", "SimBrief on ") + summary.count + "/" + summary.total + T(" trechos; demais por catálogo", " legs; others from catalogue")
+  : T("estimativa de catálogo", "catalogue estimate");
+const simbriefDay = timestamp => new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo" }).format(new Date(timestamp));
+
+function loadSimBrief() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(simbriefKey) || "null");
+    importedTimes = VortexTimes.records(saved?.references);
+    document.querySelector("#simbrief-user").value = typeof saved?.identifier === "string" ? saved.identifier.slice(0, 80) : "";
+  } catch { importedTimes = []; }
+}
+
+function renderSimBrief() {
+  const items = VortexTimes.records([...importedTimes, ...sharedTimes]);
+  const valid = items.filter(item => VortexTimes.active(item));
+  document.querySelector("#simbrief-summary").textContent = valid.length + T(" referência(s) de tempo disponível(is) · ver rotas e datas",
+    " time reference(s) available · view routes and dates");
+  document.querySelector("#simbrief-references").replaceChildren(...items.map(item => {
+    const row = element("li", "meta");
+    row.textContent = item.origin + " → " + item.destination + " · " + item.aircraftType + " · " + clock(Math.ceil(item.blockSeconds / 60)) +
+      T(" de bloco · plano de ", " block time · plan from ") + dayText(simbriefDay(item.generatedAt)) +
+      (VortexTimes.active(item) ? "" : T(" · vencida: importe um plano recente", " · expired: import a recent plan"));
+    return row;
+  }));
+  document.querySelector("#simbrief-feedback").textContent = simbriefBusy ? T("Consultando seu último plano…", "Fetching your latest plan…")
+    : simbriefFeedback ? T(...simbriefFeedback) : T("Importe quando quiser atualizar os tempos do seu plano.", "Import whenever you want to update your plan’s times.");
+  document.querySelector("#simbrief-import").disabled = simbriefBusy;
+  document.querySelector("#simbrief-clear").disabled = simbriefBusy;
+  document.querySelector("#simbrief-user").disabled = simbriefBusy;
+}
+
+document.querySelector("#simbrief-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (simbriefBusy) return;
+  const identifier = document.querySelector("#simbrief-user").value.trim();
+  const url = VortexTimes.endpoint(identifier);
+  if (!url) { simbriefFeedback = ["Informe seu usuário ou Pilot ID válido.", "Enter a valid username or Pilot ID."]; renderSimBrief(); return; }
+  simbriefBusy = true;
+  renderSimBrief();
+  try {
+    const response = await fetch(url, { cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: AbortSignal.timeout(20000) });
+    if (!response.ok) throw new Error();
+    const record = VortexTimes.readOFP(await response.json());
+    if (!record) throw new Error();
+    importedTimes = VortexTimes.records([record, ...importedTimes]);
+    let saved = true;
+    try { localStorage.setItem(simbriefKey, JSON.stringify({ identifier, references: importedTimes })); } catch { saved = false; }
+    simbriefFeedback = VortexTimes.active(record)
+      ? ["Plano importado: " + record.origin + " → " + record.destination + ". O tempo será usado na mesma rota e modelo.",
+        "Plan imported: " + record.origin + " → " + record.destination + ". Its time will be used for the same route and model."]
+      : ["Plano importado, mas está fora da validade de 30 dias. Gere um plano recente no SimBrief e importe novamente.",
+        "Plan imported, but it is outside the 30-day validity. Generate a recent SimBrief plan and import again."];
+    if (!saved) simbriefFeedback = simbriefFeedback.map((text, index) => text + (index ? " Browser storage unavailable: this import lasts for this page only."
+      : " Armazenamento indisponível: esta importação vale somente nesta página."));
+  } catch {
+    simbriefFeedback = ["Não foi possível importar. Confira o usuário/ID, gere um plano no SimBrief e tente novamente. As referências anteriores foram mantidas.",
+      "Could not import. Check your username/ID, generate a SimBrief plan and try again. Previous references were kept."];
+  } finally {
+    simbriefBusy = false;
+    paintAll();
+    if (document.querySelector("#share-dialog").open) updateShare();
+  }
+});
+
+document.querySelector("#simbrief-clear").addEventListener("click", () => {
+  importedTimes = [];
+  document.querySelector("#simbrief-user").value = "";
+  try { localStorage.removeItem(simbriefKey); } catch { /* A sessão também pode funcionar sem armazenamento. */ }
+  simbriefFeedback = ["Suas importações foram limpas. As referências publicadas pela companhia continuam disponíveis.",
+    "Your imports were cleared. Company-published references remain available."];
+  paintAll();
+  if (document.querySelector("#share-dialog").open) updateShare();
+});
 
 const clock = minutes => minutes === null ? "" :
   "≈ " + Math.floor(minutes / 60) + "h" + String(minutes % 60).padStart(2, "0");
@@ -339,7 +422,7 @@ function routeRow({ route, miles }) {
   if (currentOrigin()) head.append(button(T("Adicionar ao plano", "Add to plan"), "secondary small", () => addLeg(route)));
   row.append(head);
   row.append(element("span", "meta", [route.code, placeName(route.destination), nm(miles),
-    clock(blockMinutes(miles, plane))].filter(Boolean).join(" · ")));
+    blockLabel(miles, plane, route.origin, route.destination)].filter(Boolean).join(" · ")));
   if (plane) {
     row.append(reachTag(plane, miles));
   } else if (currentOrigin()) {
@@ -402,13 +485,13 @@ function renderPlan() {
     const item = element("li");
     item.append(element("span", "", [route.code === "Traslado" ? T("Traslado", "Ferry") : route.code,
       route.origin + " → " + route.destination, nm(miles),
-      clock(blockMinutes(miles, plane))].filter(Boolean).join(" · ")));
+      blockLabel(miles, plane, route.origin, route.destination)].filter(Boolean).join(" · ")));
     if (plane && reach(plane, miles) !== "ok") item.append(reachTag(plane, miles));
     list.append(item);
   }
   const total = legs.reduce((sum, leg) => sum + (leg.miles ?? 0), 0);
-  const times = legs.map(leg => blockMinutes(leg.miles, plane));
-  const totalTime = times.every(value => value !== null) ? " · " + clock(times.reduce((a, b) => a + b, 0)) + T(" de bloco", " block time") : "";
+  const times = VortexTimes.summary(legs.map(leg => blockEstimate(leg.miles, plane, leg.route.origin, leg.route.destination)));
+  const totalTime = times.minutes !== null ? " · " + clock(times.minutes) + T(" de bloco · ", " block time · ") + timeBasis(times) : "";
   planBox.append(heading, list, element("p", "meta", "Total: " + nm(total) + T(" em ", " in ") + legs.length +
     (legs.length > 1 ? T(" trechos", " legs") : T(" trecho", " leg")) +
     (plane ? totalTime : T(" · escolha uma aeronave para checar alcance e tempo", " · pick an aircraft to check range and time"))));
@@ -512,7 +595,7 @@ function repositionOptions(plane) {
     const miles = distance(plane.airport, code);
     const flyable = routes.filter(route => route.origin === code && canFly(plane, route.origin, route.destination));
     const needed = flyable.filter(route => !coverage.get(route)?.here.length);
-    return { code, miles, flyable, needed, minutes: blockMinutes(miles, plane) };
+    return { code, miles, flyable, needed, minutes: blockMinutes(miles, plane, plane.airport, code) };
   }).filter(option => canFly(plane, plane.airport, option.code) && option.flyable.length)
     .sort((a, b) => (b.needed.length > 0) - (a.needed.length > 0) || a.miles - b.miles)
     .map(option => ({ ...option, hangar: option.code === plane.base }))
@@ -601,7 +684,7 @@ function renderAlerts() {
     for (const option of options) {
       const line = element("div", "ferry");
       line.append(element("span", "", T("Traslado para ", "Ferry to ") + option.code + " (" + placeName(option.code) + ") · " +
-        nm(option.miles) + (option.minutes ? " · " + clock(option.minutes) : "") + " · " +
+        nm(option.miles) + (option.minutes ? " · " + blockLabel(option.miles, plane, plane.airport, option.code) : "") + " · " +
         (option.needed.length ? option.needed.length + (option.needed.length > 1 ? T(" rotas sem aeronave livre ali", " routes with no free aircraft there")
           : T(" rota sem aeronave livre ali", " route with no free aircraft there"))
           : option.flyable.length + (option.flyable.length > 1 ? T(" rotas de partida", " departing routes") : T(" rota de partida", " departing route")))));
@@ -747,9 +830,9 @@ function circuitRow(circuit, pairs) {
     document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
   }));
   row.append(head);
-  const times = plane ? circuit.legs.map((leg, i) => blockMinutes(circuit.miles[i], plane)) : [];
-  const total = times.length && times.every(value => value !== null)
-    ? clock(times.reduce((a, b) => a + b, 0)) + T(" de bloco com ", " block time with ") + plane.model : "";
+  const times = VortexTimes.summary(plane ? circuit.legs.map((leg, i) => blockEstimate(circuit.miles[i], plane, leg.origin, leg.destination)) : []);
+  const total = times.minutes !== null
+    ? clock(times.minutes) + T(" de bloco com ", " block time with ") + plane.model + " · " + timeBasis(times) : "";
   row.append(element("span", "meta", [circuit.legs.length + T(" trechos", " legs"), nm(circuit.total),
     T("maior trecho ", "longest leg ") + nm(circuit.longest), total].filter(Boolean).join(" · ")));
   const never = circuit.legs.filter(leg => !pairs.has(leg.origin + "-" + leg.destination)).length;
@@ -1107,6 +1190,8 @@ function renderActivity(window, counts) {
 
 async function start() {
   applyStaticTexts();
+  loadSimBrief();
+  renderSimBrief();
   document.querySelector("#snapshot-time").textContent = T("Carregando dados da Vortex…", "Loading Vortex data…");
   document.querySelector("#snapshot-note").textContent = T("A frota e as rotas vêm da última coleta no PilOps.",
     "Fleet and routes come from the last PilOps sync.");
@@ -1138,6 +1223,10 @@ async function start() {
     const response = await fetch("./atividade.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) activityConfig = VortexActivity.read(await response.json());
   } catch { /* Sem configuração válida, não se atribui alerta de inatividade. */ }
+  try {
+    const response = await fetch("./tempos-simbrief.json?t=" + Date.now(), { cache: "no-store" });
+    if (response.ok) sharedTimes = VortexTimes.records((await response.json()).references);
+  } catch { /* O catálogo e as importações locais continuam disponíveis. */ }
   coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
   airportCodes = [...new Set([
@@ -1168,6 +1257,7 @@ async function start() {
 // Tudo o que depende do idioma: textos fixos, cabeçalho da coleta, listas dos filtros e todas as seções.
 function paintAll() {
   applyStaticTexts();
+  renderSimBrief();
   if (!fleet.length) return;
   // Em inglês a data sai por extenso ("7 Nov 2026"), sem a ambiguidade dia/mês do formato numérico.
   const date = new Intl.DateTimeFormat(locale(), {
@@ -1232,7 +1322,8 @@ const where = code => code + " (" + placeName(code) + ")";
 const plural = (count, one, many) => count + " " + (count === 1 ? one : many);
 const flyableFrom = (plane, code) => routes.filter(route => route.origin === code && canFly(plane, route.origin, route.destination));
 const legText = route => route.code + " " + route.origin + " → " + route.destination;
-const blockText = (miles, plane) => nm(miles) + (blockMinutes(miles, plane) ? ", " + clock(blockMinutes(miles, plane)) : "");
+const blockText = (miles, plane, origin, destination) => nm(miles) + (blockLabel(miles, plane, origin, destination) ?
+  ", " + blockLabel(miles, plane, origin, destination) : "");
 
 const activityLevels = () => ({
   parada: [T("Parada", "Idle"), "bad"],
@@ -1319,7 +1410,7 @@ function reallocCards() {
       }
       assigned.add(plane.prefix);
       const via = target?.via || null;
-      const leg = blockText(distance(plane.airport, code), plane);
+      const leg = blockText(distance(plane.airport, code), plane, plane.airport, code);
       const action = via
         ? T("Voe a rota " + legText(via) + " (" + leg + "). Ela já deixa a aeronave em " + where(code) + ".",
           "Fly route " + legText(via) + " (" + leg + "). It leaves the aircraft at " + where(code) + ".")
@@ -1356,7 +1447,7 @@ function reallocCards() {
     if (needAirports.has(route.destination)) notes.push(T("E ela chega a " + route.destination + ", onde falta aeronave para outras rotas.",
       "And it lands at " + route.destination + ", where other routes are missing an aircraft."));
     cards.push({ kind: "voar", item,
-      action: T("Voe a rota ", "Fly route ") + legText(route) + " (" + blockText(distance(route.origin, route.destination), plane) + ").",
+      action: T("Voe a rota ", "Fly route ") + legText(route) + " (" + blockText(distance(route.origin, route.destination), plane, route.origin, route.destination) + ").",
       why: [T((item.level === "parada" ? "Está parada" : "Está sem voar " + agoText(item.idleDays)) + " em " + where(plane.airport) +
         ", que tem rota ao alcance dela.",
         (item.level === "parada" ? "It is idle at " : "Its last flight was " + agoText(item.idleDays) + " and it sits at ") + where(plane.airport) +
@@ -1660,10 +1751,10 @@ function renderOperation() {
     }
     const available = coverage.get(route);
     const reference = available.here[0] || available.capable[0];
-    const minutes = blockMinutes(available.miles, reference);
+    const minutes = blockMinutes(available.miles, reference, route.origin, route.destination);
     card.append(element("p", "meta", route.code + " · " + nm(available.miles)),
       element("span", "tag " + coverageText()[available.status][1], coverageText()[available.status][0]));
-    if (minutes !== null) card.append(element("p", "meta", clock(minutes) + T(" de bloco · referência ", " block time · reference ") + reference.model));
+    if (minutes !== null) card.append(element("p", "meta", blockLabel(available.miles, reference, route.origin, route.destination) + T(" · referência ", " · reference ") + reference.model));
     card.append(element("p", "meta", T("Voos lidos no período: ", "Flights read in the period: ") +
       completed.filter(flight => VortexOperation.pair(flight) === VortexOperation.pair(route)).length));
     const actions = element("div", "plan-actions");
@@ -1717,7 +1808,7 @@ function updateShare() {
   if (!shareLegs.length) return;
   const plane = fleet.find(item => item.prefix === document.querySelector("#share-aircraft").value);
   const distances = shareLegs.map(leg => distance(leg.origin, leg.destination));
-  const times = distances.map(miles => blockMinutes(miles, plane));
+  const times = VortexTimes.summary(shareLegs.map((leg, index) => blockEstimate(distances[index], plane, leg.origin, leg.destination)));
   const url = new URL("https://vortexairways.github.io/vortex-planejador/");
   url.searchParams.set("from", shareLegs[0].origin);
   url.searchParams.set("to", shareLegs[0].destination);
@@ -1726,7 +1817,7 @@ function updateShare() {
   url.hash = "map-title";
   document.querySelector("#share-message").value = VortexOperation.share({ legs: shareLegs, plane,
     pilot: document.querySelector("#share-pilot").value, status: document.querySelector("#share-status").value,
-    minutes: times.every(value => value !== null) ? times.reduce((sum, value) => sum + value, 0) : null,
+    minutes: times.minutes, timeSource: times.source, simbriefLegs: times.count,
     miles: distances.every(value => value !== null) ? distances.reduce((sum, value) => sum + value, 0) : null,
     url: url.href });
   shareFeedback();

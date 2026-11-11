@@ -1,0 +1,12 @@
+{
+  "references": [
+    {
+      "origin": "LEMD",
+      "destination": "KRDU",
+      "aircraftType": "B78X",
+      "blockSeconds": 31497,
+      "enrouteSeconds": 29817,
+      "generatedAt": "2026-11-10T12:34:11.000Z"
+    }
+  ]
+}

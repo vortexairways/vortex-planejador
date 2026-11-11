@@ -44,6 +44,14 @@ A retirada dos dados atuais não apaga revisões antigas do GitHub. A limpeza do
 
 Edite os arquivos em `docs/`, faça o commit e `git push`. O GitHub Pages publica sozinho.
 
+## Tempos do SimBrief
+
+O cálculo usa o **bloco estimado** (`times.est_block`) de um plano SimBrief datado, apenas para a mesma origem, destino e variante de aeronave. Não confunde o tempo no ar (`est_time_enroute`), o bloco agendado (`sched_block`) ou a duração realizada no PilOps. A referência LEMD → KRDU / B78X, conferida no plano de 10/11/2026, resulta em **8h45 de bloco** e **8h17 no ar**, arredondando para cima ao minuto. Apenas esses campos operacionais mínimos ficam em `docs/tempos-simbrief.json`, sem ID de conta, pesos, combustível, tripulação ou documento completo.
+
+Cada piloto pode informar seu usuário ou Pilot ID em **Tempos do SimBrief → Importar último plano**. A consulta usa [o endpoint oficial de leitura](https://developers.navigraph.com/docs/simbrief/fetching-ofp-data), `json=v2` e identificação do cliente. A [orientação oficial atualizada](https://forum.navigraph.com/t/fetching-a-users-latest-ofp-data/5297) exige ação do usuário: não há consulta periódica, geração de plano nem chave secreta no site. O usuário/ID e os tempos importados ficam somente no navegador do piloto; falhas preservam as referências anteriores. Limpar as importações não remove as referências publicadas pela companhia.
+
+As referências valem por 30 dias. Sem referência válida para o mesmo trecho e variante, usa-se o catálogo com indicação explícita. Modelos genéricos sem variante inequívoca não são associados a um tipo SimBrief por aproximação. Um plano com vários trechos soma cada estimativa separadamente e identifica quando mistura SimBrief e catálogo, inclusive no texto compartilhado. Datas são exibidas pelo calendário de Brasília. Validação: `node --test tools/tempos.test.mjs tools/operacao.test.mjs`.
+
 ## Operação da semana e compartilhamento
 
 A operação fica no início do planejador. O botão **Editar operação** abre `docs/operacao.json` no GitHub. Uma conta com acesso de edição ao repositório pode alterar o título em português e inglês, as datas de início e fim (inclusive, no calendário de Brasília), a meta de voos e até cinco pares de origem/destino já cadastrados. Os trechos são numerados na ordem da seleção; uma sequência contínua também mostra o percurso completo em destaque. Ao salvar no GitHub, o Pages publica a seleção para todos. A sincronização de dados preserva esse arquivo.

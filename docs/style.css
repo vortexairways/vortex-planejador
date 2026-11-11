@@ -17,6 +17,10 @@
 .pilot-alert, .pilot-approved { display: inline-flex; align-items: center; gap: .25rem; border-radius: .35rem; padding: .1rem .4rem; font-weight: 800; }
 .pilot-alert { color: #951c2b; background: #fff0f2; border: 1px solid #d4939c; }
 .pilot-approved { color: #145c32; background: #e3f6ea; border: 1px solid #83b99a; }
+.simbrief-card { margin-bottom: 1rem; }
+.simbrief-form { display: flex; flex-wrap: wrap; align-items: end; gap: .6rem; margin: .8rem 0; }
+.simbrief-form label { flex: 1 1 240px; font-size: .86rem; font-weight: 650; }
+.simbrief-form input { display: block; width: 100%; margin-top: .3rem; padding: .6rem; border: 1px solid #bcc9de; border-radius: .55rem; font: inherit; }
 .operation-route .plan-actions { margin-top: .7rem; }
 .weekly-ranking { width: 100%; border-collapse: collapse; font-size: .85rem; }
 .weekly-ranking th, .weekly-ranking td { text-align: left; border-bottom: 1px solid #e4eaf3; padding: .45rem .65rem; }
