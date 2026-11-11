@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-10T21:36:21.613Z",
+ "capturedAt": "2026-11-11T01:38:21.246Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -33,7 +33,7 @@
   {
    "prefix": "NPC7VI",
    "model": "Airbus A320neo",
-   "airport": "LEMD",
+   "airport": "LEXJ",
    "base": "EFHK",
    "status": "Sem alerta no cartão"
   },
@@ -47,9 +47,9 @@
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "SBGL",
+   "airport": "LEMD",
    "base": "LEMD",
-   "status": "EM USO"
+   "status": "Atenção em motor"
   },
   {
    "prefix": "N4XBCS",
@@ -311,6 +311,14 @@
    "joined": "2026-10-20"
   },
   {
+   "name": "nassis89",
+   "role": null,
+   "level": null,
+   "totalMinutes": 5280,
+   "companyMinutes": 560,
+   "joined": "2026-11-10"
+  },
+  {
    "name": "AlphaPrime",
    "role": null,
    "level": null,
@@ -322,33 +330,9 @@
    "name": "PaxArcturia",
    "role": null,
    "level": null,
-   "totalMinutes": 510,
-   "companyMinutes": 0,
+   "totalMinutes": 557,
+   "companyMinutes": 46,
    "joined": "2026-11-07"
-  },
-  {
-   "name": "marcelocanela",
-   "role": null,
-   "level": null,
-   "totalMinutes": 13119,
-   "companyMinutes": 0,
-   "joined": "2026-11-07"
-  },
-  {
-   "name": "Harris",
-   "role": null,
-   "level": null,
-   "totalMinutes": 5211,
-   "companyMinutes": 0,
-   "joined": "2026-10-23"
-  },
-  {
-   "name": "PonAir",
-   "role": null,
-   "level": null,
-   "totalMinutes": 2595,
-   "companyMinutes": 0,
-   "joined": "2026-10-31"
   },
   {
    "name": "RCassalati",
@@ -375,23 +359,32 @@
    "joined": "2026-11-03"
   },
   {
-   "name": "nassis89",
+   "name": "marcelocanela",
    "role": null,
    "level": null,
-   "totalMinutes": 4720,
+   "totalMinutes": 13119,
    "companyMinutes": 0,
-   "joined": "2026-11-10"
+   "joined": "2026-11-07"
+  },
+  {
+   "name": "Harris",
+   "role": null,
+   "level": null,
+   "totalMinutes": 5211,
+   "companyMinutes": 0,
+   "joined": "2026-10-23"
+  },
+  {
+   "name": "PonAir",
+   "role": null,
+   "level": null,
+   "totalMinutes": 2595,
+   "companyMinutes": 0,
+   "joined": "2026-10-31"
   }
  ],
- "pilotsCapturedAt": "2026-11-10T21:36:21.613Z",
+ "pilotsCapturedAt": "2026-11-11T01:38:21.246Z",
  "activeFlights": [
-  {
-   "pilot": "nassis89",
-   "model": "Douglas MD-11",
-   "origin": "SBGL",
-   "destination": "LEMD",
-   "status": "Em voo"
-  },
   {
    "pilot": "astronauta",
    "model": "Douglas MD-11",
@@ -400,7 +393,7 @@
    "status": "Em voo"
   }
  ],
- "activeFlightsCapturedAt": "2026-11-10T21:36:21.613Z",
+ "activeFlightsCapturedAt": "2026-11-11T01:38:21.246Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -437,6 +430,30 @@
    "nm": 3448.68,
    "payload": 109854,
    "revenue": 4934383.24
+  },
+  {
+   "pilot": "PaxArcturia",
+   "prefix": "NPC7VI",
+   "model": "Airbus A320neo",
+   "origin": "LEMD",
+   "destination": "LEXJ",
+   "date": "2026-11-10",
+   "minutes": 46,
+   "nm": 177.68,
+   "payload": 1482,
+   "revenue": 16439.9
+  },
+  {
+   "pilot": "nassis89",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "SBGL",
+   "destination": "LEMD",
+   "date": "2026-11-10",
+   "minutes": 559,
+   "nm": 4395.57,
+   "payload": 149359,
+   "revenue": 8797235.92
   },
   {
    "pilot": "astronauta",
