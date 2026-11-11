@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-11T01:38:21.246Z",
+ "capturedAt": "2026-11-11T11:42:23.205Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -35,7 +35,7 @@
    "model": "Airbus A320neo",
    "airport": "LEXJ",
    "base": "EFHK",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N6KZLB",
@@ -47,9 +47,9 @@
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "EFHK",
    "base": "LEMD",
-   "status": "Atenção em motor"
+   "status": "EM USO · Atenção em motor"
   },
   {
    "prefix": "N4XBCS",
@@ -91,7 +91,7 @@
    "model": "Douglas MD-11",
    "airport": "RJTT",
    "base": "OTHH",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NK4I2I",
@@ -103,9 +103,9 @@
   {
    "prefix": "NE2XUQ",
    "model": "Douglas MD-11",
-   "airport": "KRDU",
+   "airport": "SBKP",
    "base": "SUMU",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NLFTDW",
@@ -117,21 +117,6 @@
  ],
  "routes": [
   {
-   "origin": "SBRF",
-   "destination": "SBGL",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "LEMD",
-   "destination": "RJTT",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "RJTT",
-   "destination": "KRDU",
-   "code": "VTX0001"
-  },
-  {
    "origin": "LEMD",
    "destination": "KRDU",
    "code": "VTX0001"
@@ -142,8 +127,8 @@
    "code": "VTX0001"
   },
   {
-   "origin": "LEMD",
-   "destination": "OTHH",
+   "origin": "SBRF",
+   "destination": "SBGL",
    "code": "VTX0001"
   },
   {
@@ -152,18 +137,28 @@
    "code": "VTX0001"
   },
   {
+   "origin": "LEMD",
+   "destination": "OTHH",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "RJTT",
+   "code": "VTX0001"
+  },
+  {
    "origin": "RJTT",
-   "destination": "EFHK",
+   "destination": "KRDU",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "EFHK",
+   "destination": "SBSP",
    "code": "VTX0002"
   },
   {
    "origin": "KRDU",
    "destination": "SBGL",
-   "code": "VTX0002"
-  },
-  {
-   "origin": "EFHK",
-   "destination": "SBSP",
    "code": "VTX0002"
   },
   {
@@ -177,6 +172,11 @@
    "code": "VTX0002"
   },
   {
+   "origin": "RJTT",
+   "destination": "EFHK",
+   "code": "VTX0002"
+  },
+  {
    "origin": "SBMA",
    "destination": "SBRF",
    "code": "VTX0003"
@@ -187,13 +187,13 @@
    "code": "VTX0005"
   },
   {
-   "origin": "LPMT",
-   "destination": "LPPT",
+   "origin": "SBKP",
+   "destination": "SBGL",
    "code": "VTX0006"
   },
   {
-   "origin": "SBKP",
-   "destination": "SBGL",
+   "origin": "LPMT",
+   "destination": "LPPT",
    "code": "VTX0006"
   },
   {
@@ -242,44 +242,14 @@
    "code": "VTX0093"
   },
   {
-   "origin": "SUMU",
-   "destination": "SBCG",
-   "code": "VTX0099"
-  },
-  {
    "origin": "SBCG",
    "destination": "SBMA",
    "code": "VTX0099"
   },
   {
-   "origin": "SBCP",
-   "destination": "OMDM",
-   "code": "VTX3331"
-  },
-  {
-   "origin": "SBKP",
-   "destination": "KRDU",
-   "code": "VTX3333"
-  },
-  {
-   "origin": "KRDU",
-   "destination": "SBKP",
-   "code": "VTX4444"
-  },
-  {
-   "origin": "RJTT",
-   "destination": "OMDM",
-   "code": "VTX4444"
-  },
-  {
-   "origin": "OMDM",
-   "destination": "SBCP",
-   "code": "VTX4444"
-  },
-  {
-   "origin": "OMDM",
-   "destination": "RJTT",
-   "code": "VTX5555"
+   "origin": "SUMU",
+   "destination": "SBCG",
+   "code": "VTX0099"
   },
   {
    "origin": "LTAI",
@@ -305,6 +275,36 @@
    "origin": "SBSP",
    "destination": "LTAI",
    "code": "VTX2222"
+  },
+  {
+   "origin": "SBCP",
+   "destination": "OMDM",
+   "code": "VTX3331"
+  },
+  {
+   "origin": "SBKP",
+   "destination": "KRDU",
+   "code": "VTX3333"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "OMDM",
+   "code": "VTX4444"
+  },
+  {
+   "origin": "OMDM",
+   "destination": "SBCP",
+   "code": "VTX4444"
+  },
+  {
+   "origin": "KRDU",
+   "destination": "SBKP",
+   "code": "VTX4444"
+  },
+  {
+   "origin": "OMDM",
+   "destination": "RJTT",
+   "code": "VTX5555"
   }
  ],
  "hubs": [
@@ -323,8 +323,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 121155,
-   "companyMinutes": 110855,
+   "totalMinutes": 121613,
+   "companyMinutes": 111313,
    "joined": "2026-05-23"
   },
   {
@@ -339,8 +339,8 @@
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 5280,
-   "companyMinutes": 560,
+   "totalMinutes": 5528,
+   "companyMinutes": 808,
    "joined": "2026-11-10"
   },
   {
@@ -408,8 +408,19 @@
    "joined": "2026-10-31"
   }
  ],
- "pilotsCapturedAt": "2026-11-11T01:38:21.246Z",
+ "pilotsCapturedAt": "2026-11-11T11:42:23.205Z",
  "flights": [
+  {
+   "pilot": "nassis89",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-11",
+   "minutes": 248,
+   "nm": 1590.35,
+   "paid": true
+  },
   {
    "pilot": "astronauta",
    "prefix": "NUNFUD",
@@ -463,6 +474,17 @@
    "date": "2026-11-10",
    "minutes": 559,
    "nm": 4395.57,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NE2XUQ",
+   "model": "Douglas MD-11",
+   "origin": "KRDU",
+   "destination": "SBKP",
+   "date": "2026-11-10",
+   "minutes": 457,
+   "nm": 3963.33,
    "paid": true
   },
   {
@@ -776,16 +798,16 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 31,
+  "readCount": 33,
   "groups": [
    {
     "origin": "LEMD",
     "destination": "EFHK",
     "model": "Douglas MD-11",
-    "count": 5,
-    "lastDate": "2026-11-09",
-    "change": 0.069439,
-    "state": "estavel"
+    "count": 6,
+    "lastDate": "2026-11-11",
+    "change": -0.490198,
+    "state": "queda"
    },
    {
     "origin": "SUMU",
@@ -910,6 +932,15 @@
     "model": "Douglas MD-11",
     "count": 1,
     "lastDate": "2026-11-08",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "KRDU",
+    "destination": "SBKP",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-10",
     "change": null,
     "state": "unico"
    },
