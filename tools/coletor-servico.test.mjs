@@ -24,7 +24,7 @@ async function fixture() {
   const repo = path.join(root, "work"), remote = path.join(root, "remote.git");
   mkdirSync(path.join(repo, "coletor/extensao-chrome"), { recursive: true });
   mkdirSync(path.join(repo, "docs"));
-  for (const file of ["coletor/coletor-local.mjs", "coletor/dados.mjs", "coletor/extensao-chrome/manifest.json"]) copyFileSync(path.join(project, file), path.join(repo, file));
+  for (const file of [".gitignore", "coletor/coletor-local.mjs", "coletor/dados.mjs", "coletor/publicacao.mjs", "coletor/extensao-chrome/manifest.json"]) copyFileSync(path.join(project, file), path.join(repo, file));
   const original = JSON.stringify({ ...input, capturedAt: "2026-11-09T12:00:00Z" });
   writeFileSync(path.join(repo, "docs/dados.json"), original);
   git(repo, "init", "-b", "main");
@@ -82,10 +82,17 @@ test("modo automatico publica somente a coleta validada em um remoto de teste lo
   try {
     const child = f.launch(); await f.ready(child);
     const { lease } = await (await f.post("job", {})).json();
-    const response = await f.post("snapshot", { ...input, lease });
+    const response = await f.post("snapshot", { ...input, lease, activeFlights: [{ pilot: "Privado" }],
+      flights: [{ pilot: "Piloto", prefix: "NABCDE", model: "Test Plane", origin: "LEMD", destination: "KRDU",
+        date: "2026-11-10", minutes: 60, nm: 3000, payload: 100, revenue: 53123.47 }] });
     assert.equal(response.status, 200); assert.equal(await child.done, 0);
     const data = JSON.parse(readFileSync(path.join(f.repo, "docs/dados.json")));
-    assert.ok(data.activeFlightsCapturedAt); assert.equal(data.flights.length, 0);
+    assert.ok(data.revenueMonitor); assert.equal(data.flights.length, 1); assert.equal("activeFlights" in data, false);
+    assert.equal(data.flights[0].paid, true); assert.equal("revenue" in data.flights[0], false);
+    assert.equal("payload" in data.flights[0], false);
+    const privateData = JSON.parse(readFileSync(path.join(f.repo, ".vortex-local/dados.json")));
+    assert.equal(privateData.flights[0].revenue, 53123.47);
+    assert.equal(git(f.repo, "ls-files", ".vortex-local"), "");
     const local = git(f.repo, "rev-parse", "HEAD");
     const remote = execFileSync("git", ["--git-dir", f.remote, "rev-parse", "refs/heads/main"], { encoding: "utf8", windowsHide: true }).trim();
     assert.equal(local, remote); assert.equal(git(f.repo, "status", "--porcelain"), "");

@@ -25,20 +25,6 @@ function readCompany(section, openTab) {
   }
   const body = document.body.innerText;
   const split = el => el.innerText.split("\n").map(t => t.trim()).filter(Boolean);
-  if (section === "Visão Geral") {
-    const liveHeading = [...document.querySelectorAll("h3")].find(el => el.innerText.trim() === "Voos ao vivo");
-    const panel = liveHeading?.closest("aside");
-    if (!panel) return null;
-    const expected = Number(panel.innerText.match(/(\d+)\s+ativos?/i)?.[1]);
-    const flights = [...panel.querySelectorAll("button")].map(card => {
-      const fields = [...card.querySelectorAll("p")].map(el => el.innerText.trim());
-      const route = /^([A-Z0-9]{3,5})\s*(?:->|→)\s*([A-Z0-9]{3,5})$/.exec(fields[0] || "");
-      const pilot = /^@([\w.-]{1,40})\s+-\s+(.+)$/.exec(fields[1] || "");
-      const status = split(card).at(-1);
-      return route && pilot && status ? { origin: route[1], destination: route[2], pilot: pilot[1], model: pilot[2], status } : null;
-    });
-    return Number.isInteger(expected) && flights.length === expected && flights.every(Boolean) ? flights : null;
-  }
   if (section === "Frota") {
     const reportedFleet = Number(body.match(/(?:^|\n)FROTA\s*\n\s*(\d+)/i)?.[1]);
     const buttons = [...document.querySelectorAll('img[alt^="Aircraft "]')]
@@ -188,7 +174,7 @@ async function section(tabId, name) {
       if (result !== null && result !== undefined) return result;
       const tab = await chrome.tabs.get(tabId);
       opened = tab.url?.startsWith(company + "?tab=") &&
-        new URL(tab.url).searchParams.get("tab") === { "Visão Geral":"overview", Frota:"fleet", Hangares:"hangars", Hubs:"hubs", Rotas:"routes", Pilotos:"pilots", Voos:"flights" }[name];
+        new URL(tab.url).searchParams.get("tab") === { Frota:"fleet", Hangares:"hangars", Hubs:"hubs", Rotas:"routes", Pilotos:"pilots", Voos:"flights" }[name];
     } catch { /* Wait for the company's page to finish loading. */ }
     await new Promise(resolve => setTimeout(resolve, 500));
   }
@@ -247,11 +233,10 @@ async function run() {
       }
     }
     const flights = await optional("Voos");
-    const activeFlights = await optional("Visão Geral");
     await local("snapshot", {
       lease: job.lease,
       fleet: fleet.map(p => ({ ...p, base: hangars[p.prefix] ?? null })),
-      reportedFleet, hubs, routes, pilots, flights, activeFlights, notes,
+      reportedFleet, hubs, routes, pilots, flights, notes,
     });
     await chrome.action.setBadgeText({ text: "OK" });
     await chrome.action.setTitle({ title: "Vortex · coleta concluída" });

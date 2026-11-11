@@ -1,14 +1,17 @@
 // Coleta única: espera a extensão do Chrome ler a Vortex no PilOps, grava docs/dados.json
 // e publica no GitHub (commit + push). Rode pelo atalho "Sincronizar Vortex".
 import { createHash, randomUUID } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { buildSnapshot } from "./dados.mjs";
+import { publicSnapshot } from "./publicacao.mjs";
 
 const repo = fileURLToPath(new URL("../", import.meta.url));
 const dataFile = new URL("../docs/dados.json", import.meta.url);
+const privateDir = new URL("../.vortex-local/", import.meta.url);
+const privateFile = new URL("dados.json", privateDir);
 const manifest = JSON.parse(readFileSync(new URL("./extensao-chrome/manifest.json", import.meta.url), "utf8"));
 const hex = createHash("sha256").update(Buffer.from(manifest.key, "base64")).digest("hex").slice(0, 32);
 const extensionOrigin = "chrome-extension://" + [...hex].map(n => String.fromCharCode(97 + parseInt(n, 16))).join("");
@@ -37,15 +40,15 @@ function publish(snapshot, report) {
       }
     }
   }
-  writeFileSync(dataFile, JSON.stringify(snapshot, null, 1) + "\n");
+  mkdirSync(privateDir, { recursive: true });
+  writeFileSync(privateFile, JSON.stringify(snapshot, null, 1) + "\n");
+  writeFileSync(dataFile, JSON.stringify(publicSnapshot(snapshot), null, 1) + "\n");
   console.log("Coleta gravada: " + snapshot.fleet.length + " aeronaves, " + snapshot.routes.length +
     " rotas e " + snapshot.hubs.length + " hubs.");
   console.log(report.pilotsRead ? "Pilotos: " + snapshot.pilots.length + " lidos."
     : "Pilotos: " + (report.pilotsInvalid ? "leitura inválida" : "aba não lida") + "; mantidos os da coleta anterior.");
   console.log(report.flightsRead ? "Voos: " + report.flightsAdded + " novos (total guardado: " + snapshot.flights.length + ")."
     : "Voos: " + (report.flightsInvalid ? "leitura inválida" : "aba não lida") + "; histórico guardado mantido.");
-  console.log(report.activeFlightsRead ? "Voos em andamento: " + snapshot.activeFlights.length + " lidos."
-    : "Voos em andamento: leitura indisponível; mantido o último registro e seu horário.");
   if (snapshot.reportedFleet !== snapshot.fleet.length) {
     // Em 04/11/2026 a API do PilOps listava 15 aeronaves com o contador em 16: a diferença é do PilOps.
     console.log("Observação: o contador do PilOps mostra " + snapshot.reportedFleet + " aeronaves, mas o PilOps lista " +
@@ -123,13 +126,14 @@ const server = createServer(async (req, res) => {
       }
       return;
     }
-    const { fleet, routes, hubs, reportedFleet, pilots, flights, activeFlights, notes } = input;
+    const { fleet, routes, hubs, reportedFleet, pilots, flights, notes } = input;
     if (Array.isArray(notes)) {
       for (const note of notes.slice(0, 5)) if (typeof note === "string") console.log("Extensão: " + note.slice(0, 300));
     }
     let previous = null;
-    try { previous = JSON.parse(readFileSync(dataFile, "utf8")); } catch { /* primeira coleta */ }
-    const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights, activeFlights }, previous);
+    try { previous = JSON.parse(readFileSync(privateFile, "utf8")); }
+    catch { try { previous = JSON.parse(readFileSync(dataFile, "utf8")); } catch { /* primeira coleta */ } }
+    const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights }, previous);
     if (!built) {
       json(res, 422, { error: "Leitura incompleta." });
       return finish(1, "A leitura veio incompleta ou inválida. Os dados publicados foram mantidos.");

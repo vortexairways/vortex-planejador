@@ -10,12 +10,12 @@ const routes = [
 ];
 const config = { title: { pt: "Operação", en: "Operation" }, start: "2026-11-09", end: "2026-11-15", goal: 10, routes };
 const flight = (pilot, date, route = routes[0], extra = {}) =>
-  ({ ...route, pilot, date, revenue: 100, minutes: 60, ...extra });
+  ({ ...route, pilot, date, paid: true, minutes: 60, ...extra });
 
 test("conta apenas voos pagos das rotas em destaque dentro das datas inclusivas", () => {
   const progress = operation.progress(operation.read(config, routes), [
     flight("A", "2026-11-08"), flight("A", "2026-11-09"), flight("A", "2026-11-15"),
-    flight("A", "2026-11-16"), flight("A", "2026-11-10", routes[0], { revenue: 0 }),
+    flight("A", "2026-11-16"), flight("A", "2026-11-10", routes[0], { paid: false }),
     flight("A", "2026-11-10", routes[0], { minutes: 0 }),
     flight("A", "2026-11-10", { origin: "KRDU", destination: "LEMD" }),
   ]);

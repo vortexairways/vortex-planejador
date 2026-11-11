@@ -5,14 +5,15 @@ Site estático (GitHub Pages) com o mapa, a frota e as rotas da Vortex no PilOps
 ## Estrutura
 
 - `docs/`: o site publicado pelo GitHub Pages.
-  - `dados.json`: frota, rotas, hubs, pilotos e histórico de voos acumulado (gerado pelo coletor; não editar à mão).
-  - `aeronaves.js`: catálogo do Mercado de Aeronaves do PilOps (135 modelos, com preço) e alcance/cruzeiro aproximados de cada um. Ajuste aqui se um modelo tiver valores diferentes ou se o PilOps lançar aeronaves novas.
+  - `dados.json`: frota, rotas, hubs, pilotos, histórico operacional e variações percentuais, sem valores financeiros absolutos (gerado pelo coletor; não editar à mão).
+  - `aeronaves.js`: catálogo do Mercado de Aeronaves do PilOps (135 modelos, sem preços publicados) e alcance/cruzeiro aproximados de cada um. Ajuste aqui se um modelo tiver valores diferentes ou se o PilOps lançar aeronaves novas.
   - `aeroportos.js`: coordenadas do OurAirports (gerado por `tools/gerar-aeroportos.mjs`). Ao regenerar, aumente o `?v=` dele em `index.html`.
 - `coletor/`: lê a Vortex no PilOps pelo Chrome e publica o `dados.json`.
   - `extensao-chrome/`: extensão carregada sem compactação no Chrome.
   - `coletor-local.mjs`: serviço que recebe a leitura, grava e faz commit + push.
   - `dados.mjs`: validação da leitura e fusão do histórico de voos (sem repetir voos).
-- `Sincronizar Vortex.cmd`: roda uma coleta e publica.
+- `.vortex-local/dados.json`: histórico financeiro privado para calcular os percentuais. Fica fora de `docs/` e é ignorado pelo Git. Preserve esse arquivo ao mover o projeto.
+- `Sincronizar Vortex.cmd`: roda uma coleta manual e publica somente o resultado reduzido.
 
 ## Atualizar os dados
 
@@ -27,13 +28,15 @@ O painel carrega pilotos em lotes de dez. O coletor percorre a lista até atingi
 
 O PilOps mostra só os 10 voos mais recentes da companhia. O coletor guarda todos os que já leu, então sincronize com frequência (por exemplo, uma vez por dia) para o ranking não perder voos.
 
-## Sincronização automática e reserva manual
+## Sincronização manual e privacidade
 
-Execute `node coletor/configurar-automatico.mjs` uma vez para ativar a tarefa **Vortex - Sincronizar automaticamente** no Agendador de Tarefas do Windows. Ela tenta uma coleta a cada 10 minutos e ao entrar no Windows, com a sessão do usuário, sem guardar senha. É compatível com a extensão instalada no Chrome ou no Samsung Browser. Não desperta o computador nem abre o navegador. Se ambos estiverem fechados, aguarda o próximo horário. Enquanto o PC está desligado ou suspenso, o planejador permanece online com a última coleta.
+A sincronização automática permanece desativada, conforme decisão da administração. Use **Sincronizar Vortex** para atualizar os dados. O coletor valida o histórico e guarda a versão completa apenas em `.vortex-local/dados.json`. A publicação é criada por uma lista explícita de campos permitidos em `coletor/publicacao.mjs`: não inclui receitas, cargas, preços, valores por unidade ou voos em andamento. O ranking de pilotos também não publica receita.
 
-O atalho **Sincronizar Vortex** continua executando uma coleta manual independente da tarefa. Se já houver uma coleta em andamento, uma segunda não começa. A tarefa automática não publica alterações locais do projeto nem commits de código pendentes. Falhas são registradas em `%LOCALAPPDATA%\Vortex\sincronizacao.log` e uma nova tentativa acontece no próximo ciclo. Para desativar apenas o automático: `node coletor/configurar-automatico.mjs --desativar`.
+O monitor publica somente o percentual do último voo contra a mediana dos anteriores na mesma rota e modelo, normalizado pela carga. Os números usados no cálculo ficam no arquivo privado. Sem esse arquivo, é possível recuperar o histórico operacional público, mas as referências financeiras só voltam a ser conhecidas conforme os voos são relidos. A migração inicial é feita por `node coletor/sanitizar-publicacao.mjs`, preservando os voos já registrados.
 
-O bloco **Voos em andamento** mostra pilotos, rotas e aeronaves da última leitura da visão geral do PilOps. É um registro periódico, separado dos voos concluídos. Após 20 minutos sem leitura válida, o painel avisa que os dados estão desatualizados. A página consulta o arquivo publicado a cada minuto, preservando a seleção e o plano em uso; diálogos de compartilhamento abertos não são interrompidos. Uma leitura indisponível conserva os voos em andamento anteriores com seu horário; uma leitura válida de zero voos limpa a lista.
+A página consulta os dados publicados a cada minuto para refletir uma coleta manual nova; isso não inicia coleta no PilOps. A seção de voos em andamento foi removida. Os scripts opcionais de agendamento continuam no repositório, mas a tarefa está desabilitada.
+
+A retirada dos dados atuais não apaga revisões antigas do GitHub. A limpeza do histórico exige uma operação separada de reescrita das revisões; não é feita pela sincronização.
 
 ## Publicar mudanças no site
 

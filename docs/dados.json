@@ -384,16 +384,6 @@
   }
  ],
  "pilotsCapturedAt": "2026-11-11T01:38:21.246Z",
- "activeFlights": [
-  {
-   "pilot": "astronauta",
-   "model": "Douglas MD-11",
-   "origin": "KRDU",
-   "destination": "SBKP",
-   "status": "Em voo"
-  }
- ],
- "activeFlightsCapturedAt": "2026-11-11T01:38:21.246Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -404,8 +394,7 @@
    "date": "2026-11-10",
    "minutes": 386,
    "nm": 2875.87,
-   "payload": 69034,
-   "revenue": 5936235.18
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -416,8 +405,7 @@
    "date": "2026-11-10",
    "minutes": 681,
    "nm": 5810.2,
-   "payload": 138842,
-   "revenue": 13072618.88
+   "paid": true
   },
   {
    "pilot": "Titanocs",
@@ -428,8 +416,7 @@
    "date": "2026-11-10",
    "minutes": 525,
    "nm": 3448.68,
-   "payload": 109854,
-   "revenue": 4934383.24
+   "paid": true
   },
   {
    "pilot": "PaxArcturia",
@@ -440,8 +427,7 @@
    "date": "2026-11-10",
    "minutes": 46,
    "nm": 177.68,
-   "payload": 1482,
-   "revenue": 16439.9
+   "paid": true
   },
   {
    "pilot": "nassis89",
@@ -452,8 +438,7 @@
    "date": "2026-11-10",
    "minutes": 559,
    "nm": 4395.57,
-   "payload": 149359,
-   "revenue": 8797235.92
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -464,8 +449,7 @@
    "date": "2026-11-09",
    "minutes": 272,
    "nm": 2372.45,
-   "payload": 57001,
-   "revenue": 5941415.97
+   "paid": true
   },
   {
    "pilot": "Titanocs",
@@ -476,8 +460,7 @@
    "date": "2026-11-09",
    "minutes": 168,
    "nm": 1003.22,
-   "payload": 33242,
-   "revenue": 2462856.13
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -488,8 +471,7 @@
    "date": "2026-11-09",
    "minutes": 186,
    "nm": 1590.35,
-   "payload": 39114,
-   "revenue": 4694487.24
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -500,8 +482,7 @@
    "date": "2026-11-08",
    "minutes": 506,
    "nm": 4395.57,
-   "payload": 105395,
-   "revenue": 9589854.42
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -512,8 +493,7 @@
    "date": "2026-11-08",
    "minutes": 761,
    "nm": 4057.65,
-   "payload": 98536,
-   "revenue": 8205300.06
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -524,8 +504,7 @@
    "date": "2026-11-08",
    "minutes": 349,
    "nm": 2875.87,
-   "payload": 72812,
-   "revenue": 5828815.11
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -536,8 +515,7 @@
    "date": "2026-11-07",
    "minutes": 507,
    "nm": 3448.68,
-   "payload": 104687,
-   "revenue": 7944342.95
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -548,8 +526,7 @@
    "date": "2026-11-07",
    "minutes": 289,
    "nm": 2372.45,
-   "payload": 58442,
-   "revenue": 5145680.24
+   "paid": true
   },
   {
    "pilot": "Titanocs",
@@ -560,8 +537,7 @@
    "date": "2026-11-07",
    "minutes": 119,
    "nm": 593.38,
-   "payload": 10097,
-   "revenue": 0
+   "paid": false
   },
   {
    "pilot": "Titanocs",
@@ -572,8 +548,7 @@
    "date": "2026-11-07",
    "minutes": 164,
    "nm": 926.59,
-   "payload": 9452,
-   "revenue": 0
+   "paid": false
   },
   {
    "pilot": "astronauta",
@@ -584,8 +559,7 @@
    "date": "2026-11-06",
    "minutes": 208,
    "nm": 1590.35,
-   "payload": 40503,
-   "revenue": 4406726.25
+   "paid": true
   },
   {
    "pilot": "Titanocs",
@@ -596,8 +570,7 @@
    "date": "2026-11-06",
    "minutes": 573,
    "nm": 4395.57,
-   "payload": 124806,
-   "revenue": 5730180.33
+   "paid": true
   },
   {
    "pilot": "Titanocs",
@@ -608,8 +581,7 @@
    "date": "2026-11-06",
    "minutes": 151,
    "nm": 862.84,
-   "payload": 29618,
-   "revenue": 2435864.48
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -620,8 +592,7 @@
    "date": "2026-11-06",
    "minutes": 718,
    "nm": 5810.2,
-   "payload": 145917,
-   "revenue": 9602593.45
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -632,8 +603,7 @@
    "date": "2026-11-06",
    "minutes": 346,
    "nm": 2875.87,
-   "payload": 64739,
-   "revenue": 6113659.32
+   "paid": true
   },
   {
    "pilot": "Titanocs",
@@ -644,8 +614,7 @@
    "date": "2026-11-05",
    "minutes": 170,
    "nm": 961.78,
-   "payload": 33148,
-   "revenue": 2626419.09
+   "paid": true
   },
   {
    "pilot": "Titanocs",
@@ -656,8 +625,7 @@
    "date": "2026-11-05",
    "minutes": 137,
    "nm": 865.05,
-   "payload": 28564,
-   "revenue": 2435034.75
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -668,8 +636,7 @@
    "date": "2026-11-05",
    "minutes": 329,
    "nm": 2372.45,
-   "payload": 53529,
-   "revenue": 5480653.42
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -680,8 +647,7 @@
    "date": "2026-11-03",
    "minutes": 186,
    "nm": 1590.35,
-   "payload": 39064,
-   "revenue": 4616708.05
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -692,8 +658,7 @@
    "date": "2026-11-03",
    "minutes": 349,
    "nm": 2875.87,
-   "payload": 19754,
-   "revenue": 1886262.36
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -704,8 +669,7 @@
    "date": "2026-11-03",
    "minutes": 663,
    "nm": 5810.2,
-   "payload": 133476,
-   "revenue": 6534970.73
+   "paid": true
   },
   {
    "pilot": "Titanocs",
@@ -716,8 +680,7 @@
    "date": "2026-11-03",
    "minutes": 168,
    "nm": 1003.22,
-   "payload": 32603,
-   "revenue": 2113799.19
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -728,8 +691,7 @@
    "date": "2026-11-03",
    "minutes": 326,
    "nm": 2875.87,
-   "payload": 67947,
-   "revenue": 6048575.99
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -740,8 +702,7 @@
    "date": "2026-11-02",
    "minutes": 266,
    "nm": 2372.45,
-   "payload": 55058,
-   "revenue": 6286816.84
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -752,8 +713,7 @@
    "date": "2026-11-02",
    "minutes": 184,
    "nm": 1590.35,
-   "payload": 38149,
-   "revenue": 4412133.93
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -764,8 +724,7 @@
    "date": "2026-11-02",
    "minutes": 655,
    "nm": 5810.2,
-   "payload": 133584,
-   "revenue": 9577807.97
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -776,8 +735,7 @@
    "date": "2026-11-02",
    "minutes": 103,
    "nm": 865.05,
-   "payload": 21974,
-   "revenue": 3492461.6
+   "paid": true
   },
   {
    "pilot": "astronauta",
@@ -788,9 +746,175 @@
    "date": "2026-11-02",
    "minutes": 189,
    "nm": 1590.35,
-   "payload": 39542,
-   "revenue": 4092620.47
+   "paid": true
   }
  ],
- "flightsSince": "2026-11-02"
+ "flightsSince": "2026-11-02",
+ "revenueMonitor": {
+  "readCount": 31,
+  "groups": [
+   {
+    "origin": "LEMD",
+    "destination": "EFHK",
+    "model": "Douglas MD-11",
+    "count": 5,
+    "lastDate": "2026-11-09",
+    "change": 0.069439,
+    "state": "estavel"
+   },
+   {
+    "origin": "SUMU",
+    "destination": "SBCG",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-02",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "RJTT",
+    "destination": "LEMD",
+    "model": "Douglas MD-11",
+    "count": 2,
+    "lastDate": "2026-11-06",
+    "change": -0.082152,
+    "state": "estavel"
+   },
+   {
+    "origin": "EFHK",
+    "destination": "OTHH",
+    "model": "Douglas MD-11",
+    "count": 4,
+    "lastDate": "2026-11-09",
+    "change": 0.018039,
+    "state": "recuperada"
+   },
+   {
+    "origin": "OTHH",
+    "destination": "LEMD",
+    "model": "Douglas MD-11",
+    "count": 4,
+    "lastDate": "2026-11-10",
+    "change": -0.034027,
+    "state": "recuperada"
+   },
+   {
+    "origin": "SBRF",
+    "destination": "SBGL",
+    "model": "Airbus A330",
+    "count": 2,
+    "lastDate": "2026-11-09",
+    "change": 0.142736,
+    "state": "alta"
+   },
+   {
+    "origin": "LEMD",
+    "destination": "RJTT",
+    "model": "Douglas MD-11",
+    "count": 2,
+    "lastDate": "2026-11-10",
+    "change": 0.923097,
+    "state": "alta"
+   },
+   {
+    "origin": "OTHH",
+    "destination": "LEMD",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "lastDate": "2026-11-03",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "SUMU",
+    "destination": "SBCG",
+    "model": "Airbus A330",
+    "count": 1,
+    "lastDate": "2026-11-05",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "SBCG",
+    "destination": "SBMA",
+    "model": "Airbus A330",
+    "count": 1,
+    "lastDate": "2026-11-05",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "SBMA",
+    "destination": "SBRF",
+    "model": "Airbus A330",
+    "count": 1,
+    "lastDate": "2026-11-06",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "SBGL",
+    "destination": "LEMD",
+    "model": "Boeing 787-10 Dreamliner",
+    "count": 1,
+    "lastDate": "2026-11-06",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "LEMD",
+    "destination": "KRDU",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-07",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "KRDU",
+    "destination": "SBGL",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-08",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "LEMD",
+    "destination": "SBGL",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-08",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "SBGL",
+    "destination": "LEMD",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-10",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "LEMD",
+    "destination": "LEXJ",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "lastDate": "2026-11-10",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "LEMD",
+    "destination": "KRDU",
+    "model": "Boeing 787-10 Dreamliner",
+    "count": 1,
+    "lastDate": "2026-11-10",
+    "change": null,
+    "state": "unico"
+   }
+  ]
+ }
 }

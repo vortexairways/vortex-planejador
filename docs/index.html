@@ -21,10 +21,10 @@
   <link rel="stylesheet" href="./style.css?v=11">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
-  <script defer src="./aeronaves.js?v=2"></script>
-  <script defer src="./operacao.js?v=2"></script>
-  <script defer src="./atividade.js?v=2"></script>
-  <script defer src="./planner.js?v=14"></script>
+  <script defer src="./aeronaves.js?v=3"></script>
+  <script defer src="./operacao.js?v=3"></script>
+  <script defer src="./atividade.js?v=3"></script>
+  <script defer src="./planner.js?v=15"></script>
 </head>
 <body>
   <header class="top">
@@ -56,10 +56,6 @@
     <aside class="notice" aria-label="Situação dos dados" data-en-label="Data status">
       <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p><p id="fleet-alert" class="fleet-alert" hidden></p><p id="revenue-alert" class="fleet-alert" hidden></p></div>
     </aside>
-    <section id="live-card" class="card operation-card" aria-labelledby="live-title">
-      <div class="section-heading"><div><p class="eyebrow" data-en="VORTEX IN THE AIR">VORTEX NO AR</p><h2 id="live-title" data-en="Flights in progress">Voos em andamento</h2></div><a class="secondary small" href="https://pilops.com/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1?tab=overview" target="_blank" rel="noopener noreferrer" data-en="Check PilOps">Conferir no PilOps</a></div>
-      <div class="pad"><p id="live-freshness" class="detail" role="status"></p><div id="live-flights" class="operation-routes"></div><p class="meta" data-en="Updated periodically. Flight status may have changed since the sync. Flights in progress only count in the standings after completion and sync.">Atualizado periodicamente. A situação dos voos pode ter mudado após a coleta. Voos em andamento só contam no ranking após a conclusão e sincronização.</p></div>
-    </section>
     <section id="operation-card" class="card operation-card" aria-labelledby="operation-heading">
       <div class="section-heading">
         <div><p class="eyebrow" data-en="INDIVIDUAL FLIGHTS · WEEKLY CHALLENGE">VOOS INDIVIDUAIS · DESAFIO SEMANAL</p><h2 id="operation-heading" data-en="Operation of the week">Operação da semana</h2></div>
@@ -173,15 +169,9 @@
       <div class="pad">
         <details class="explain">
           <summary data-en="How the monitor works">Como o monitor funciona</summary>
-          <div class="explain-body"
-            data-en="&lt;p&gt;The monitor compares flights on the &lt;strong&gt;same route with the same aircraft model&lt;/strong&gt; to spot a pay cut by PilOps that was not announced to players.&lt;/p&gt;
-            &lt;p&gt;The yardstick is &lt;strong&gt;revenue per pound of load&lt;/strong&gt; (P$ ÷ lbs). On the same route the distance does not change, so this number separates &amp;ldquo;PilOps paid less&amp;rdquo; from &amp;ldquo;the flight simply carried less&amp;rdquo;.&lt;/p&gt;
-            &lt;p&gt;Each flight is compared with the &lt;strong&gt;median of the earlier flights&lt;/strong&gt; on that route. A drop of more than 10% raises an alert. A one-off drop that recovers on the next flight is only noted, because revenue naturally varies by a few percent from flight to flight. Ferries with no revenue are left out.&lt;/p&gt;
-            &lt;p&gt;When several routes drop at the same time, it points to a change in PilOps itself and not to a specific flight.&lt;/p&gt;">
-            <p>O monitor compara voos da <strong>mesma rota com o mesmo modelo de aeronave</strong> para achar um corte de pagamento do PilOps que não foi avisado aos jogadores.</p>
-            <p>A régua é a <strong>receita por libra de carga</strong> (P$ ÷ lbs). Na mesma rota a distância não muda, então esse número separa &ldquo;o PilOps pagou menos&rdquo; de &ldquo;o voo levou menos carga&rdquo;.</p>
-            <p>Cada voo é comparado com a <strong>mediana dos voos anteriores</strong> naquela rota. Queda maior que 10% gera alerta. Uma queda isolada que se recupera no voo seguinte só fica registrada, porque a receita varia naturalmente alguns por cento de um voo para outro. Traslados sem receita ficam de fora.</p>
-            <p>Quando várias rotas caem ao mesmo tempo, o sinal aponta para uma mudança no próprio PilOps, e não para um voo específico.</p>
+          <div class="explain-body" data-en="&lt;p&gt;Compares the latest completed flight with the median of earlier flights on the same route and aircraft model, adjusting for load. Only percentage changes are published.&lt;/p&gt;&lt;p&gt;A variation of 10% or more raises a flag. This is an indicator for review, not proof of a change in PilOps.&lt;/p&gt;">
+            <p>Compara o último voo concluído com a mediana dos voos anteriores na mesma rota e modelo, ajustando pela carga transportada. Somente as variações percentuais são publicadas.</p>
+            <p>Uma variação de 10% ou mais gera um aviso. É um indicador para análise, sem provar uma mudança no PilOps.</p>
           </div>
         </details>
         <div id="revenue-stats" class="stat-row"></div>

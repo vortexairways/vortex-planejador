@@ -19,7 +19,7 @@ const VortexOperation = (() => {
   function progress(operation, flights) {
     const eligible = new Set(operation.routes.filter(item => item.route).map(pair));
     const completed = flights.filter(flight => eligible.has(pair(flight)) && flight.date >= operation.start &&
-      flight.date <= operation.end && flight.revenue > 0 && flight.minutes > 0);
+      flight.date <= operation.end && flight.paid === true && flight.minutes > 0);
     const pilots = new Map();
     for (const flight of completed) {
       const pilot = pilots.get(flight.pilot) || { name: flight.pilot, flights: 0, routes: new Set() };

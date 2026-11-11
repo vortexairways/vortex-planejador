@@ -17,8 +17,7 @@ let flightLog = [];
 let flightsSince = null;
 let capturedAt = null;
 let pilotsCapturedAt = null;
-let activeFlights = [];
-let activeFlightsCapturedAt = null;
+let revenueMonitor = { readCount: 0, groups: [] };
 let refreshingData = false;
 let operationConfig = null;
 let shareLegs = [];
@@ -853,12 +852,6 @@ for (const tabButton of document.querySelectorAll("#idea-tabs button")) {
 
 // ---------- Frota × rotas ----------
 
-const money = value => {
-  const abs = Math.abs(value);
-  const [div, unit] = abs >= 1e9 ? [1e9, T(" bi", " bn")] : abs >= 1e6 ? [1e6, T(" mi", " m")] : abs >= 1e3 ? [1e3, T(" mil", " k")] : [1, ""];
-  return "P$ " + new Intl.NumberFormat(locale(), { maximumFractionDigits: div === 1 ? 0 : 1 }).format(value / div) + unit;
-};
-
 // comprar: nenhum modelo da frota tem alcance · indisponivel: só aeronaves em uso/manutenção alcançam ·
 // reposicionar: há aeronave capaz livre, mas não na origem · pronta: há aeronave capaz livre na origem.
 function routeCoverage(route) {
@@ -867,8 +860,8 @@ function routeCoverage(route) {
   const free = capable.filter(plane => !unavailable(plane));
   const here = free.filter(plane => plane.airport === route.origin);
   const status = !capable.length ? "comprar" : !free.length ? "indisponivel" : !here.length ? "reposicionar" : "pronta";
-  // Modelos do catálogo do PilOps que alcançam a rota, do mais barato ao mais caro.
-  const options = miles === null ? [] : aircraftCatalog.filter(item => item.range >= miles).sort((a, b) => a.price - b.price);
+  // Modelos que alcançam a rota, ordenados pelo alcance e pelo nome.
+  const options = miles === null ? [] : aircraftCatalog.filter(item => item.range >= miles).sort((a, b) => a.range - b.range || a.name.localeCompare(b.name));
   return { route, miles, capable, free, here, status, options };
 }
 
@@ -906,10 +899,10 @@ function renderCoverage() {
     const models = list => [...new Set(list.map(plane => plane.model))].join(", ");
     let detail;
     if (item.status === "comprar") {
-      const cheapest = item.options.slice(0, 5).map(option => option.name + " (" + money(option.price) + ")");
-      detail = cheapest.length
+      const models = item.options.slice(0, 5).map(option => option.name);
+      detail = models.length
         ? T("Nenhum modelo da frota tem esse alcance. No PilOps, alcançam: ", "No model in the fleet has that range. On PilOps, these can make it: ") +
-          cheapest.join(", ") + (item.options.length > 5 ? T(" e mais ", " and ") + (item.options.length - 5) + T(" modelos", " more models") : "") + "."
+          models.join(", ") + (item.options.length > 5 ? T(" e mais ", " and ") + (item.options.length - 5) + T(" modelos", " more models") : "") + "."
         : T("Nenhum modelo do catálogo do PilOps tem esse alcance sem escala.", "No model in the PilOps catalogue has that range non-stop.");
     } else if (item.status === "indisponivel") {
       detail = T("Alcançam, mas estão indisponíveis agora: ", "They can make it, but are unavailable now: ") +
@@ -935,17 +928,16 @@ const ranking = { key: "companyMinutes", desc: true };
 
 function pilotStats() {
   const registered = new Set(routes.map(route => route.origin + "-" + route.destination));
-  const rows = new Map(pilots.map(p => [p.name, { ...p, flights: 0, minutes: 0, nm: 0, revenue: 0, vtx: new Set(), last: null, member: true }]));
+  const rows = new Map(pilots.map(p => [p.name, { ...p, flights: 0, minutes: 0, nm: 0, vtx: new Set(), last: null, member: true }]));
   for (const flight of flightLog) {
     if (!rows.has(flight.pilot)) {
       rows.set(flight.pilot, { name: flight.pilot, role: null, level: null, totalMinutes: null, companyMinutes: null,
-        joined: null, flights: 0, minutes: 0, nm: 0, revenue: 0, vtx: new Set(), last: null, member: false });
+        joined: null, flights: 0, minutes: 0, nm: 0, vtx: new Set(), last: null, member: false });
     }
     const row = rows.get(flight.pilot);
     row.flights++;
     row.minutes += flight.minutes;
     row.nm += flight.nm;
-    row.revenue += flight.revenue;
     const pair = flight.origin + "-" + flight.destination;
     if (registered.has(pair)) row.vtx.add(pair);
     if (!row.last || flight.date > row.last) row.last = flight.date;
@@ -961,7 +953,6 @@ const rankingColumns = () => [
   ["flights", T("Voos lidos*", "Flights read*")],
   ["minutes", T("Horas nos voos lidos*", "Hours in flights read*")],
   ["nm", T("Distância*", "Distance*")],
-  ["revenue", T("Receita*", "Revenue*")],
   ["vtxCount", T("Rotas VTX*", "VTX routes*")],
   ["last", T("Último voo*", "Last flight*")],
 ];
@@ -1016,7 +1007,6 @@ function renderRanking() {
       element("td", "", number.format(row.flights)),
       element("td", "", row.flights ? hoursText(row.minutes) : "—"),
       element("td", "", row.flights ? nm(row.nm) : "—"),
-      element("td", "", row.flights ? money(row.revenue) : "—"),
       element("td", "", row.flights ? String(row.vtxCount) : "—"),
       element("td", "", dayText(row.last)));
     return tr;
@@ -1111,8 +1101,7 @@ async function start() {
   flightsSince = data.flightsSince || null;
   capturedAt = data.capturedAt || null;
   pilotsCapturedAt = data.pilotsCapturedAt || null;
-  activeFlights = data.activeFlights || [];
-  activeFlightsCapturedAt = data.activeFlightsCapturedAt || null;
+  revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
   try {
     const response = await fetch("./operacao.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) operationConfig = VortexOperation.read(await response.json(), routes);
@@ -1184,7 +1173,6 @@ function paintAll() {
   renderRealloc();
   renderRevenue();
   renderOperation();
-  renderLive();
 }
 
 function setLanguage(next) {
@@ -1512,214 +1500,58 @@ for (const tab of document.querySelectorAll("#realloc-tabs button")) {
   tab.addEventListener("click", () => { realloc.view = tab.dataset.view; renderRealloc(); });
 }
 
-// ---------- Monitor de receita ----------
-// Procura cortes de pagamento do PilOps não avisados. Compara voos da mesma rota com o mesmo modelo pela
-// receita por libra de carga (na mesma rota a distância é fixa, então isso separa preço de carga). Cada voo é
-// comparado com a mediana dos voos anteriores daquele grupo; queda maior que revenueLimit gera alerta.
-
-const revenueLimit = 0.10;
-const median = values => {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-};
+// ---------- Variações percentuais de receita ----------
+// Os valores financeiros são processados no coletor local. O arquivo público só contém variações.
 const percent = value => (value > 0 ? "+" : value < 0 ? "−" : "") +
   new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 }).format(Math.abs(value * 100)) + "%";
-const perLbText = value => "P$ " + new Intl.NumberFormat(locale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value) + "/lb";
-const perLb = flight => flight.revenue / flight.payload;
-
-function revenueGroups() {
-  // Do mais antigo para o mais recente; voos sem receita (traslados) ou sem carga ficam de fora.
-  const paid = [...flightLog].reverse().filter(flight => flight.revenue > 0 && flight.payload > 0)
-    .sort((a, b) => a.date.localeCompare(b.date));
-  const groups = new Map();
-  for (const flight of paid) {
-    const key = flight.origin + "-" + flight.destination + "|" + flight.model;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(flight);
-  }
-  return [...groups.values()].map(list => {
-    const rows = list.map((flight, i) => {
-      if (!i) return { flight, value: perLb(flight), reference: null, vsReference: null, vsPrevious: null };
-      const previous = list[i - 1];
-      const reference = median(list.slice(0, i).map(perLb));
-      return { flight, value: perLb(flight), reference, vsReference: perLb(flight) / reference - 1,
-        vsPrevious: perLb(flight) / perLb(previous) - 1, loadChange: flight.payload / previous.payload - 1,
-        timeChange: flight.minutes / previous.minutes - 1 };
-    });
-    const last = rows.at(-1);
-    const hadDrop = rows.some(row => row.vsReference !== null && row.vsReference <= -revenueLimit);
-    const state = rows.length < 2 ? "unico" : last.vsReference <= -revenueLimit ? "queda"
-      : last.vsReference >= revenueLimit ? "alta" : hadDrop ? "recuperada" : "estavel";
-    const { origin, destination, model } = list[0];
-    return { origin, destination, model, rows, last, state, total: last.value / rows[0].value - 1 };
-  });
-}
-
 const revenueStates = () => ({
-  queda: [T("Queda acima de 10%", "Drop over 10%"), "bad"],
-  recuperada: [T("Queda isolada, recuperada", "One-off drop, recovered"), "warn"],
-  alta: [T("Alta acima de 10%", "Rise over 10%"), "ok"],
+  queda: [T("Queda de 10% ou mais", "Drop of 10% or more"), "bad"],
+  recuperada: [T("Queda anterior, recuperada", "Earlier drop, recovered"), "warn"],
+  alta: [T("Alta de 10% ou mais", "Rise of 10% or more"), "ok"],
   estavel: [T("Estável", "Stable"), "neutral"],
 });
-
 function revenueRow(group) {
   const row = element("li", "revenue-item state-" + group.state);
   const head = element("div", "row-head");
   head.append(element("strong", "circuit", group.origin + " → " + group.destination + " · " + group.model));
   const [label, tone] = revenueStates()[group.state];
   head.append(element("span", "tag " + tone, label));
-  row.append(head);
-  const first = group.rows[0].flight;
-  row.append(element("span", "meta", T(group.rows.length + " voos comparáveis · referência atual " + perLbText(group.last.reference) +
-    " · desde o 1º voo (" + dayText(first.date) + "): " + percent(group.total),
-    group.rows.length + " comparable flights · current reference " + perLbText(group.last.reference) +
-    " · since the 1st flight (" + dayText(first.date) + "): " + percent(group.total))));
-
-  // Leitura do último voo, com carga e duração para ajudar a separar corte de preço de outras causas.
-  const last = group.last;
-  const f = last.flight;
-  const ctx = [];
-  if (Math.abs(last.loadChange) >= 0.03) ctx.push(T("carga " + percent(last.loadChange), "load " + percent(last.loadChange)));
-  if (Math.abs(last.timeChange) >= 0.05) ctx.push(T("duração " + percent(last.timeChange), "flight time " + percent(last.timeChange)));
-  const ctxText = ctx.length ? T(" Em relação ao voo anterior: " + ctx.join(", ") + ".", " Compared with the previous flight: " + ctx.join(", ") + ".") : "";
-  const who = dayText(f.date) + ", @" + f.pilot + ", " + f.prefix;
-  let reading;
-  if (group.state === "queda") {
-    reading = T("O último voo (" + who + ") pagou " + perLbText(last.value) + ", " + percent(last.vsReference).slice(1) +
-      " abaixo da mediana dos voos anteriores (" + perLbText(last.reference) + ")." + ctxText +
-      (last.loadChange > 0 ? " Como a carga foi maior, ela não explica a queda." : "") +
-      " Se o próximo voo nesta rota também vier baixo, o corte está confirmado.",
-      "The last flight (" + who + ") paid " + perLbText(last.value) + ", " + percent(last.vsReference).slice(1) +
-      " below the median of earlier flights (" + perLbText(last.reference) + ")." + ctxText +
-      (last.loadChange > 0 ? " The load was higher, so it does not explain the drop." : "") +
-      " If the next flight on this route also comes in low, the cut is confirmed.");
-  } else if (group.state === "recuperada") {
-    reading = T("Houve uma queda de mais de 10% num voo anterior, mas o último (" + who + ") voltou ao normal (" +
-      percent(last.vsReference) + " em relação à mediana).",
-      "An earlier flight dropped more than 10%, but the last one (" + who + ") is back to normal (" +
-      percent(last.vsReference) + " against the median).");
-  } else if (group.state === "alta") {
-    reading = T("O último voo (" + who + ") pagou " + percent(last.vsReference) + " em relação à mediana dos anteriores." + ctxText,
-      "The last flight (" + who + ") paid " + percent(last.vsReference) + " against the median of earlier flights." + ctxText);
-  } else {
-    reading = T("O último voo (" + who + ") ficou " + percent(last.vsReference) + " em relação à mediana: dentro da variação normal.",
-      "The last flight (" + who + ") came in at " + percent(last.vsReference) + " against the median: within normal variation.");
-  }
-  row.append(element("p", "why", reading));
-
-  const table = element("table", "revenue-table");
-  const headRow = element("tr");
-  for (const title of [T("Data", "Date"), T("Piloto", "Pilot"), T("Aeronave", "Aircraft"), T("Carga", "Load"), T("Receita", "Revenue"),
-    "P$/lb", T("vs. anterior", "vs. previous"), T("vs. referência", "vs. reference")]) {
-    const th = element("th", "", title);
-    th.setAttribute("scope", "col");
-    headRow.append(th);
-  }
-  const thead = element("thead");
-  thead.append(headRow);
-  const tbody = element("tbody");
-  const changeCell = value => {
-    const td = element("td", value === null || value === undefined ? "" : value <= -revenueLimit ? "down" : value >= revenueLimit ? "up" : "",
-      value === null || value === undefined ? "—" : percent(value));
-    return td;
-  };
-  for (const item of [...group.rows].reverse()) {
-    const tr = element("tr");
-    tr.append(element("td", "", dayText(item.flight.date)), element("td", "", "@" + item.flight.pilot), element("td", "", item.flight.prefix),
-      element("td", "", number.format(item.flight.payload) + " lbs"), element("td", "", money(item.flight.revenue)),
-      element("td", "", perLbText(item.value).replace("P$ ", "").replace("/lb", "")), changeCell(item.vsPrevious), changeCell(item.vsReference));
-    tbody.append(tr);
-  }
-  table.append(thead, tbody);
-  const wrap = element("div", "table-wrap");
-  wrap.append(table);
-  row.append(wrap);
+  row.append(head, element("p", "why", percent(group.change) + T(" em relação à referência dos voos anteriores.",
+    " against the reference from earlier flights.")), element("span", "meta", group.count +
+    T(" voos comparáveis · último: ", " comparable flights · last: ") + dayText(group.lastDate)));
   return row;
 }
-
 function renderRevenue() {
   const list = document.querySelector("#revenue");
   if (!list) return;
-  const groups = revenueGroups();
-  const compared = groups.filter(group => group.state !== "unico");
-  const count = state => compared.filter(group => group.state === state).length;
+  const groups = revenueMonitor.groups || [];
+  const compared = groups.filter(group => group.state !== "unico" && Number.isFinite(group.change));
+  const count = key => compared.filter(group => group.state === key).length;
   const drops = compared.filter(group => group.state === "queda");
-
-  // Sinal geral: quedas em rotas diferentes com o último voo em até 3 dias de diferença.
-  const dropDays = drops.map(group => group.last.flight.date).sort();
-  const general = new Set(drops.map(group => group.origin + "-" + group.destination)).size >= 2 &&
-    daysBetween(dropDays[0], dropDays.at(-1)) <= 3;
-
-  const stats = document.querySelector("#revenue-stats");
   const tile = (value, title, hint, kind) => {
     const box = element("div", "stat stat-" + kind);
     box.append(element("strong", "", String(value)), element("span", "", title), element("small", "", hint));
     return box;
   };
-  stats.replaceChildren(
-    tile(count("queda"), T("Rotas com queda", "Routes with a drop"), T("último voo mais de 10% abaixo", "last flight over 10% lower"), "queda"),
-    tile(count("alta"), T("Rotas com alta", "Routes with a rise"), T("último voo mais de 10% acima", "last flight over 10% higher"), "alta"),
+  document.querySelector("#revenue-stats").replaceChildren(
+    tile(count("queda"), T("Rotas com queda", "Routes with a drop"), T("10% ou mais abaixo", "10% or more lower"), "queda"),
+    tile(count("alta"), T("Rotas com alta", "Routes with a rise"), T("10% ou mais acima", "10% or more higher"), "alta"),
     tile(count("estavel") + count("recuperada"), T("Rotas estáveis", "Stable routes"), T("dentro da variação normal", "within normal variation"), "estavel"),
-    tile(groups.length - compared.length, T("Aguardando 2º voo", "Waiting for a 2nd flight"),
-      T("rota + modelo voados só uma vez", "route + model flown only once"), "unico"));
-
-  const paidCount = flightLog.filter(flight => flight.revenue > 0 && flight.payload > 0).length;
-  document.querySelector("#revenue-summary").textContent = (general
-    ? T("⚠ Possível deságio geral: " + drops.length + " rotas caíram mais de 10% entre " + dayText(dropDays[0]) + " e " + dayText(dropDays.at(-1)) +
-      ". Quedas em várias rotas ao mesmo tempo apontam para mudança no próprio PilOps. ",
-      "⚠ Possible across-the-board cut: " + drops.length + " routes dropped more than 10% between " + dayText(dropDays[0]) + " and " +
-      dayText(dropDays.at(-1)) + ". Drops on several routes at once point to a change in PilOps itself. ")
-    : drops.length ? T("Queda restrita a " + (drops.length === 1 ? "uma rota" : drops.length + " rotas") + " por enquanto: ainda não há sinal de corte geral. ",
-      "Drop limited to " + (drops.length === 1 ? "one route" : drops.length + " routes") + " for now: no sign of an across-the-board cut yet. ")
-      : "") +
-    T(paidCount + " voos com receita lidos" + (flightsSince ? " desde " + dayText(flightsSince) : "") + ", em " + compared.length +
-      (compared.length === 1 ? " rota comparável" : " rotas comparáveis") + " (mesma rota e mesmo modelo, com 2 voos ou mais). O monitor fica mais preciso a cada sincronização.",
-      paidCount + " paid flights read" + (flightsSince ? " since " + dayText(flightsSince) : "") + ", on " + compared.length +
-      (compared.length === 1 ? " comparable route" : " comparable routes") + " (same route and model, with 2 or more flights). The monitor gets sharper with every sync.");
-
+    tile(groups.length - compared.length, T("Aguardando 2º voo", "Waiting for a 2nd flight"), T("mesma rota e mesmo modelo", "same route and aircraft model"), "unico"));
+  document.querySelector("#revenue-summary").textContent = T(
+    "Somente variações percentuais. " + revenueMonitor.readCount + " voos analisados; " + compared.length + " combinações de rota e modelo com comparação. Os percentuais são atualizados a cada sincronização manual.",
+    "Percentage changes only. " + revenueMonitor.readCount + " flights analysed; " + compared.length + " comparable route and aircraft combinations. Percentages are updated with each manual sync.");
   const order = { queda: 0, recuperada: 1, alta: 2, estavel: 3 };
-  const rows = compared.sort((a, b) => order[a.state] - order[b.state] || a.last.vsReference - b.last.vsReference).map(revenueRow);
-  if (!rows.length) rows.push(element("li", "meta", T("Ainda não há duas viagens na mesma rota com o mesmo modelo para comparar.",
-    "There are no two flights on the same route with the same model to compare yet.")));
+  const rows = [...compared].sort((a, b) => order[a.state] - order[b.state] || a.change - b.change).map(revenueRow);
+  if (!rows.length) rows.push(element("li", "meta", T("Aguardando dois voos comparáveis na mesma rota e modelo.", "Waiting for two comparable flights on the same route and aircraft model.")));
   list.replaceChildren(...rows);
-
   const banner = document.querySelector("#revenue-alert");
-  banner.replaceChildren();
-  banner.hidden = !drops.length;
-  if (drops.length) {
-    banner.append(button("⚠ " + (general ? T("Possível deságio geral do PilOps", "Possible across-the-board PilOps cut")
-      : T("Receita: queda acima de 10% em " + (drops.length === 1 ? "1 rota" : drops.length + " rotas"),
-        "Revenue: drop over 10% on " + (drops.length === 1 ? "1 route" : drops.length + " routes"))) + T(" — ver monitor", " — see monitor"),
-    "alert-link", () => document.querySelector("#revenue-card").scrollIntoView({ behavior: "smooth", block: "start" })));
-  }
+  banner.replaceChildren(); banner.hidden = !drops.length;
+  if (drops.length) banner.append(button(T("⚠ Queda de 10% ou mais em ", "⚠ Drop of 10% or more on ") + drops.length +
+    T(" rota(s) — ver percentuais", " route(s) — see percentages"), "alert-link", () => document.querySelector("#revenue-card").scrollIntoView({ behavior: "smooth", block: "start" })));
 }
 
 // ---------- Operação da semana e compartilhamento ----------
-
-function renderLive() {
-  const status = document.querySelector("#live-freshness");
-  const cards = document.querySelector("#live-flights");
-  const freshness = VortexActivity.liveState(activeFlightsCapturedAt);
-  cards.replaceChildren();
-  if (freshness === "unknown") {
-    status.textContent = T("Aguardando a primeira leitura dos voos em andamento.", "Awaiting the first flight-status sync.");
-    return;
-  }
-  const stamp = new Intl.DateTimeFormat(locale(), { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(activeFlightsCapturedAt));
-  status.textContent = (freshness === "recent" ? T("Última verificação: ", "Last checked: ")
-    : T("Dados desatualizados. Situação atual não confirmada. Última verificação: ", "Outdated data. Current status unconfirmed. Last checked: ")) + stamp + T(" (Brasília).", " (Brasília time).");
-  if (!activeFlights.length) {
-    cards.append(element("p", "meta", T("Nenhum voo em andamento registrado nessa coleta.", "No flights in progress recorded in that sync.")));
-  }
-  for (const flight of activeFlights) {
-    const card = element("article", "operation-route");
-    card.append(element("h3", "", "@" + flight.pilot), element("strong", "", flight.origin + " → " + flight.destination),
-      element("p", "meta", flight.model), element("span", "tag " + (freshness === "recent" ? "ok" : "warn"),
-        freshness === "recent" ? T("Em andamento na coleta", "In progress at sync time") : T("Registro antigo", "Older record")));
-    cards.append(card);
-  }
-}
 
 async function refreshData() {
   if (!fleet.length || refreshingData || document.hidden || document.querySelector("dialog[open]")) return;
@@ -1733,7 +1565,7 @@ async function refreshData() {
     fleet = data.fleet; routes = data.routes; hubs = new Set(data.hubs);
     pilots = data.pilots || []; flightLog = data.flights || []; flightsSince = data.flightsSince || null;
     capturedAt = data.capturedAt; pilotsCapturedAt = data.pilotsCapturedAt || null;
-    activeFlights = data.activeFlights || []; activeFlightsCapturedAt = data.activeFlightsCapturedAt || null;
+    revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
     const currentRoute = old => routes.find(route => VortexOperation.pair(route) === VortexOperation.pair(old));
     state.plan = state.plan.map(route => currentRoute(route) || (route.code === "Traslado" ? route : null)).filter(Boolean);
     state.focus = state.focus ? currentRoute(state.focus) || null : null;
@@ -1890,7 +1722,6 @@ document.querySelector("#share-copy").addEventListener("click", async () => {
 // Atualiza a janela na virada do dia, inclusive quando a aba volta do segundo plano.
 function refreshActivityDay() {
   if (activityDay && activityDay !== VortexActivity.today()) renderRanking();
-  if (fleet.length) renderLive();
 }
 setInterval(() => { refreshActivityDay(); void refreshData(); }, 60000);
 document.addEventListener("visibilitychange", () => { refreshActivityDay(); void refreshData(); });
