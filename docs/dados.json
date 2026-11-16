@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-11T16:47:22.269Z",
+ "capturedAt": "2026-11-16T18:32:23.446Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -33,9 +33,9 @@
   {
    "prefix": "NPC7VI",
    "model": "Airbus A320neo",
-   "airport": "LEXJ",
+   "airport": "EDDM",
    "base": "EFHK",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N6KZLB",
@@ -47,9 +47,9 @@
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "OTHH",
+   "airport": "RJTT",
    "base": "LEMD",
-   "status": "EM USO · Atenção em motor"
+   "status": "Atenção em motor"
   },
   {
    "prefix": "N4XBCS",
@@ -61,7 +61,7 @@
   {
    "prefix": "NUTTBL",
    "model": "Airbus A220-300",
-   "airport": "OTHH",
+   "airport": "LEMD",
    "base": "EDDH",
    "status": "Sem alerta no cartão"
   },
@@ -82,9 +82,9 @@
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "KRDU",
+   "airport": "EFHK",
    "base": "RJTT",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO · Atenção em motor"
   },
   {
    "prefix": "NUNFUD",
@@ -103,7 +103,7 @@
   {
    "prefix": "NE2XUQ",
    "model": "Douglas MD-11",
-   "airport": "SBKP",
+   "airport": "KRDU",
    "base": "SUMU",
    "status": "Sem alerta no cartão"
   },
@@ -323,8 +323,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 122096,
-   "companyMinutes": 111796,
+   "totalMinutes": 127428,
+   "companyMinutes": 117128,
    "joined": "2026-05-23"
   },
   {
@@ -339,9 +339,17 @@
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 6021,
-   "companyMinutes": 1301,
+   "totalMinutes": 7297,
+   "companyMinutes": 1900,
    "joined": "2026-11-10"
+  },
+  {
+   "name": "PaxArcturia",
+   "role": null,
+   "level": null,
+   "totalMinutes": 744,
+   "companyMinutes": 234,
+   "joined": "2026-11-07"
   },
   {
    "name": "AlphaPrime",
@@ -352,12 +360,28 @@
    "joined": "2026-06-29"
   },
   {
-   "name": "PaxArcturia",
+   "name": "marcelocanela",
    "role": null,
    "level": null,
-   "totalMinutes": 557,
-   "companyMinutes": 46,
+   "totalMinutes": 13233,
+   "companyMinutes": 0,
    "joined": "2026-11-07"
+  },
+  {
+   "name": "Harris",
+   "role": null,
+   "level": null,
+   "totalMinutes": 6226,
+   "companyMinutes": 0,
+   "joined": "2026-10-23"
+  },
+  {
+   "name": "PonAir",
+   "role": null,
+   "level": null,
+   "totalMinutes": 2595,
+   "companyMinutes": 0,
+   "joined": "2026-10-31"
   },
   {
    "name": "RCassalati",
@@ -384,32 +408,142 @@
    "joined": "2026-11-03"
   },
   {
-   "name": "marcelocanela",
+   "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 13119,
+   "totalMinutes": 78545,
    "companyMinutes": 0,
-   "joined": "2026-11-07"
+   "joined": "2026-11-12"
   },
   {
-   "name": "Harris",
+   "name": "waponttes",
    "role": null,
    "level": null,
-   "totalMinutes": 5211,
+   "totalMinutes": 94,
    "companyMinutes": 0,
-   "joined": "2026-10-23"
+   "joined": "2026-11-11"
   },
   {
-   "name": "PonAir",
+   "name": "Julianajp",
    "role": null,
    "level": null,
-   "totalMinutes": 2595,
+   "totalMinutes": 19011,
    "companyMinutes": 0,
-   "joined": "2026-10-31"
+   "joined": "2026-11-13"
   }
  ],
- "pilotsCapturedAt": "2026-11-11T16:47:22.269Z",
+ "pilotsCapturedAt": "2026-11-16T18:32:23.446Z",
  "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "OTHH",
+   "destination": "RJTT",
+   "date": "2026-11-16",
+   "minutes": 551,
+   "nm": 4453.88,
+   "paid": true
+  },
+  {
+   "pilot": "PaxArcturia",
+   "prefix": "NPC7VI",
+   "model": "Airbus A320neo",
+   "origin": "EHAM",
+   "destination": "EDDM",
+   "date": "2026-11-16",
+   "minutes": 74,
+   "nm": 358.37,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-15",
+   "minutes": 289,
+   "nm": 2372.45,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-15",
+   "minutes": 195,
+   "nm": 1590.35,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "RJTT",
+   "destination": "LEMD",
+   "date": "2026-11-15",
+   "minutes": 698,
+   "nm": 5810.2,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-15",
+   "minutes": 194,
+   "nm": 1590.35,
+   "paid": true
+  },
+  {
+   "pilot": "PaxArcturia",
+   "prefix": "NPC7VI",
+   "model": "Airbus A320neo",
+   "origin": "LEXJ",
+   "destination": "EHAM",
+   "date": "2026-11-15",
+   "minutes": 113,
+   "nm": 634.1,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "SBGL",
+   "destination": "LEMD",
+   "date": "2026-11-14",
+   "minutes": 590,
+   "nm": 4395.57,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "KRDU",
+   "destination": "SBGL",
+   "date": "2026-11-14",
+   "minutes": 523,
+   "nm": 4057.65,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NK4I2I",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "SBGL",
+   "date": "2026-11-13",
+   "minutes": 579,
+   "nm": 4395.57,
+   "paid": true
+  },
   {
    "pilot": "nassis89",
    "prefix": "N2IUPG",
@@ -820,16 +954,16 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 35,
+  "readCount": 45,
   "groups": [
    {
     "origin": "LEMD",
     "destination": "EFHK",
     "model": "Douglas MD-11",
-    "count": 6,
-    "lastDate": "2026-11-11",
-    "change": -0.490198,
-    "state": "queda"
+    "count": 8,
+    "lastDate": "2026-11-15",
+    "change": -0.080133,
+    "state": "recuperada"
    },
    {
     "origin": "SUMU",
@@ -844,19 +978,19 @@
     "origin": "RJTT",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 2,
-    "lastDate": "2026-11-06",
-    "change": -0.082152,
+    "count": 3,
+    "lastDate": "2026-11-15",
+    "change": -0.045566,
     "state": "estavel"
    },
    {
     "origin": "EFHK",
     "destination": "OTHH",
     "model": "Douglas MD-11",
-    "count": 5,
-    "lastDate": "2026-11-11",
-    "change": -0.146896,
-    "state": "queda"
+    "count": 6,
+    "lastDate": "2026-11-15",
+    "change": 0.018492,
+    "state": "recuperada"
    },
    {
     "origin": "OTHH",
@@ -943,19 +1077,19 @@
     "origin": "KRDU",
     "destination": "SBGL",
     "model": "Douglas MD-11",
-    "count": 1,
-    "lastDate": "2026-11-08",
-    "change": null,
-    "state": "unico"
+    "count": 2,
+    "lastDate": "2026-11-14",
+    "change": -0.166769,
+    "state": "queda"
    },
    {
     "origin": "LEMD",
     "destination": "SBGL",
     "model": "Douglas MD-11",
-    "count": 1,
-    "lastDate": "2026-11-08",
-    "change": null,
-    "state": "unico"
+    "count": 2,
+    "lastDate": "2026-11-13",
+    "change": -0.173037,
+    "state": "queda"
    },
    {
     "origin": "KRDU",
@@ -970,10 +1104,10 @@
     "origin": "SBGL",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 1,
-    "lastDate": "2026-11-10",
-    "change": null,
-    "state": "unico"
+    "count": 2,
+    "lastDate": "2026-11-14",
+    "change": 0.260627,
+    "state": "alta"
    },
    {
     "origin": "LEMD",
@@ -999,6 +1133,33 @@
     "model": "Douglas MD-11",
     "count": 1,
     "lastDate": "2026-11-11",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "LEXJ",
+    "destination": "EHAM",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "lastDate": "2026-11-15",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "EHAM",
+    "destination": "EDDM",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "lastDate": "2026-11-16",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "OTHH",
+    "destination": "RJTT",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-16",
     "change": null,
     "state": "unico"
    }
