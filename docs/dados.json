@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-16T18:32:23.446Z",
+ "capturedAt": "2026-11-17T18:42:27.779Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -33,23 +33,23 @@
   {
    "prefix": "NPC7VI",
    "model": "Airbus A320neo",
-   "airport": "EDDM",
+   "airport": "LTAC",
    "base": "EFHK",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N6KZLB",
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "KJFK",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "RJTT",
+   "airport": "LEMD",
    "base": "LEMD",
-   "status": "Atenção em motor"
+   "status": "EM USO"
   },
   {
    "prefix": "N4XBCS",
@@ -82,9 +82,9 @@
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "EFHK",
+   "airport": "LEMD",
    "base": "RJTT",
-   "status": "EM USO · Atenção em motor"
+   "status": "Atenção em motor"
   },
   {
    "prefix": "NUNFUD",
@@ -110,7 +110,7 @@
   {
    "prefix": "NLFTDW",
    "model": "Boeing 787-10 Dreamliner",
-   "airport": "KRDU",
+   "airport": "SBKP",
    "base": "SBGL",
    "status": "Sem alerta no cartão"
   }
@@ -323,23 +323,23 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 127428,
-   "companyMinutes": 117128,
+   "totalMinutes": 128813,
+   "companyMinutes": 118512,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 19442,
-   "companyMinutes": 7328,
+   "totalMinutes": 19965,
+   "companyMinutes": 7852,
    "joined": "2026-10-20"
   },
   {
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 7297,
+   "totalMinutes": 8453,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -347,8 +347,8 @@
    "name": "PaxArcturia",
    "role": null,
    "level": null,
-   "totalMinutes": 744,
-   "companyMinutes": 234,
+   "totalMinutes": 1133,
+   "companyMinutes": 494,
    "joined": "2026-11-07"
   },
   {
@@ -363,7 +363,7 @@
    "name": "marcelocanela",
    "role": null,
    "level": null,
-   "totalMinutes": 13233,
+   "totalMinutes": 13303,
    "companyMinutes": 0,
    "joined": "2026-11-07"
   },
@@ -371,7 +371,7 @@
    "name": "Harris",
    "role": null,
    "level": null,
-   "totalMinutes": 6226,
+   "totalMinutes": 6460,
    "companyMinutes": 0,
    "joined": "2026-10-23"
   },
@@ -411,7 +411,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 78545,
+   "totalMinutes": 79337,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -432,8 +432,52 @@
    "joined": "2026-11-13"
   }
  ],
- "pilotsCapturedAt": "2026-11-16T18:32:23.446Z",
+ "pilotsCapturedAt": "2026-11-17T18:42:27.779Z",
  "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "RJTT",
+   "destination": "LEMD",
+   "date": "2026-11-17",
+   "minutes": 734,
+   "nm": 5810.2,
+   "paid": true
+  },
+  {
+   "pilot": "PaxArcturia",
+   "prefix": "NPC7VI",
+   "model": "Airbus A320neo",
+   "origin": "LYBE",
+   "destination": "LTAC",
+   "date": "2026-11-17",
+   "minutes": 156,
+   "nm": 627.02,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NLFTDW",
+   "model": "Boeing 787-10 Dreamliner",
+   "origin": "KRDU",
+   "destination": "SBKP",
+   "date": "2026-11-17",
+   "minutes": 523,
+   "nm": 3963.33,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "date": "2026-11-17",
+   "minutes": 357,
+   "nm": 2875.87,
+   "paid": true
+  },
   {
    "pilot": "astronauta",
    "prefix": "N2IUPG",
@@ -454,6 +498,28 @@
    "date": "2026-11-16",
    "minutes": 74,
    "nm": 358.37,
+   "paid": true
+  },
+  {
+   "pilot": "PaxArcturia",
+   "prefix": "NPC7VI",
+   "model": "Airbus A320neo",
+   "origin": "EDDM",
+   "destination": "LYBE",
+   "date": "2026-11-16",
+   "minutes": 103,
+   "nm": 410.14,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-16",
+   "minutes": 293,
+   "nm": 2372.45,
    "paid": true
   },
   {
@@ -954,7 +1020,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 45,
+  "readCount": 51,
   "groups": [
    {
     "origin": "LEMD",
@@ -978,27 +1044,27 @@
     "origin": "RJTT",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 3,
-    "lastDate": "2026-11-15",
-    "change": -0.045566,
-    "state": "estavel"
+    "count": 4,
+    "lastDate": "2026-11-17",
+    "change": 0.135297,
+    "state": "alta"
    },
    {
     "origin": "EFHK",
     "destination": "OTHH",
     "model": "Douglas MD-11",
-    "count": 6,
-    "lastDate": "2026-11-15",
-    "change": 0.018492,
-    "state": "recuperada"
+    "count": 7,
+    "lastDate": "2026-11-16",
+    "change": -0.152886,
+    "state": "queda"
    },
    {
     "origin": "OTHH",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 4,
-    "lastDate": "2026-11-10",
-    "change": -0.034027,
+    "count": 5,
+    "lastDate": "2026-11-17",
+    "change": 0.057795,
     "state": "recuperada"
    },
    {
@@ -1146,6 +1212,15 @@
     "state": "unico"
    },
    {
+    "origin": "EDDM",
+    "destination": "LYBE",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "lastDate": "2026-11-16",
+    "change": null,
+    "state": "unico"
+   },
+   {
     "origin": "EHAM",
     "destination": "EDDM",
     "model": "Airbus A320neo",
@@ -1160,6 +1235,24 @@
     "model": "Douglas MD-11",
     "count": 1,
     "lastDate": "2026-11-16",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "KRDU",
+    "destination": "SBKP",
+    "model": "Boeing 787-10 Dreamliner",
+    "count": 1,
+    "lastDate": "2026-11-17",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "LYBE",
+    "destination": "LTAC",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "lastDate": "2026-11-17",
     "change": null,
     "state": "unico"
    }
