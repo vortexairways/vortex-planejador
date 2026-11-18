@@ -57,20 +57,21 @@ const VortexOperation = (() => {
       completed: ["Voo concluído pela Vortex", "Vortex flight completed"],
     };
     const heading = headings[status] || headings.today;
-    const routeLines = legs.map(leg => leg.origin + " → " + leg.destination + " · " + leg.code).join("\n");
+    const routeLines = ferry => legs.map(leg => leg.origin + " → " + leg.destination + " · " +
+      (leg.code === "Traslado" ? ferry : leg.code)).join("\n");
     const aircraft = plane ? plane.model + " · " + plane.prefix : "";
     const duration = Number.isFinite(minutes) ? Math.floor(minutes / 60) + "h" + String(minutes % 60).padStart(2, "0") : null;
     const distance = Number.isFinite(miles) ? Math.round(miles) + " nm" : null;
-    const facts = [name && "@" + name, routeLines, aircraft].filter(Boolean).join("\n");
+    const facts = ferry => [name && "@" + name, routeLines(ferry), aircraft].filter(Boolean).join("\n");
     const basisPT = timeSource === "pilops" ? "duração estimada pelo histórico do PilOps ≈ " : "duração estimada ≈ ";
     const basisEN = timeSource === "pilops" ? "estimated duration from PilOps history ≈ " : "estimated duration ≈ ";
     const mixedPT = timeSource === "mixed" ? "PilOps em " + pilopsLegs + "/" + legs.length + " trechos; demais por catálogo" : null;
     const mixedEN = timeSource === "mixed" ? "PilOps on " + pilopsLegs + "/" + legs.length + " legs; others from catalogue" : null;
     const estimatePT = [distance, duration && basisPT + duration, duration && mixedPT].filter(Boolean).join(" · ");
     const estimateEN = [distance, duration && basisEN + duration, duration && mixedEN].filter(Boolean).join(" · ");
-    return ["✈️ " + heading[0], facts, estimatePT,
+    return ["✈️ " + heading[0], facts("Traslado"), estimatePT,
       "Quem vai somar mais um trecho hoje? Escolham suas rotas e compartilhem seus próprios voos no grupo!", "",
-      "✈️ " + heading[1], facts, estimateEN,
+      "✈️ " + heading[1], facts("Ferry"), estimateEN,
       "Who’s logging another leg today? Pick your routes and share your own flights with the group!", "",
       "Planejador / Planner · " + url].filter(line => line !== null).join("\n");
   }

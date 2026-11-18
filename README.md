@@ -6,6 +6,8 @@ Em **Movimentações da frota**, o aviso fica ativo enquanto a última posição
 
 ## Estrutura
 
+Em **Planejar ida e volta**, cada rota permite montar um retorno direto cadastrado, uma conexão na malha ou um traslado direto. A aeronave escolhida determina a triagem por trecho. Em **Simular nova rota**, informe dois códigos ICAO para ver os circuitos que a ligação fecharia, os modelos com alcance e as opções de reposicionamento segundo a última coleta. A simulação é local ao navegador. O aviso de compatibilidade começa por Congonhas e pelos modelos de código D, E e F catalogados no planejador. Sua referência é a [ficha do DECEA](https://aisweb.decea.mil.br/?codigo=SBSP&i=aerodromos). Alcance e porte são triagem para simulação. Validação: `node --test tools/malha.test.mjs`.
+
 - `docs/`: o site publicado pelo GitHub Pages.
   - `dados.json`: frota, rotas, hubs, pilotos, histórico operacional e variações percentuais, sem valores financeiros absolutos (gerado pelo coletor; não editar à mão).
   - `aeronaves.js`: catálogo do Mercado de Aeronaves do PilOps (135 modelos, sem preços publicados) e alcance/cruzeiro aproximados de cada um. Ajuste aqui se um modelo tiver valores diferentes ou se o PilOps lançar aeronaves novas.

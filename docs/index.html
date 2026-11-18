@@ -18,15 +18,16 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=15">
+  <link rel="stylesheet" href="./style.css?v=16">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=3"></script>
-  <script defer src="./operacao.js?v=6"></script>
+  <script defer src="./operacao.js?v=7"></script>
   <script defer src="./atividade.js?v=3"></script>
   <script defer src="./movimentacoes.js?v=2"></script>
   <script defer src="./tempos.js?v=2"></script>
-  <script defer src="./planner.js?v=20"></script>
+  <script defer src="./malha.js?v=1"></script>
+  <script defer src="./planner.js?v=21"></script>
 </head>
 <body>
   <header class="top">
@@ -78,6 +79,7 @@
       <label><span data-en="Departure airport">Aeroporto de partida</span> <select id="airport"><option value="">Todos os aeroportos</option></select></label>
       <label><span data-en="Aircraft by registration">Aeronave por prefixo</span> <select id="aircraft"><option value="">Toda a frota</option></select></label>
       <button id="reset" class="secondary" type="button" data-en="Clear selection">Limpar seleção</button>
+      <a class="secondary small simulation-link" href="#route-simulator" data-en="Simulate a new route">Simular nova rota</a>
       <p class="meta time-note" data-en="Times use the median of up to 10 completed PilOps flights on the same route and aircraft model. Without valid history, a catalogue estimate is shown. References update after manual Vortex sync.">Os tempos usam a mediana de até 10 voos concluídos no PilOps na mesma rota e modelo. Sem histórico válido, aparece a estimativa de catálogo. As referências são atualizadas após a sincronização manual da Vortex.</p>
     </section>
     <div class="layout">
@@ -196,6 +198,20 @@
       </div>
       <ul id="ideas" class="list pad"></ul>
     </section>
+    <section id="route-simulator" class="card wide" aria-labelledby="simulation-title">
+      <div class="section-heading"><h2 id="simulation-title" data-en="Simulate a new route">Simular nova rota</h2></div>
+      <div class="pad">
+        <p class="meta" data-en="Compare a proposed link with the current network before buying it in PilOps.">Compare uma ligação proposta com a malha atual antes da compra no PilOps.</p>
+        <form id="simulation-form" class="simulation-form">
+          <label><span data-en="Departure ICAO">ICAO de origem</span><input id="simulation-origin" list="simulation-airports" maxlength="5" placeholder="OTHH" autocomplete="off" spellcheck="false" required></label>
+          <label><span data-en="Destination ICAO">ICAO de destino</span><input id="simulation-destination" list="simulation-airports" maxlength="5" placeholder="LTAI" autocomplete="off" spellcheck="false" required></label>
+          <datalist id="simulation-airports"></datalist>
+          <button type="submit" class="primary" data-en="Compare route">Comparar rota</button>
+        </form>
+        <p id="simulation-status" class="meta" role="status"></p>
+        <div id="simulation-result"></div>
+      </div>
+    </section>
     <section class="card wide" aria-labelledby="coverage-title">
       <div class="section-heading">
         <div><p class="eyebrow" data-en="FLEET × ROUTES">FROTA × ROTAS</p><h2 id="coverage-title" data-en="Route coverage">Cobertura das rotas</h2></div>
@@ -222,6 +238,12 @@
     </section>
     <footer data-en="Lines and distances follow the great circle between airports. Range uses approximate catalogue values. Times use completed PilOps flight history for the same route and model when available; otherwise they are catalogue estimates without wind. Historical duration is a reference, not a guarantee. Confirm aircraft availability, load and flight feasibility on PilOps before dispatching. Coordinates from &lt;a href=&quot;https://ourairports.com/data/&quot;&gt;OurAirports&lt;/a&gt;.">Linhas e distâncias seguem o grande círculo entre os aeroportos. O alcance usa valores aproximados de catálogo. Os tempos usam o histórico de voos concluídos no PilOps na mesma rota e modelo, quando disponível; nos demais casos, são estimativas de catálogo sem vento. A duração histórica é uma referência, não uma garantia. Confirme a disponibilidade da aeronave, a carga e a viabilidade do voo no PilOps antes de despachar. Coordenadas de <a href="https://ourairports.com/data/">OurAirports</a>.</footer>
   </main>
+  <dialog id="return-dialog" aria-labelledby="return-title">
+    <form method="dialog" class="share-close"><button class="secondary small" data-en="Close">Fechar</button></form>
+    <h2 id="return-title"></h2>
+    <label><span data-en="Aircraft for the round trip">Aeronave para a ida e volta</span><select id="return-aircraft"></select></label>
+    <div id="return-options"></div>
+  </dialog>
   <dialog id="share-dialog" aria-labelledby="share-title">
     <form method="dialog" class="share-close"><button class="secondary small" data-en="Close">Fechar</button></form>
     <h2 id="share-title" data-en="Share your flight">Compartilhar seu voo</h2>

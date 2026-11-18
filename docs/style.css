@@ -26,8 +26,20 @@
 .activity-zero .meta { color: #951c2b; }
 .activity-panel .activity-summary-zero, .activity-panel .activity-summary-zero:hover { border-color: #d4939c; background: #fff0f2; color: #951c2b; }
 .share-action { margin-top: .45rem; }
-#share-dialog { width: min(760px, 94vw); max-height: 90vh; overflow: auto; border: 1px solid #bcc9de; border-radius: 1rem; color: #17243b; padding: 1.2rem; }
-#share-dialog::backdrop { background: #050b24b3; }
+#share-dialog, #return-dialog { width: min(760px, 94vw); max-height: 90vh; overflow: auto; border: 1px solid #bcc9de; border-radius: 1rem; color: #17243b; padding: 1.2rem; box-sizing: border-box; }
+#share-dialog::backdrop, #return-dialog::backdrop { background: #050b24b3; }
+#return-options { margin-top: .7rem; }
+.return-option { background: #f4f7ff; border: 1px solid var(--border); border-radius: .6rem; padding: .65rem; margin-top: .55rem; }
+.return-option strong { display: block; overflow-wrap: anywhere; }
+.return-option button { margin-top: .4rem; }
+.airport-review { display: block; width: fit-content; margin-top: .35rem; overflow-wrap: anywhere; }
+.airport-review a { color: inherit; white-space: nowrap; }
+.simulation-link { justify-self: start; text-decoration: none; }
+.simulation-form { display: flex; flex-wrap: wrap; align-items: end; gap: .55rem; margin: .65rem 0; }
+.simulation-form label { font-size: .82rem; }
+.simulation-form input { display: block; width: 9em; margin-top: .2rem; padding: .45rem; border: 1px solid #bcc9de; border-radius: .45rem; font: inherit; text-transform: uppercase; }
+#simulation-result h3 { font-size: .95rem; margin: .75rem 0 .2rem; }
+#simulation-result ul { padding-left: 1.2rem; margin: .25rem 0; font-size: .84rem; }
 .share-close { float: right; margin: 0 0 .5rem .5rem; }
 .share-options { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: .7rem; clear: both; margin: 1rem 0; }
 .share-options label { font-size: .8rem; font-weight: 650; min-width: 0; }
@@ -76,7 +88,7 @@ button { font-size: .85rem; font-weight: 650; cursor: pointer; }
 button:disabled { cursor: default; color: #52607a; border: 1px solid #b9c8e0; background: #f1f5fd; border-radius: .55rem; padding: .65rem .85rem; flex-shrink: 0; }
 button:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid #4774e7; outline-offset: 2px; }
 .card { border: 1px solid var(--border); background: white; border-radius: 1rem; box-shadow: 0 7px 28px #17243b0a; min-width: 0; }
-.filters { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 1rem; padding: 1rem; margin-bottom: 1rem; }
+.filters { display: grid; grid-template-columns: 1fr 1fr auto auto; align-items: end; gap: 1rem; padding: 1rem; margin-bottom: 1rem; }
 .filters label { display: block; min-width: 0; font-weight: 650; font-size: .86rem; }
 select { width: 100%; display: block; margin-top: .3rem; padding: .6rem; border-radius: .55rem; border: 1px solid #bcc9de; color: inherit; background: #f8faff; }
 .secondary { color: var(--navy); background: white; border: 1px solid #bcc9de; border-radius: .55rem; padding: .57rem .8rem; }

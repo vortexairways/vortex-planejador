@@ -21,6 +21,8 @@ let revenueMonitor = { readCount: 0, groups: [] };
 let refreshingData = false;
 let operationConfig = null;
 let shareLegs = [];
+let returnRoute = null;
+let simulatedRoute = null;
 let activityConfig = null;
 let activityDay = null;
 // Cobertura de cada rota pela frota atual (preenchida em start()).
@@ -336,6 +338,111 @@ function reachTag(plane, miles) {
     (performance && status !== "ok" ? T(" · máx. ≈ ", " · max ≈ ") + number.format(performance.range) + " nm" : ""));
 }
 
+function airportWarning(route, model) {
+  const review = VortexNetwork.airportReview(route, model);
+  if (!review) return null;
+  const warning = element("span", "tag warn airport-review", review.code
+    ? T("⚠ Congonhas (SBSP): " + model + " tem código " + review.code + ", acima do 4C para operação regular. ",
+      "⚠ Congonhas (SBSP): " + model + " has code " + review.code + ", above 4C for regular operations. ")
+    : T("⚠ Congonhas (SBSP): verificar pista e compatibilidade. ",
+      "⚠ Congonhas (SBSP): check runway and compatibility. "));
+  const source = element("a", "", "DECEA");
+  source.href = review.source;
+  source.target = "_blank";
+  source.rel = "noopener noreferrer";
+  warning.append(source);
+  return warning;
+}
+
+function appendAirportWarning(node, route, model) {
+  const warning = airportWarning(route, model);
+  if (warning) node.append(warning);
+}
+
+const rangeAllows = (plane, miles) => ["ok", "limite"].includes(reach(plane, miles));
+const airportAllows = (plane, route) => !VortexNetwork.airportReview(route, plane.model)?.code;
+
+function returnButton(route, plane) {
+  return button(T("Planejar ida e volta", "Plan round trip"), "secondary small", () => {
+    returnRoute = route;
+    const picker = document.querySelector("#return-aircraft");
+    picker.replaceChildren(new Option(T("Sem aeronave definida", "Aircraft not chosen"), ""));
+    for (const candidate of [...fleet].sort((a, b) => (b.airport === route.origin) - (a.airport === route.origin))) {
+      picker.add(new Option(candidate.prefix + " · " + candidate.model + " · " + candidate.airport +
+        (unavailable(candidate) ? " · " + statusLabel(candidate.status) : ""), candidate.prefix));
+    }
+    const local = fleet.find(candidate => candidate.airport === route.origin && !unavailable(candidate) &&
+      rangeAllows(candidate, distance(route.origin, route.destination)) && airportAllows(candidate, route));
+    picker.value = (plane || local)?.prefix || "";
+    renderReturnOptions();
+    document.querySelector("#return-dialog").showModal();
+  });
+}
+
+function renderReturnOptions() {
+  if (!returnRoute) return;
+  const origin = returnRoute.origin, destination = returnRoute.destination;
+  const route = VortexNetwork.direct(routes, origin, destination);
+  const panel = document.querySelector("#return-options");
+  panel.replaceChildren();
+  document.querySelector("#return-title").textContent = T("Ida e volta · ", "Round trip · ") + origin + " → " + destination;
+  if (!route) {
+    panel.append(element("p", "meta", T("A rota deixou de constar na última coleta.", "The route is missing from the latest sync.")));
+    return;
+  }
+  const plane = fleet.find(candidate => candidate.prefix === document.querySelector("#return-aircraft").value);
+  const allowed = (leg, miles) => !plane || rangeAllows(plane, miles) && airportAllows(plane, leg);
+  const miles = distance(origin, destination);
+  appendAirportWarning(panel, route, plane?.model);
+  if (plane && !allowed(route, miles)) {
+    panel.append(element("p", "meta", T("A ida fica fora da triagem de alcance ou porte para esta aeronave. Escolha outro modelo.",
+      "The outbound leg falls outside the range or airport size screening for this aircraft. Choose another model.")));
+    return;
+  }
+  if (!plane) panel.append(element("p", "meta", T("Selecione uma aeronave para conferir o alcance de cada trecho.",
+    "Select an aircraft to check the range of each leg.")));
+  else panel.append(element("p", "meta", T("A triagem usa alcance de catálogo e restrições cadastradas. Confira carga, combustível e desempenho de pista no simulador.",
+    "Screening uses catalogue range and restrictions on file. Check load, fuel and runway performance in the simulator.")));
+  if (plane && (plane.airport !== origin || unavailable(plane))) {
+    const detail = plane.airport === origin ? statusLabel(plane.status)
+      : T("Posição na última coleta: ", "Position in the last sync: ") + plane.airport +
+        (unavailable(plane) ? " · " + statusLabel(plane.status) : "");
+    panel.append(element("p", "meta", detail));
+  }
+  const { reverse, options } = VortexNetwork.returnOptions(route, routes, distance, allowed);
+  if (!reverse) panel.append(element("p", "meta", T("Sem volta direta cadastrada.", "No registered direct return.")));
+  else if (!options.some(option => option.kind === "direct")) panel.append(element("p", "meta",
+    T("A volta direta cadastrada fica fora da triagem para esta aeronave.", "The registered direct return falls outside the screening for this aircraft.")));
+  if (!options.length) {
+    panel.append(element("p", "meta", T("Nenhuma opção de volta encontrada para esta seleção.",
+      "No return option was found for this selection.")));
+    return;
+  }
+  const labels = {
+    direct: T("Volta direta cadastrada", "Registered direct return"),
+    connection: T("Volta pela malha com conexão", "Return via the network with a connection"),
+    ferry: T("Volta por traslado direto · sem carga", "Direct ferry return · no cargo"),
+  };
+  for (const { kind, legs } of options) {
+    const card = element("div", "return-option");
+    const total = legs.map(leg => distance(leg.origin, leg.destination));
+    const totalMiles = total.every(value => value !== null) ? total.reduce((sum, value) => sum + value, 0) : null;
+    card.append(element("strong", "", VortexNetwork.pathLabel(legs)), element("span", "meta", labels[kind] + " · " + nm(totalMiles)));
+    for (const leg of legs.slice(1)) appendAirportWarning(card, leg, plane?.model);
+    card.append(button(T("Montar no plano", "Build plan"), "secondary small", () => {
+      const extend = state.plan.length && currentOrigin() === origin && state.prefix === (plane?.prefix || "");
+      Object.assign(state, { origin: extend ? state.origin : origin, prefix: plane?.prefix || "",
+        plan: extend ? [...state.plan, ...legs] : [...legs], focus: null, tab: "routes" });
+      document.querySelector("#return-dialog").close();
+      render();
+      planBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }));
+    panel.append(card);
+  }
+}
+
+document.querySelector("#return-aircraft").addEventListener("change", renderReturnOptions);
+
 function routeRow({ route, miles }) {
   const plane = selectedPlane();
   const row = element("li");
@@ -360,8 +467,9 @@ function routeRow({ route, miles }) {
   }
   const status = coverage.get(route)?.status;
   if (!plane && status === "comprar") row.append(element("span", "tag bad", T("Nenhuma aeronave da frota alcança esta rota", "No aircraft in the fleet can fly this route")));
+  appendAirportWarning(row, route, plane?.model);
   const actions = element("div", "plan-actions share-action");
-  actions.append(button(T("Compartilhar voo", "Share flight"), "secondary small", () => openShare([route], plane)));
+  actions.append(returnButton(route, plane), button(T("Compartilhar voo", "Share flight"), "secondary small", () => openShare([route], plane)));
   row.append(actions);
   return row;
 }
@@ -413,6 +521,7 @@ function renderPlan() {
       route.origin + " → " + route.destination, nm(miles),
       blockLabel(miles, plane, route.origin, route.destination)].filter(Boolean).join(" · ")));
     if (plane && reach(plane, miles) !== "ok") item.append(reachTag(plane, miles));
+    appendAirportWarning(item, route, plane?.model);
     list.append(item);
   }
   const total = legs.reduce((sum, leg) => sum + (leg.miles ?? 0), 0);
@@ -507,7 +616,8 @@ document.querySelector("#reset").addEventListener("click", reset);
 // voar nenhuma rota VTX sem antes fazer um traslado.
 const networkAirports = () => new Set(routes.map(route => route.origin));
 const isRegistered = (origin, destination) => routes.some(route => route.origin === origin && route.destination === destination);
-const canFly = (plane, origin, destination) => ["ok", "limite"].includes(reach(plane, distance(origin, destination)));
+const canFly = (plane, origin, destination) =>
+  rangeAllows(plane, distance(origin, destination)) && airportAllows(plane, { origin, destination });
 
 // Aeroportos da rede ao alcance, primeiro os que têm rota sem aeronave capaz livre na origem.
 function repositionOptions(plane) {
@@ -524,7 +634,7 @@ function repositionOptions(plane) {
 
 function planFerry(plane, code) {
   Object.assign(state, { prefix: plane.prefix, origin: plane.airport, focus: null, tab: "routes",
-    plan: [{ origin: plane.airport, destination: code, code: "Traslado" }] });
+    plan: [VortexNetwork.ferried(plane.airport, code)] });
   render();
   document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -610,6 +720,7 @@ function renderAlerts() {
           : option.flyable.length + (option.flyable.length > 1 ? T(" rotas de partida", " departing routes") : T(" rota de partida", " departing route")))));
       if (option.needed.length) line.append(element("span", "tag ok", T("Necessária", "Needed")));
       if (option.hangar) line.append(element("span", "tag neutral", T("Hangar da aeronave", "Aircraft's hangar")));
+      appendAirportWarning(line, { origin: plane.airport, destination: option.code }, plane.model);
       line.append(button(T("Planejar traslado", "Plan ferry"), "secondary small", () => planFerry(plane, option.code)));
       box.append(line);
     }
@@ -771,6 +882,8 @@ function circuitRow(circuit, pairs) {
   if (never) tags.append(element("span", "tag warn", never === circuit.legs.length ? T("Nenhum trecho voado ainda", "No leg flown yet")
     : never + (never > 1 ? T(" trechos nunca voados", " legs never flown") : T(" trecho nunca voado", " leg never flown"))));
   row.append(tags);
+  const restrictedLeg = circuit.legs.find(leg => VortexNetwork.airportReview(leg));
+  if (restrictedLeg) appendAirportWarning(row, restrictedLeg, plane?.model);
   return row;
 }
 
@@ -900,7 +1013,7 @@ const coverageText = () => ({
   comprar: [T("Precisa comprar", "Needs a purchase"), "bad"],
   indisponivel: [T("Só com aeronave indisponível", "Only with an unavailable aircraft"), "warn"],
   reposicionar: [T("Reposicionar aeronave", "Reposition an aircraft"), "warn"],
-  pronta: [T("Pronta para voar", "Ready to fly"), "ok"],
+  pronta: [T("Frota livre na origem e com alcance", "Available aircraft at origin within range"), "ok"],
 });
 
 function renderCoverage() {
@@ -912,7 +1025,7 @@ function renderCoverage() {
       : T(" rota precisa de aeronave que a frota não tem", " route needs an aircraft the fleet does not have")),
     counts.indisponivel && counts.indisponivel + T(" só com aeronave em uso ou manutenção", " only with an aircraft in use or in maintenance"),
     counts.reposicionar && counts.reposicionar + T(" com aeronave capaz em outro aeroporto", " with a capable aircraft at another airport"),
-    counts.pronta && counts.pronta + (counts.pronta > 1 ? T(" prontas para voar", " ready to fly") : T(" pronta para voar", " ready to fly")),
+    counts.pronta && counts.pronta + T(" com aeronave livre na origem e com alcance", " with an available aircraft at origin within range"),
   ].filter(Boolean).join(" · ") + ".";
   const list = document.querySelector("#coverage");
   list.replaceChildren(...items.map(item => {
@@ -945,9 +1058,121 @@ function renderCoverage() {
       detail = T("Livres em ", "Free at ") + item.route.origin + ": " + item.here.map(p => p.prefix + " (" + p.model + ")").join(", ") + ".";
     }
     row.append(element("span", "meta", detail));
+    const reference = item.here[0] || item.free[0] || item.capable[0];
+    appendAirportWarning(row, item.route, reference?.model);
+    const actions = element("div", "plan-actions share-action");
+    actions.append(returnButton(item.route, selectedPlane()));
+    row.append(actions);
     return row;
   }));
 }
+
+// ---------- Simulação de novas rotas ----------
+
+function renderSimulation() {
+  const result = document.querySelector("#simulation-result");
+  const status = document.querySelector("#simulation-status");
+  result.replaceChildren();
+  status.textContent = "";
+  if (!simulatedRoute) return;
+  if (!routes.length) {
+    status.textContent = T("Aguarde o carregamento da malha.", "Wait for the network to load.");
+    return;
+  }
+  const route = simulatedRoute;
+  const { origin, destination } = route;
+  if (!/^[A-Z0-9]{3,5}$/.test(origin) || !/^[A-Z0-9]{3,5}$/.test(destination) ||
+      !Object.hasOwn(airports, origin) || !Object.hasOwn(airports, destination) || origin === destination) {
+    status.textContent = T("Informe dois códigos de aeroporto conhecidos e diferentes.",
+      "Enter two different, known airport codes.");
+    return;
+  }
+  const registered = VortexNetwork.direct(routes, origin, destination);
+  const reverse = VortexNetwork.direct(routes, destination, origin);
+  const miles = distance(origin, destination);
+  status.textContent = origin + " → " + destination + " · " + nm(miles) + " · " +
+    (registered ? T("Já cadastrada: ", "Already registered: ") + registered.code : T("Rota proposta", "Proposed route"));
+  result.append(element("p", "meta", reverse
+    ? T("Volta direta cadastrada: ", "Registered direct return: ") + reverse.code
+    : T("Sem volta direta cadastrada.", "No registered direct return.")));
+  appendAirportWarning(result, route);
+
+  const circuits = VortexNetwork.newCircuits(route, routes, distance);
+  result.append(element("h3", "", registered
+    ? T("Circuitos com esta rota", "Circuits using this route")
+    : T("Circuitos que esta ligação fecha", "Circuits this link would close")));
+  if (!circuits.length) result.append(element("p", "meta",
+    T("Nenhum retorno à origem pelas rotas atuais.", "No path back to the origin using current routes.")));
+  else {
+    const list = element("ul");
+    for (const legs of circuits) {
+      const total = legs.reduce((sum, leg) => sum + distance(leg.origin, leg.destination), 0);
+      const row = element("li", "", VortexNetwork.pathLabel(legs) + " · " + nm(total));
+      const restrictedLeg = legs.find(leg => VortexNetwork.airportReview(leg));
+      if (restrictedLeg && !VortexNetwork.airportReview(route)) appendAirportWarning(row, restrictedLeg);
+      list.append(row);
+    }
+    result.append(list);
+  }
+
+  const capable = fleet.filter(plane => rangeAllows(plane, miles));
+  result.append(element("h3", "", T("Modelos da frota com alcance", "Fleet models within range")));
+  if (!capable.length) result.append(element("p", "meta",
+    T("Nenhum modelo tem alcance cadastrado suficiente.", "No fleet model has sufficient range on file.")));
+  else {
+    const list = element("ul");
+    for (const model of [...new Set(capable.map(plane => plane.model))].sort((a, b) => a.localeCompare(b, locale()))) {
+      const row = element("li", "", model);
+      if (VortexNetwork.airportReview(route, model)?.code) appendAirportWarning(row, route, model);
+      list.append(row);
+    }
+    result.append(list);
+  }
+
+  const free = capable.filter(plane => !unavailable(plane) && airportAllows(plane, route));
+  const here = free.filter(plane => plane.airport === origin);
+  const formatPlane = plane => plane.prefix + " · " + plane.model;
+  result.append(element("h3", "", T("Disponibilidade na última coleta", "Availability in the last sync")));
+  if (here.length) {
+    result.append(element("p", "meta", T("Livres na origem: ", "Available at departure: ") + here.map(formatPlane).join(", ")));
+  } else {
+    result.append(element("p", "meta", T("Nenhuma aeronave livre na origem tem alcance e atende às restrições de porte cadastradas.",
+      "No available aircraft at departure is both within range and free of a listed airport size restriction.")));
+  }
+  const ferries = free.filter(plane => plane.airport !== origin).map(plane => ({
+    plane, miles: distance(plane.airport, origin), leg: VortexNetwork.ferried(plane.airport, origin),
+  })).filter(item => rangeAllows(item.plane, item.miles) && airportAllows(item.plane, item.leg))
+    .sort((a, b) => a.miles - b.miles).slice(0, 3);
+  if (ferries.length) {
+    result.append(element("h3", "", T("Opções de reposicionamento direto", "Direct repositioning options")));
+    const list = element("ul");
+    for (const { plane, miles: ferryMiles, leg } of ferries) {
+      const row = element("li", "", formatPlane(plane) + " · " + leg.origin + " → " + origin + " · " + nm(ferryMiles));
+      appendAirportWarning(row, leg, plane.model);
+      list.append(row);
+    }
+    result.append(list);
+  } else if (!here.length && free.length) {
+    result.append(element("p", "meta", T("As aeronaves livres em outros aeroportos precisam de escala ou revisão de compatibilidade.",
+      "Available aircraft at other airports need a stop or a compatibility review.")));
+  }
+  result.append(element("p", "meta", T("Distâncias em linha direta. A triagem usa alcance de catálogo e restrições cadastradas. Confira carga, combustível e desempenho de pista no simulador.",
+    "Great-circle distances. Screening uses catalogue range and the restrictions on file. Check load, fuel and runway performance in the simulator.")));
+}
+
+const simulationForm = document.querySelector("#simulation-form");
+simulationForm.addEventListener("submit", event => {
+  event.preventDefault();
+  const origin = document.querySelector("#simulation-origin").value.trim().toUpperCase();
+  const destination = document.querySelector("#simulation-destination").value.trim().toUpperCase();
+  simulatedRoute = { origin, destination };
+  renderSimulation();
+});
+simulationForm.addEventListener("input", () => {
+  if (!simulatedRoute) return;
+  simulatedRoute = null;
+  renderSimulation();
+});
 
 // ---------- Ranking de pilotos ----------
 
@@ -1153,15 +1378,14 @@ async function start() {
   document.querySelector("#total-routes").textContent = routes.length;
   document.querySelector("#total-hubs").textContent = hubs.size;
   const shared = new URLSearchParams(location.search);
-  const sharedRoute = routes.find(route => route.origin === shared.get("from") && route.destination === shared.get("to"));
+  const from = shared.get("from"), to = shared.get("to");
+  const sharedPlan = VortexNetwork.readSharedPlan(shared.get("legs"), routes, from, to, code => Object.hasOwn(airports, code));
+  const sharedRoute = sharedPlan?.[0] || VortexNetwork.direct(routes, from, to);
   if (sharedRoute) {
     state.origin = sharedRoute.origin;
     state.focus = sharedRoute;
     state.prefix = fleet.some(plane => plane.prefix === shared.get("aircraft")) ? shared.get("aircraft") : "";
-    const requestedLegs = (shared.get("legs") || "").split(",");
-    const sharedPlan = requestedLegs.slice(0, 30).map(pair => routes.find(route => VortexOperation.pair(route) === pair));
-    if (requestedLegs.length <= 30 && sharedPlan.length > 1 && sharedPlan[0] === sharedRoute &&
-        sharedPlan.every((route, index) => route && (!index || sharedPlan[index - 1]?.destination === route.origin))) {
+    if (sharedPlan && (sharedPlan.length > 1 || sharedRoute.code === "Traslado")) {
       state.plan = sharedPlan;
       state.focus = null;
     }
@@ -1185,12 +1409,15 @@ function paintAll() {
     fleet.length + " aircraft and " + routes.length + (routes.length === 1 ? " route" : " routes") + " mapped in this sync.");
 
   airportSelect.replaceChildren(new Option(T("Todos os aeroportos", "All airports"), ""));
+  const simulationAirports = document.querySelector("#simulation-airports");
+  simulationAirports.replaceChildren();
   for (const code of airportCodes) {
     const planes = fleet.filter(plane => plane.airport === code).length;
     const departures = routes.filter(route => route.origin === code).length;
     const counts = [planes && planes + (planes > 1 ? T(" aeronaves", " aircraft") : T(" aeronave", " aircraft")),
       departures && departures + (departures > 1 ? T(" rotas", " routes") : T(" rota", " route"))].filter(Boolean).join(" · ");
     airportSelect.add(new Option(code + " · " + airportName(code) + (counts ? " — " + counts : ""), code));
+    simulationAirports.append(new Option(airportName(code), code));
   }
   aircraftSelect.replaceChildren(new Option(T("Toda a frota", "Whole fleet"), ""));
   for (const plane of [...fleet].sort((a, b) => a.prefix.localeCompare(b.prefix))) {
@@ -1205,6 +1432,7 @@ function paintAll() {
   renderRealloc();
   renderRevenue();
   renderOperation();
+  renderSimulation();
 }
 
 function setLanguage(next) {
@@ -1343,6 +1571,7 @@ function reallocCards() {
           code + " has " + plural(fallback.flyable.length, "departing route", "departing routes") + " within its range.");
       }
       cards.push({ kind: "realocar", item, action, why: [why, reason].filter(Boolean).join(" "), hangar: code === plane.base,
+        route: via || VortexNetwork.ferried(plane.airport, code),
         button: [T("Ver no mapa", "Show on map"), () => via ? showPlan(plane, [via]) : planFerry(plane, code)] });
       continue;
     }
@@ -1360,7 +1589,7 @@ function reallocCards() {
     if (!pairs.has(route.origin + "-" + route.destination)) notes.push(T("Essa rota ainda não tem voo registrado.", "This route has no recorded flight yet."));
     if (needAirports.has(route.destination)) notes.push(T("E ela chega a " + route.destination + ", onde falta aeronave para outras rotas.",
       "And it lands at " + route.destination + ", where other routes are missing an aircraft."));
-    cards.push({ kind: "voar", item,
+    cards.push({ kind: "voar", item, route,
       action: T("Voe a rota ", "Fly route ") + legText(route) + " (" + blockText(distance(route.origin, route.destination), plane, route.origin, route.destination) + ").",
       why: [T((item.level === "parada" ? "Está parada" : "Está sem voar " + agoText(item.idleDays)) + " em " + where(plane.airport) +
         ", que tem rota ao alcance dela.",
@@ -1443,6 +1672,7 @@ function reallocRow(card) {
   action.append(element("strong", "", card.kind === "ok" || card.kind === "indisponivel" ? T("Situação: ", "Status: ") : T("O que fazer: ", "What to do: ")),
     card.action);
   row.append(action);
+  if (card.route) appendAirportWarning(row, card.route, plane.model);
   if (card.why) row.append(element("p", "why", T("Por quê: ", "Why: ") + card.why));
   if (card.others?.length) row.append(element("span", "meta", T("Outras rotas daqui ao alcance: ", "Other routes from here within range: ") +
     card.others.join(", ") + "."));
@@ -1600,7 +1830,13 @@ async function refreshData() {
     capturedAt = data.capturedAt; pilotsCapturedAt = data.pilotsCapturedAt || null;
     revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
     const currentRoute = old => routes.find(route => VortexOperation.pair(route) === VortexOperation.pair(old));
-    state.plan = state.plan.map(route => currentRoute(route) || (route.code === "Traslado" ? route : null)).filter(Boolean);
+    const plan = [];
+    for (const route of state.plan) {
+      const leg = route.code === "Traslado" ? route : currentRoute(route);
+      if (!leg) break;
+      plan.push(leg);
+    }
+    state.plan = plan;
     state.focus = state.focus ? currentRoute(state.focus) || null : null;
     if (!fleet.some(plane => plane.prefix === state.prefix)) state.prefix = "";
     coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
@@ -1671,6 +1907,7 @@ function renderOperation() {
     card.append(element("p", "meta", route.code + " · " + nm(available.miles)),
       element("span", "tag " + coverageText()[available.status][1], coverageText()[available.status][0]));
     if (minutes !== null) card.append(element("p", "meta", blockLabel(available.miles, reference, route.origin, route.destination) + T(" · referência ", " · reference ") + reference.model));
+    appendAirportWarning(card, route, reference?.model);
     card.append(element("p", "meta", T("Voos lidos no período: ", "Flights read in the period: ") +
       completed.filter(flight => VortexOperation.pair(flight) === VortexOperation.pair(route)).length));
     const actions = element("div", "plan-actions");
@@ -1679,7 +1916,7 @@ function renderOperation() {
       render(false);
       frame([available]);
       document.querySelector(".map-card").scrollIntoView({ behavior: "smooth", block: "start" });
-    }), button(T("Compartilhar meu voo", "Share my flight"), "secondary small", () => openShare([route], available.here[0])));
+    }), returnButton(route, selectedPlane()), button(T("Compartilhar meu voo", "Share my flight"), "secondary small", () => openShare([route], available.here[0])));
     card.append(actions);
     cards.append(card);
   }
@@ -1729,7 +1966,9 @@ function updateShare() {
   url.searchParams.set("from", shareLegs[0].origin);
   url.searchParams.set("to", shareLegs[0].destination);
   if (plane) url.searchParams.set("aircraft", plane.prefix);
-  if (shareLegs.length > 1) url.searchParams.set("legs", shareLegs.map(VortexOperation.pair).join(","));
+  if (shareLegs.length > 1 || shareLegs[0].code === "Traslado") {
+    url.searchParams.set("legs", shareLegs.map(leg => (leg.code === "Traslado" ? "F:" : "") + VortexOperation.pair(leg)).join(","));
+  }
   url.hash = "map-title";
   document.querySelector("#share-message").value = VortexOperation.share({ legs: shareLegs, plane,
     pilot: document.querySelector("#share-pilot").value, status: document.querySelector("#share-status").value,
