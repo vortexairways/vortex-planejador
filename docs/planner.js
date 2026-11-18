@@ -509,12 +509,6 @@ const networkAirports = () => new Set(routes.map(route => route.origin));
 const isRegistered = (origin, destination) => routes.some(route => route.origin === origin && route.destination === destination);
 const canFly = (plane, origin, destination) => ["ok", "limite"].includes(reach(plane, distance(origin, destination)));
 
-// Voo lido mais recente que levou a aeronave até onde ela está agora.
-function lastArrival(plane) {
-  return flightLog.filter(flight => flight.prefix === plane.prefix && flight.destination === plane.airport)
-    .sort((a, b) => b.date.localeCompare(a.date))[0] || null;
-}
-
 // Aeroportos da rede ao alcance, primeiro os que têm rota sem aeronave capaz livre na origem.
 function repositionOptions(plane) {
   return [...networkAirports()].filter(code => airports[code] && code !== plane.airport).map(code => {
@@ -550,14 +544,17 @@ function renderAlerts() {
   const list = document.querySelector("#alerts");
   if (!list) return;
   const network = networkAirports();
-  const outside = fleet.filter(plane => !network.has(plane.airport));
+  const outside = VortexMovements.outsideAircraft(fleet, flightLog, network);
+  const warnings = outside.map(({ arrival }) => arrival)
+    .filter(flight => flight && VortexMovements.classify(flight, routes) === "outside")
+    .map(flight => ({ flight, kind: "outside" }));
   const movements = flightLog.map(flight => ({ flight, kind: VortexMovements.classify(flight, routes) }))
-    .filter(item => item.kind !== "registered").sort((a, b) => b.flight.date.localeCompare(a.flight.date));
-  const warnings = movements.filter(item => item.kind === "outside");
+    .filter(item => item.kind === "return" || item.kind === "reposition")
+    .concat(warnings).sort((a, b) => b.flight.date.localeCompare(a.flight.date));
 
   const alert = document.querySelector("#fleet-alert");
   alert.replaceChildren();
-  alert.hidden = !outside.length && !warnings.length;
+  alert.hidden = !outside.length;
   if (!alert.hidden) {
     alert.append(button("⚠ " + [outside.length && outside.length + (outside.length > 1 ? T(" aeronaves fora da rede", " aircraft outside the network")
       : T(" aeronave fora da rede", " aircraft outside the network")),
@@ -577,7 +574,7 @@ function renderAlerts() {
         " Returns from airports outside the network receive a green approval badge; ferries between network airports are neutral. Classification uses the current network and does not assume the pilot’s intent or authorization.");
 
   const rows = [];
-  for (const plane of outside) {
+  for (const { plane, arrival } of outside) {
     const row = element("li");
     const head = element("div", "row-head");
     head.append(button(plane.prefix + " · " + plane.model, "item-heading", () => chooseAircraft(plane.prefix)));
@@ -587,7 +584,6 @@ function renderAlerts() {
     row.append(element("span", "meta", (place ? place.name + " · " + countryName(place.country) : plane.airport) +
       (hubs.has(plane.airport) ? T(" · hub sem rotas de partida", " · hub with no departing routes") : "") + " · " + statusLabel(plane.status) +
       (plane.base ? T(" · hangar em ", " · hangar at ") + plane.base : "")));
-    const arrival = lastArrival(plane);
     const who = element("span", "meta who");
     if (arrival) {
       who.append(T("Levada até " + plane.airport + " por ", "Flown to " + plane.airport + " by "),
@@ -595,10 +591,8 @@ function renderAlerts() {
         T(" em ", " on ") + dayText(arrival.date) + T(" (voo ", " (flight ") + arrival.origin + " → " +
         arrival.destination + (isRegistered(arrival.origin, arrival.destination) ? ")." : T(", fora das rotas cadastradas).", ", off the registered routes).")));
     } else {
-      who.textContent = T("Chegou a " + plane.airport + " antes dos voos lidos" + (flightsSince ? " (desde " + dayText(flightsSince) + ")" : "") +
-        ": o piloto responsável não aparece no histórico do PilOps.",
-        "Reached " + plane.airport + " before the flights read" + (flightsSince ? " (since " + dayText(flightsSince) + ")" : "") +
-        ": the pilot responsible does not appear in the PilOps history.");
+      who.textContent = T("O histórico disponível do PilOps não confirma quem levou a aeronave até " + plane.airport + ".",
+        "The available PilOps history does not confirm who flew the aircraft to " + plane.airport + ".");
     }
     row.append(who);
     const options = repositionOptions(plane);
@@ -623,7 +617,7 @@ function renderAlerts() {
     rows.push(row);
   }
   for (const [kind, label, english] of [
-    ["outside", "Voos que deixaram aeronaves fora da malha", "Flights that left aircraft outside the network"],
+    ["outside", "Voos associados aos avisos ativos", "Flights associated with active alerts"],
     ["return", "✓ Retornos à malha · aprovação", "✓ Network returns · approval"],
     ["reposition", "Traslados entre aeroportos da malha · sem advertência", "Ferries between network airports · no warning"],
   ]) {
