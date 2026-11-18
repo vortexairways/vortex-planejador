@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-17T18:42:27.779Z",
+ "capturedAt": "2026-11-18T01:23:22.719Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -35,19 +35,19 @@
    "model": "Airbus A320neo",
    "airport": "LTAC",
    "base": "EFHK",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N6KZLB",
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "KJFK",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "EFHK",
    "base": "LEMD",
    "status": "EM USO"
   },
@@ -323,8 +323,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 128813,
-   "companyMinutes": 118512,
+   "totalMinutes": 129013,
+   "companyMinutes": 118713,
    "joined": "2026-05-23"
   },
   {
@@ -339,7 +339,7 @@
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 8453,
+   "totalMinutes": 8699,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -347,7 +347,7 @@
    "name": "PaxArcturia",
    "role": null,
    "level": null,
-   "totalMinutes": 1133,
+   "totalMinutes": 1170,
    "companyMinutes": 494,
    "joined": "2026-11-07"
   },
@@ -371,7 +371,7 @@
    "name": "Harris",
    "role": null,
    "level": null,
-   "totalMinutes": 6460,
+   "totalMinutes": 6612,
    "companyMinutes": 0,
    "joined": "2026-10-23"
   },
@@ -411,7 +411,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 79337,
+   "totalMinutes": 79380,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -432,7 +432,7 @@
    "joined": "2026-11-13"
   }
  ],
- "pilotsCapturedAt": "2026-11-17T18:42:27.779Z",
+ "pilotsCapturedAt": "2026-11-18T01:23:22.719Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -476,6 +476,17 @@
    "date": "2026-11-17",
    "minutes": 357,
    "nm": 2875.87,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-17",
+   "minutes": 200,
+   "nm": 1590.35,
    "paid": true
   },
   {
@@ -1020,15 +1031,15 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 51,
+  "readCount": 52,
   "groups": [
    {
     "origin": "LEMD",
     "destination": "EFHK",
     "model": "Douglas MD-11",
-    "count": 8,
-    "lastDate": "2026-11-15",
-    "change": -0.080133,
+    "count": 9,
+    "lastDate": "2026-11-17",
+    "change": 0.025373,
     "state": "recuperada"
    },
    {
