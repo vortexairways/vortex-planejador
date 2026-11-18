@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-18T01:23:22.719Z",
+ "capturedAt": "2026-11-18T11:05:22.575Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -33,7 +33,7 @@
   {
    "prefix": "NPC7VI",
    "model": "Airbus A320neo",
-   "airport": "LTAC",
+   "airport": "LTAI",
    "base": "EFHK",
    "status": "Sem alerta no cartão"
   },
@@ -47,7 +47,7 @@
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "EFHK",
+   "airport": "LEMD",
    "base": "LEMD",
    "status": "EM USO"
   },
@@ -75,7 +75,7 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SBGL",
+   "airport": "SUMU",
    "base": "SBGL",
    "status": "Sem alerta no cartão"
   },
@@ -287,19 +287,24 @@
    "code": "VTX3333"
   },
   {
-   "origin": "RJTT",
-   "destination": "OMDM",
+   "origin": "OMDM",
+   "destination": "SBCP",
    "code": "VTX4444"
   },
   {
-   "origin": "OMDM",
-   "destination": "SBCP",
+   "origin": "RJTT",
+   "destination": "OMDM",
    "code": "VTX4444"
   },
   {
    "origin": "KRDU",
    "destination": "SBKP",
    "code": "VTX4444"
+  },
+  {
+   "origin": "LTAI",
+   "destination": "OTHH",
+   "code": "VTX5555"
   },
   {
    "origin": "OMDM",
@@ -323,23 +328,23 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 129013,
-   "companyMinutes": 118713,
+   "totalMinutes": 129642,
+   "companyMinutes": 119342,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 19965,
-   "companyMinutes": 7852,
+   "totalMinutes": 20137,
+   "companyMinutes": 8023,
    "joined": "2026-10-20"
   },
   {
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 8699,
+   "totalMinutes": 8895,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -432,8 +437,30 @@
    "joined": "2026-11-13"
   }
  ],
- "pilotsCapturedAt": "2026-11-18T01:23:22.719Z",
+ "pilotsCapturedAt": "2026-11-18T11:05:22.575Z",
  "flights": [
+  {
+   "pilot": "Titanocs",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SBGL",
+   "destination": "SUMU",
+   "date": "2026-11-18",
+   "minutes": 171,
+   "nm": 984.12,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "date": "2026-11-18",
+   "minutes": 338,
+   "nm": 2875.87,
+   "paid": true
+  },
   {
    "pilot": "astronauta",
    "prefix": "N2IUPG",
@@ -487,6 +514,17 @@
    "date": "2026-11-17",
    "minutes": 200,
    "nm": 1590.35,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-17",
+   "minutes": 290,
+   "nm": 2372.45,
    "paid": true
   },
   {
@@ -1031,7 +1069,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 52,
+  "readCount": 55,
   "groups": [
    {
     "origin": "LEMD",
@@ -1064,18 +1102,18 @@
     "origin": "EFHK",
     "destination": "OTHH",
     "model": "Douglas MD-11",
-    "count": 7,
-    "lastDate": "2026-11-16",
-    "change": -0.152886,
-    "state": "queda"
+    "count": 8,
+    "lastDate": "2026-11-17",
+    "change": 0.411958,
+    "state": "alta"
    },
    {
     "origin": "OTHH",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 5,
-    "lastDate": "2026-11-17",
-    "change": 0.057795,
+    "count": 6,
+    "lastDate": "2026-11-18",
+    "change": 0.006824,
     "state": "recuperada"
    },
    {
@@ -1264,6 +1302,15 @@
     "model": "Airbus A320neo",
     "count": 1,
     "lastDate": "2026-11-17",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "SBGL",
+    "destination": "SUMU",
+    "model": "Airbus A330",
+    "count": 1,
+    "lastDate": "2026-11-18",
     "change": null,
     "state": "unico"
    }
