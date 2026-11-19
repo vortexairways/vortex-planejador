@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-19T00:45:25.878Z",
+ "capturedAt": "2026-11-19T10:51:20.673Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -42,7 +42,7 @@
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "KJFK",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N2IUPG",
@@ -75,9 +75,9 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SUMU",
+   "airport": "SBCG",
    "base": "SBGL",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NTXJ5N",
@@ -336,15 +336,15 @@
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 20659,
-   "companyMinutes": 8546,
+   "totalMinutes": 20792,
+   "companyMinutes": 8679,
    "joined": "2026-10-20"
   },
   {
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 9448,
+   "totalMinutes": 9642,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -352,7 +352,7 @@
    "name": "PaxArcturia",
    "role": null,
    "level": null,
-   "totalMinutes": 1384,
+   "totalMinutes": 1436,
    "companyMinutes": 709,
    "joined": "2026-11-07"
   },
@@ -416,7 +416,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 79465,
+   "totalMinutes": 79522,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -437,8 +437,19 @@
    "joined": "2026-11-13"
   }
  ],
- "pilotsCapturedAt": "2026-11-19T00:45:25.878Z",
+ "pilotsCapturedAt": "2026-11-19T10:51:20.673Z",
  "flights": [
+  {
+   "pilot": "Titanocs",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SUMU",
+   "destination": "SBCG",
+   "date": "2026-11-19",
+   "minutes": 133,
+   "nm": 865.05,
+   "paid": true
+  },
   {
    "pilot": "Titanocs",
    "prefix": "NZ66EU",
@@ -1113,7 +1124,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 59,
+  "readCount": 60,
   "groups": [
    {
     "origin": "LEMD",
@@ -1191,10 +1202,10 @@
     "origin": "SUMU",
     "destination": "SBCG",
     "model": "Airbus A330",
-    "count": 1,
-    "lastDate": "2026-11-05",
-    "change": null,
-    "state": "unico"
+    "count": 2,
+    "lastDate": "2026-11-19",
+    "change": 0.013708,
+    "state": "estavel"
    },
    {
     "origin": "SBCG",
