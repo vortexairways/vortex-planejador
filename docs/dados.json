@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-19T10:51:20.673Z",
+ "capturedAt": "2026-11-19T13:49:53.728Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -75,7 +75,7 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SBCG",
+   "airport": "SBMA",
    "base": "SBGL",
    "status": "EM USO"
   },
@@ -448,6 +448,17 @@
    "date": "2026-11-19",
    "minutes": 133,
    "nm": 865.05,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SBCG",
+   "destination": "SBMA",
+   "date": "2026-11-19",
+   "minutes": 170,
+   "nm": 961.78,
    "paid": true
   },
   {
@@ -1124,7 +1135,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 60,
+  "readCount": 61,
   "groups": [
    {
     "origin": "LEMD",
@@ -1211,10 +1222,10 @@
     "origin": "SBCG",
     "destination": "SBMA",
     "model": "Airbus A330",
-    "count": 1,
-    "lastDate": "2026-11-05",
-    "change": null,
-    "state": "unico"
+    "count": 2,
+    "lastDate": "2026-11-19",
+    "change": 0.12547,
+    "state": "alta"
    },
    {
     "origin": "SBMA",
