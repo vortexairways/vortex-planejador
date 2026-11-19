@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-18T11:05:22.575Z",
+ "capturedAt": "2026-11-19T00:45:25.878Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -33,7 +33,7 @@
   {
    "prefix": "NPC7VI",
    "model": "Airbus A320neo",
-   "airport": "LTAI",
+   "airport": "OTHH",
    "base": "EFHK",
    "status": "Sem alerta no cartão"
   },
@@ -47,9 +47,9 @@
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "RJTT",
    "base": "LEMD",
-   "status": "EM USO"
+   "status": "MANUTENÇÃO"
   },
   {
    "prefix": "N4XBCS",
@@ -82,7 +82,7 @@
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "EFHK",
    "base": "RJTT",
    "status": "Atenção em motor"
   },
@@ -103,7 +103,7 @@
   {
    "prefix": "NE2XUQ",
    "model": "Douglas MD-11",
-   "airport": "KRDU",
+   "airport": "SBGL",
    "base": "SUMU",
    "status": "Sem alerta no cartão"
   },
@@ -328,23 +328,23 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 129642,
-   "companyMinutes": 119342,
+   "totalMinutes": 130583,
+   "companyMinutes": 120283,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 20137,
-   "companyMinutes": 8023,
+   "totalMinutes": 20659,
+   "companyMinutes": 8546,
    "joined": "2026-10-20"
   },
   {
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 8895,
+   "totalMinutes": 9448,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -352,8 +352,8 @@
    "name": "PaxArcturia",
    "role": null,
    "level": null,
-   "totalMinutes": 1170,
-   "companyMinutes": 494,
+   "totalMinutes": 1384,
+   "companyMinutes": 709,
    "joined": "2026-11-07"
   },
   {
@@ -416,7 +416,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 79380,
+   "totalMinutes": 79465,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -437,7 +437,7 @@
    "joined": "2026-11-13"
   }
  ],
- "pilotsCapturedAt": "2026-11-18T11:05:22.575Z",
+ "pilotsCapturedAt": "2026-11-19T00:45:25.878Z",
  "flights": [
   {
    "pilot": "Titanocs",
@@ -459,6 +459,50 @@
    "date": "2026-11-18",
    "minutes": 338,
    "nm": 2875.87,
+   "paid": true
+  },
+  {
+   "pilot": "PaxArcturia",
+   "prefix": "NPC7VI",
+   "model": "Airbus A320neo",
+   "origin": "LTAI",
+   "destination": "OTHH",
+   "date": "2026-11-18",
+   "minutes": 214,
+   "nm": 1271.99,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-18",
+   "minutes": 257,
+   "nm": 1590.35,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NE2XUQ",
+   "model": "Douglas MD-11",
+   "origin": "KRDU",
+   "destination": "SBGL",
+   "date": "2026-11-18",
+   "minutes": 522,
+   "nm": 4057.65,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "RJTT",
+   "date": "2026-11-18",
+   "minutes": 683,
+   "nm": 5810.2,
    "paid": true
   },
   {
@@ -1069,16 +1113,16 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 55,
+  "readCount": 59,
   "groups": [
    {
     "origin": "LEMD",
     "destination": "EFHK",
     "model": "Douglas MD-11",
-    "count": 9,
-    "lastDate": "2026-11-17",
-    "change": 0.025373,
-    "state": "recuperada"
+    "count": 10,
+    "lastDate": "2026-11-18",
+    "change": -0.393708,
+    "state": "queda"
    },
    {
     "origin": "SUMU",
@@ -1129,10 +1173,10 @@
     "origin": "LEMD",
     "destination": "RJTT",
     "model": "Douglas MD-11",
-    "count": 2,
-    "lastDate": "2026-11-10",
-    "change": 0.923097,
-    "state": "alta"
+    "count": 3,
+    "lastDate": "2026-11-18",
+    "change": -0.368953,
+    "state": "queda"
    },
    {
     "origin": "OTHH",
@@ -1192,9 +1236,9 @@
     "origin": "KRDU",
     "destination": "SBGL",
     "model": "Douglas MD-11",
-    "count": 2,
-    "lastDate": "2026-11-14",
-    "change": -0.166769,
+    "count": 3,
+    "lastDate": "2026-11-18",
+    "change": -0.518498,
     "state": "queda"
    },
    {
@@ -1302,6 +1346,15 @@
     "model": "Airbus A320neo",
     "count": 1,
     "lastDate": "2026-11-17",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "LTAI",
+    "destination": "OTHH",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "lastDate": "2026-11-18",
     "change": null,
     "state": "unico"
    },
