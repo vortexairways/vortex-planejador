@@ -23,10 +23,18 @@ const VortexOperation = (() => {
     return standings(completed);
   }
 
-  function weekly(operation, flights, routes) {
+  function weekWindow(day) {
+    const monday = new Date(day + "T00:00:00Z");
+    monday.setUTCDate(monday.getUTCDate() - (monday.getUTCDay() + 6) % 7);
+    const sunday = new Date(monday);
+    sunday.setUTCDate(sunday.getUTCDate() + 6);
+    return { start: monday.toISOString().slice(0, 10), end: sunday.toISOString().slice(0, 10) };
+  }
+
+  function weekly(period, flights, routes) {
     const eligible = new Set(routes.map(pair));
-    return standings(flights.filter(flight => eligible.has(pair(flight)) && flight.date >= operation.start &&
-      flight.date <= operation.end && flight.paid === true && flight.minutes > 0));
+    return standings(flights.filter(flight => eligible.has(pair(flight)) && flight.date >= period.start &&
+      flight.date <= period.end && flight.paid === true && flight.minutes > 0));
   }
 
   function standings(completed) {
@@ -76,5 +84,5 @@ const VortexOperation = (() => {
       "Planejador / Planner · " + url].filter(line => line !== null).join("\n");
   }
 
-  return { read, progress, weekly, share, pair };
+  return { read, progress, weekWindow, weekly, share, pair };
 })();

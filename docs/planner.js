@@ -25,6 +25,7 @@ let returnRoute = null;
 let simulatedRoute = null;
 let activityConfig = null;
 let activityDay = null;
+let weeklyPeriod = null;
 // Cobertura de cada rota pela frota atual (preenchida em start()).
 let coverage = new Map();
 // Circuitos fechados formados por rotas cadastradas (preenchidos em start()).
@@ -1432,6 +1433,7 @@ function paintAll() {
   renderRealloc();
   renderRevenue();
   renderOperation();
+  renderWeeklyRanking();
   renderSimulation();
 }
 
@@ -1857,25 +1859,19 @@ function renderOperation() {
   const path = document.querySelector("#operation-path");
   const stats = document.querySelector("#operation-stats");
   const cards = document.querySelector("#operation-routes");
-  const standings = document.querySelector("#operation-ranking");
-  const note = document.querySelector("#operation-note");
   stats.replaceChildren();
   cards.replaceChildren();
-  standings.replaceChildren();
   path.hidden = true;
   path.textContent = "";
   if (!operationConfig) {
     title.textContent = T("Aguardando definição da administração", "Awaiting the administration’s selection");
-    period.textContent = "";
-    note.textContent = T("A configuração da operação está indisponível ou inválida. A administração pode publicá-la em Editar operação.",
-      "The operation configuration is unavailable or invalid. The administration can publish it through Edit operation.");
+    period.textContent = T("A configuração do desafio está indisponível.", "The challenge configuration is unavailable.");
     return;
   }
   const operation = operationConfig;
   const challenge = VortexOperation.progress(operation, flightLog);
   const { completed } = challenge;
-  const { ranking } = VortexOperation.weekly(operation, flightLog, routes);
-  const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo" }).format(new Date());
+  const today = VortexActivity.today();
   const phase = today < operation.start ? T("Agendada", "Scheduled") : today > operation.end ? T("Encerrada", "Finished") : T("Em andamento", "In progress");
   title.textContent = operation.title[lang];
   period.textContent = dayText(operation.start) + " → " + dayText(operation.end) + T(" · datas de Brasília · ", " · Brasília dates · ") + phase;
@@ -1920,6 +1916,16 @@ function renderOperation() {
     card.append(actions);
     cards.append(card);
   }
+}
+
+function renderWeeklyRanking(today = VortexActivity.today()) {
+  const period = VortexOperation.weekWindow(today);
+  weeklyPeriod = period;
+  const { ranking } = VortexOperation.weekly(period, flightLog, routes);
+  document.querySelector("#weekly-period").textContent = dayText(period.start) + " → " + dayText(period.end) +
+    T(" · datas de Brasília", " · Brasília dates");
+  const standings = document.querySelector("#operation-ranking");
+  standings.replaceChildren();
   if (ranking.length) {
     const table = element("table", "weekly-ranking");
     const head = element("tr");
@@ -1941,8 +1947,9 @@ function renderOperation() {
     standings.append(table);
   } else standings.append(element("p", "meta", T("Nenhum voo remunerado concluído e sincronizado nas rotas da Vortex neste período.",
     "No completed and synced paid flights on Vortex routes in this period.")));
-  note.textContent = T("Ranking semanal parcial: conta os voos remunerados concluídos e lidos em todas as rotas cadastradas da Vortex no período acima, até a última coleta. O desafio das rotas em destaque tem contagem separada. Mais voos vêm primeiro; a variedade de rotas e depois a ordem alfabética desempata. Posições consecutivas, sem repetição.",
-    "Partial weekly ranking: counts completed paid flights read on all registered Vortex routes within the period above, up to the last sync. The featured-route challenge has separate counts. Most flights comes first; route variety, then alphabetical order break ties. Places are consecutive, with no shared positions.");
+  document.querySelector("#weekly-note").textContent = T(
+    "Conta os voos remunerados concluídos de segunda a domingo nas rotas da Vortex, até a última coleta. Em caso de empate, vale a variedade de rotas, seguida da ordem alfabética.",
+    "Counts completed paid flights on Vortex routes from Monday through Sunday, through the last sync. Route variety and then alphabetical order break ties.");
 }
 
 function openShare(legs, preferredPlane) {
@@ -2001,9 +2008,11 @@ document.querySelector("#share-copy").addEventListener("click", async () => {
   }
 });
 
-// Atualiza a janela na virada do dia, inclusive quando a aba volta do segundo plano.
+// Atualiza os períodos dos rankings quando muda o dia em Brasília.
 function refreshActivityDay() {
-  if (activityDay && activityDay !== VortexActivity.today()) renderRanking();
+  const today = VortexActivity.today();
+  if (activityDay && activityDay !== today) renderRanking();
+  if (weeklyPeriod && (today < weeklyPeriod.start || today > weeklyPeriod.end)) renderWeeklyRanking(today);
 }
 setInterval(() => { refreshActivityDay(); void refreshData(); }, 60000);
 document.addEventListener("visibilitychange", () => { refreshActivityDay(); void refreshData(); });

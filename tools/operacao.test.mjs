@@ -4,6 +4,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 const operation = vm.runInNewContext(readFileSync(new URL("../docs/operacao.js", import.meta.url), "utf8") + "\nVortexOperation;");
+const activity = vm.runInNewContext(readFileSync(new URL("../docs/atividade.js", import.meta.url), "utf8") + "\nVortexActivity;");
 const routes = [
   { origin: "LEMD", destination: "KRDU", code: "VTX0001" },
   { origin: "SBRF", destination: "SBGL", code: "VTX0001" },
@@ -32,21 +33,30 @@ test("desempata pela variedade e pelo nome, com posições consecutivas sem repe
   assert.equal(JSON.stringify(progress.ranking.map(p => [p.name, p.rank])), JSON.stringify([["A", 1], ["C", 2], ["B", 3]]));
 });
 
-test("ranking semanal não desaparece ao trocar as rotas do desafio", () => {
-  const flights = [flight("A", "2026-11-10", routes[0]), flight("B", "2026-11-10", routes[1])];
-  const first = operation.read({ ...config, routes: [routes[0]] }, routes);
-  const changed = operation.read({ ...config, routes: [routes[1]] }, routes);
-  assert.equal(operation.progress(first, flights).completed.length, 1);
-  assert.equal(operation.progress(changed, flights).completed.length, 1);
-  const ranking = operation.weekly(first, flights, routes);
-  assert.equal(ranking.completed.length, 2);
-  assert.equal(JSON.stringify(ranking.ranking), JSON.stringify(operation.weekly(changed, flights, routes).ranking));
-  assert.equal(JSON.stringify(ranking.ranking.map(p => p.rank)), "[1,2]");
+test("ranking avança para a semana atual quando o desafio terminou na semana passada", () => {
+  const flights = [flight("A", "2026-11-15"), flight("A", "2026-11-17"), flight("A", "2026-11-18", routes[1]),
+    flight("B", "2026-11-18", routes[1])];
+  const challenge = operation.read({ ...config, routes: [routes[0]] }, routes);
+  assert.equal(operation.progress(challenge, flights).completed.length, 1);
+  const period = operation.weekWindow("2026-11-18");
+  assert.equal(period.start, "2026-11-16");
+  assert.equal(period.end, "2026-11-22");
+  const { ranking } = operation.weekly(period, flights, routes);
+  assert.equal(JSON.stringify(ranking.map(p => [p.name, p.flights, p.rank])), JSON.stringify([["A", 2, 1], ["B", 1, 2]]));
+});
+
+test("a semana vira à meia-noite de segunda-feira em Brasília, mesmo ao mudar de ano", () => {
+  const sunday = operation.weekWindow(activity.today(new Date("2027-01-04T02:59:59Z")));
+  const monday = operation.weekWindow(activity.today(new Date("2027-01-04T03:00:00Z")));
+  assert.equal(sunday.start, "2026-12-28");
+  assert.equal(sunday.end, "2027-01-03");
+  assert.equal(monday.start, "2027-01-04");
+  assert.equal(monday.end, "2027-01-10");
 });
 
 test("ranking semanal exclui voos fora das rotas Vortex, não pagos, sem duração ou fora do período", () => {
-  const parsed = operation.read(config, routes);
-  const weekly = operation.weekly(parsed, [flight("A", "2026-11-09"), flight("B", "2026-11-15", routes[1]),
+  const period = operation.weekWindow("2026-11-13");
+  const weekly = operation.weekly(period, [flight("A", "2026-11-09"), flight("B", "2026-11-15", routes[1]),
     flight("C", "2026-11-08"), flight("C", "2026-11-16"), flight("C", "2026-11-10", routes[0], { paid: false }),
     flight("C", "2026-11-10", routes[0], { minutes: 0 }),
     flight("C", "2026-11-10", { origin: "KRDU", destination: "LEMD" })], routes);
