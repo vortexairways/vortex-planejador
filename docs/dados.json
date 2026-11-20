@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-19T13:49:53.728Z",
+ "capturedAt": "2026-11-20T15:20:22.616Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -40,9 +40,9 @@
   {
    "prefix": "N6KZLB",
    "model": "Douglas MD-11",
-   "airport": "SBGL",
+   "airport": "LEMD",
    "base": "KJFK",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N2IUPG",
@@ -75,14 +75,14 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SBMA",
+   "airport": "SBGL",
    "base": "SBGL",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "EFHK",
+   "airport": "KRDU",
    "base": "RJTT",
    "status": "Atenção em motor"
   },
@@ -328,23 +328,23 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 130583,
-   "companyMinutes": 120283,
+   "totalMinutes": 132389,
+   "companyMinutes": 122089,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 20792,
-   "companyMinutes": 8679,
+   "totalMinutes": 21111,
+   "companyMinutes": 8998,
    "joined": "2026-10-20"
   },
   {
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 9642,
+   "totalMinutes": 10661,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -357,28 +357,20 @@
    "joined": "2026-11-07"
   },
   {
+   "name": "marcelocanela",
+   "role": null,
+   "level": null,
+   "totalMinutes": 13524,
+   "companyMinutes": 221,
+   "joined": "2026-11-07"
+  },
+  {
    "name": "AlphaPrime",
    "role": null,
    "level": null,
    "totalMinutes": 218,
    "companyMinutes": 218,
    "joined": "2026-06-29"
-  },
-  {
-   "name": "marcelocanela",
-   "role": null,
-   "level": null,
-   "totalMinutes": 13303,
-   "companyMinutes": 0,
-   "joined": "2026-11-07"
-  },
-  {
-   "name": "Harris",
-   "role": null,
-   "level": null,
-   "totalMinutes": 6612,
-   "companyMinutes": 0,
-   "joined": "2026-10-23"
   },
   {
    "name": "PonAir",
@@ -416,7 +408,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 79522,
+   "totalMinutes": 80237,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -435,10 +427,51 @@
    "totalMinutes": 19011,
    "companyMinutes": 0,
    "joined": "2026-11-13"
+  },
+  {
+   "name": "Harris",
+   "role": null,
+   "level": null,
+   "totalMinutes": 6612,
+   "companyMinutes": 0,
+   "joined": "2026-10-23"
   }
  ],
- "pilotsCapturedAt": "2026-11-19T10:51:20.673Z",
+ "pilotsCapturedAt": "2026-11-20T15:20:22.616Z",
  "flights": [
+  {
+   "pilot": "marcelocanela",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SBRF",
+   "destination": "SBGL",
+   "date": "2026-11-20",
+   "minutes": 221,
+   "nm": 1003.22,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "KRDU",
+   "date": "2026-11-20",
+   "minutes": 506,
+   "nm": 3448.68,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "date": "2026-11-20",
+   "minutes": 343,
+   "nm": 2875.87,
+   "paid": true
+  },
   {
    "pilot": "Titanocs",
    "prefix": "NZ66EU",
@@ -459,6 +492,39 @@
    "date": "2026-11-19",
    "minutes": 170,
    "nm": 961.78,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-19",
+   "minutes": 287,
+   "nm": 2372.45,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SBMA",
+   "destination": "SBRF",
+   "date": "2026-11-19",
+   "minutes": 148,
+   "nm": 862.84,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N6KZLB",
+   "model": "Douglas MD-11",
+   "origin": "SBGL",
+   "destination": "LEMD",
+   "date": "2026-11-19",
+   "minutes": 667,
+   "nm": 4395.57,
    "paid": true
   },
   {
@@ -1135,7 +1201,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 61,
+  "readCount": 67,
   "groups": [
    {
     "origin": "LEMD",
@@ -1168,28 +1234,28 @@
     "origin": "EFHK",
     "destination": "OTHH",
     "model": "Douglas MD-11",
-    "count": 8,
-    "lastDate": "2026-11-17",
-    "change": 0.411958,
-    "state": "alta"
+    "count": 9,
+    "lastDate": "2026-11-19",
+    "change": -0.251053,
+    "state": "queda"
    },
    {
     "origin": "OTHH",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 6,
-    "lastDate": "2026-11-18",
-    "change": 0.006824,
-    "state": "recuperada"
+    "count": 7,
+    "lastDate": "2026-11-20",
+    "change": -0.146819,
+    "state": "queda"
    },
    {
     "origin": "SBRF",
     "destination": "SBGL",
     "model": "Airbus A330",
-    "count": 2,
-    "lastDate": "2026-11-09",
-    "change": 0.142736,
-    "state": "alta"
+    "count": 3,
+    "lastDate": "2026-11-20",
+    "change": 0.098166,
+    "state": "estavel"
    },
    {
     "origin": "LEMD",
@@ -1231,10 +1297,10 @@
     "origin": "SBMA",
     "destination": "SBRF",
     "model": "Airbus A330",
-    "count": 1,
-    "lastDate": "2026-11-06",
-    "change": null,
-    "state": "unico"
+    "count": 2,
+    "lastDate": "2026-11-19",
+    "change": 0.080274,
+    "state": "estavel"
    },
    {
     "origin": "SBGL",
@@ -1249,10 +1315,10 @@
     "origin": "LEMD",
     "destination": "KRDU",
     "model": "Douglas MD-11",
-    "count": 1,
-    "lastDate": "2026-11-07",
-    "change": null,
-    "state": "unico"
+    "count": 2,
+    "lastDate": "2026-11-20",
+    "change": 0.010892,
+    "state": "estavel"
    },
    {
     "origin": "KRDU",
@@ -1285,9 +1351,9 @@
     "origin": "SBGL",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 2,
-    "lastDate": "2026-11-14",
-    "change": 0.260627,
+    "count": 3,
+    "lastDate": "2026-11-19",
+    "change": 0.249949,
     "state": "alta"
    },
    {
