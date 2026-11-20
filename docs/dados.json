@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-20T15:20:22.616Z",
+ "capturedAt": "2026-11-20T18:58:22.519Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -75,7 +75,7 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SBGL",
+   "airport": "SUMU",
    "base": "SBGL",
    "status": "Sem alerta no cartão"
   },
@@ -84,7 +84,7 @@
    "model": "Douglas MD-11",
    "airport": "KRDU",
    "base": "RJTT",
-   "status": "Atenção em motor"
+   "status": "EM USO · Atenção em motor"
   },
   {
    "prefix": "NUNFUD",
@@ -105,7 +105,7 @@
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "SUMU",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NLFTDW",
@@ -336,8 +336,8 @@
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 21111,
-   "companyMinutes": 8998,
+   "totalMinutes": 21295,
+   "companyMinutes": 9182,
    "joined": "2026-10-20"
   },
   {
@@ -408,7 +408,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 80237,
+   "totalMinutes": 80549,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -437,7 +437,7 @@
    "joined": "2026-10-23"
   }
  ],
- "pilotsCapturedAt": "2026-11-20T15:20:22.616Z",
+ "pilotsCapturedAt": "2026-11-20T18:58:22.519Z",
  "flights": [
   {
    "pilot": "marcelocanela",
@@ -470,6 +470,17 @@
    "date": "2026-11-20",
    "minutes": 343,
    "nm": 2875.87,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SBGL",
+   "destination": "SUMU",
+   "date": "2026-11-20",
+   "minutes": 184,
+   "nm": 984.12,
    "paid": true
   },
   {
@@ -1201,7 +1212,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 67,
+  "readCount": 68,
   "groups": [
    {
     "origin": "LEMD",
@@ -1450,10 +1461,10 @@
     "origin": "SBGL",
     "destination": "SUMU",
     "model": "Airbus A330",
-    "count": 1,
-    "lastDate": "2026-11-18",
-    "change": null,
-    "state": "unico"
+    "count": 2,
+    "lastDate": "2026-11-20",
+    "change": -0.058186,
+    "state": "estavel"
    }
   ]
  }
