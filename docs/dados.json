@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-20T18:58:22.519Z",
+ "capturedAt": "2026-11-21T01:33:21.776Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -42,7 +42,7 @@
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "KJFK",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N2IUPG",
@@ -105,7 +105,7 @@
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "SUMU",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NLFTDW",
@@ -360,7 +360,7 @@
    "name": "marcelocanela",
    "role": null,
    "level": null,
-   "totalMinutes": 13524,
+   "totalMinutes": 13877,
    "companyMinutes": 221,
    "joined": "2026-11-07"
   },
@@ -408,7 +408,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 80549,
+   "totalMinutes": 80747,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -437,7 +437,7 @@
    "joined": "2026-10-23"
   }
  ],
- "pilotsCapturedAt": "2026-11-20T18:58:22.519Z",
+ "pilotsCapturedAt": "2026-11-21T01:33:21.776Z",
  "flights": [
   {
    "pilot": "marcelocanela",
