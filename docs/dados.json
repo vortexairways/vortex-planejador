@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-21T04:01:22.096Z",
+ "capturedAt": "2026-11-21T15:23:21.716Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -82,7 +82,7 @@
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "SBGL",
+   "airport": "SBKP",
    "base": "RJTT",
    "status": "EM USO · Atenção em motor"
   },
@@ -98,7 +98,7 @@
    "model": "Douglas MD-11",
    "airport": "SBGL",
    "base": "SBGL",
-   "status": "Atenção em motor"
+   "status": "EM USO · Atenção em motor"
   },
   {
    "prefix": "NE2XUQ",
@@ -336,8 +336,8 @@
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 21817,
-   "companyMinutes": 9703,
+   "totalMinutes": 21867,
+   "companyMinutes": 9754,
    "joined": "2026-10-20"
   },
   {
@@ -408,7 +408,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 80802,
+   "totalMinutes": 80818,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -437,7 +437,7 @@
    "joined": "2026-10-23"
   }
  ],
- "pilotsCapturedAt": "2026-11-21T04:01:22.096Z",
+ "pilotsCapturedAt": "2026-11-21T15:23:21.716Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -459,6 +459,17 @@
    "date": "2026-11-21",
    "minutes": 521,
    "nm": 4057.65,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "SBGL",
+   "destination": "SBKP",
+   "date": "2026-11-21",
+   "minutes": 50,
+   "nm": 214.97,
    "paid": true
   },
   {
@@ -1234,7 +1245,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 70,
+  "readCount": 71,
   "groups": [
    {
     "origin": "LEMD",
@@ -1487,6 +1498,15 @@
     "lastDate": "2026-11-20",
     "change": -0.058186,
     "state": "estavel"
+   },
+   {
+    "origin": "SBGL",
+    "destination": "SBKP",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-21",
+    "change": null,
+    "state": "unico"
    }
   ]
  }
