@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-21T01:33:21.776Z",
+ "capturedAt": "2026-11-21T04:01:22.096Z",
  "reportedFleet": 17,
  "fleet": [
   {
@@ -40,9 +40,9 @@
   {
    "prefix": "N6KZLB",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "EFHK",
    "base": "KJFK",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N2IUPG",
@@ -82,7 +82,7 @@
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "KRDU",
+   "airport": "SBGL",
    "base": "RJTT",
    "status": "EM USO · Atenção em motor"
   },
@@ -328,16 +328,16 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 132389,
-   "companyMinutes": 122089,
+   "totalMinutes": 132624,
+   "companyMinutes": 122324,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 21295,
-   "companyMinutes": 9182,
+   "totalMinutes": 21817,
+   "companyMinutes": 9703,
    "joined": "2026-10-20"
   },
   {
@@ -408,7 +408,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 80747,
+   "totalMinutes": 80802,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -437,8 +437,30 @@
    "joined": "2026-10-23"
   }
  ],
- "pilotsCapturedAt": "2026-11-21T01:33:21.776Z",
+ "pilotsCapturedAt": "2026-11-21T04:01:22.096Z",
  "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "N6KZLB",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-21",
+   "minutes": 235,
+   "nm": 1590.35,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "KRDU",
+   "destination": "SBGL",
+   "date": "2026-11-21",
+   "minutes": 521,
+   "nm": 4057.65,
+   "paid": true
+  },
   {
    "pilot": "marcelocanela",
    "prefix": "NZ66EU",
@@ -1212,15 +1234,15 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 68,
+  "readCount": 70,
   "groups": [
    {
     "origin": "LEMD",
     "destination": "EFHK",
     "model": "Douglas MD-11",
-    "count": 10,
-    "lastDate": "2026-11-18",
-    "change": -0.393708,
+    "count": 11,
+    "lastDate": "2026-11-21",
+    "change": -0.148727,
     "state": "queda"
    },
    {
@@ -1335,9 +1357,9 @@
     "origin": "KRDU",
     "destination": "SBGL",
     "model": "Douglas MD-11",
-    "count": 3,
-    "lastDate": "2026-11-18",
-    "change": -0.518498,
+    "count": 4,
+    "lastDate": "2026-11-21",
+    "change": -0.445988,
     "state": "queda"
    },
    {
