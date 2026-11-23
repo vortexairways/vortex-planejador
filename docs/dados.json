@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-23T02:47:21.921Z",
+ "capturedAt": "2026-11-23T11:20:23.212Z",
  "reportedFleet": 18,
  "fleet": [
   {
@@ -117,7 +117,7 @@
   {
    "prefix": "N6D7I2",
    "model": "Airbus A380",
-   "airport": "EFHK",
+   "airport": "OTHH",
    "base": "LEMD",
    "status": "EM USO"
   }
@@ -335,8 +335,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 134790,
-   "companyMinutes": 124489,
+   "totalMinutes": 135063,
+   "companyMinutes": 124763,
    "joined": "2026-05-23"
   },
   {
@@ -351,7 +351,7 @@
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 11922,
+   "totalMinutes": 12350,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -415,7 +415,7 @@
    "name": "Reno",
    "role": null,
    "level": null,
-   "totalMinutes": 81484,
+   "totalMinutes": 81957,
    "companyMinutes": 0,
    "joined": "2026-11-12"
   },
@@ -444,8 +444,19 @@
    "joined": "2026-10-23"
   }
  ],
- "pilotsCapturedAt": "2026-11-23T02:47:21.921Z",
+ "pilotsCapturedAt": "2026-11-23T11:20:23.212Z",
  "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-23",
+   "minutes": 273,
+   "nm": 2372.45,
+   "paid": true
+  },
   {
    "pilot": "astronauta",
    "prefix": "NK4I2I",
@@ -1340,7 +1351,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 79,
+  "readCount": 80,
   "groups": [
    {
     "origin": "LEMD",
@@ -1627,6 +1638,15 @@
     "model": "Airbus A380",
     "count": 1,
     "lastDate": "2026-11-22",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "EFHK",
+    "destination": "OTHH",
+    "model": "Airbus A380",
+    "count": 1,
+    "lastDate": "2026-11-23",
     "change": null,
     "state": "unico"
    }
