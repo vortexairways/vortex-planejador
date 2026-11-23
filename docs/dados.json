@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-22T20:46:21.345Z",
+ "capturedAt": "2026-11-23T02:47:21.921Z",
  "reportedFleet": 18,
  "fleet": [
   {
@@ -82,9 +82,9 @@
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "SBKP",
+   "airport": "SBGL",
    "base": "RJTT",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NUNFUD",
@@ -117,7 +117,7 @@
   {
    "prefix": "N6D7I2",
    "model": "Airbus A380",
-   "airport": "LEMD",
+   "airport": "EFHK",
    "base": "LEMD",
    "status": "EM USO"
   }
@@ -335,23 +335,23 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 134567,
-   "companyMinutes": 124267,
+   "totalMinutes": 134790,
+   "companyMinutes": 124489,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 22933,
-   "companyMinutes": 10819,
+   "totalMinutes": 22992,
+   "companyMinutes": 10879,
    "joined": "2026-10-20"
   },
   {
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 11717,
+   "totalMinutes": 11922,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -444,7 +444,7 @@
    "joined": "2026-10-23"
   }
  ],
- "pilotsCapturedAt": "2026-11-22T20:46:21.345Z",
+ "pilotsCapturedAt": "2026-11-23T02:47:21.921Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -477,6 +477,28 @@
    "date": "2026-11-22",
    "minutes": 373,
    "nm": 2875.87,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-22",
+   "minutes": 222,
+   "nm": 1590.35,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "SBKP",
+   "destination": "SBGL",
+   "date": "2026-11-22",
+   "minutes": 59,
+   "nm": 214.97,
    "paid": true
   },
   {
@@ -1318,7 +1340,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 77,
+  "readCount": 79,
   "groups": [
    {
     "origin": "LEMD",
@@ -1587,6 +1609,24 @@
     "model": "Douglas MD-11",
     "count": 1,
     "lastDate": "2026-11-21",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "SBKP",
+    "destination": "SBGL",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-22",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "LEMD",
+    "destination": "EFHK",
+    "model": "Airbus A380",
+    "count": 1,
+    "lastDate": "2026-11-22",
     "change": null,
     "state": "unico"
    }
