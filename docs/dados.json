@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-24T02:23:21.793Z",
+ "capturedAt": "2026-11-24T12:47:21.826Z",
  "reportedFleet": 18,
  "fleet": [
   {
@@ -42,7 +42,7 @@
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "KJFK",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N2IUPG",
@@ -89,7 +89,7 @@
   {
    "prefix": "NUNFUD",
    "model": "Douglas MD-11",
-   "airport": "OMDM",
+   "airport": "SBCP",
    "base": "OTHH",
    "status": "EM USO"
   },
@@ -117,7 +117,7 @@
   {
    "prefix": "N6D7I2",
    "model": "Airbus A380",
-   "airport": "EFHK",
+   "airport": "LEMD",
    "base": "LEMD",
    "status": "EM USO"
   }
@@ -335,8 +335,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 135647,
-   "companyMinutes": 125347,
+   "totalMinutes": 136197,
+   "companyMinutes": 125897,
    "joined": "2026-05-23"
   },
   {
@@ -354,6 +354,14 @@
    "totalMinutes": 12807,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
+  },
+  {
+   "name": "Julianajp",
+   "role": null,
+   "level": null,
+   "totalMinutes": 19910,
+   "companyMinutes": 899,
+   "joined": "2026-11-13"
   },
   {
    "name": "PaxArcturia",
@@ -380,22 +388,6 @@
    "joined": "2026-06-29"
   },
   {
-   "name": "PonAir",
-   "role": null,
-   "level": null,
-   "totalMinutes": 2595,
-   "companyMinutes": 0,
-   "joined": "2026-10-31"
-  },
-  {
-   "name": "RCassalati",
-   "role": null,
-   "level": null,
-   "totalMinutes": 7071,
-   "companyMinutes": 0,
-   "joined": "2026-11-09"
-  },
-  {
    "name": "claudiobastos",
    "role": null,
    "level": null,
@@ -412,14 +404,6 @@
    "joined": "2026-11-03"
   },
   {
-   "name": "Reno",
-   "role": null,
-   "level": null,
-   "totalMinutes": 82494,
-   "companyMinutes": 0,
-   "joined": "2026-11-12"
-  },
-  {
    "name": "waponttes",
    "role": null,
    "level": null,
@@ -428,24 +412,54 @@
    "joined": "2026-11-11"
   },
   {
-   "name": "Julianajp",
-   "role": null,
-   "level": null,
-   "totalMinutes": 19011,
-   "companyMinutes": 0,
-   "joined": "2026-11-13"
-  },
-  {
    "name": "Harris",
    "role": null,
    "level": null,
    "totalMinutes": 6612,
    "companyMinutes": 0,
    "joined": "2026-10-23"
+  },
+  {
+   "name": "PonAir",
+   "role": null,
+   "level": null,
+   "totalMinutes": 2595,
+   "companyMinutes": 0,
+   "joined": "2026-10-31"
+  },
+  {
+   "name": "RCassalati",
+   "role": null,
+   "level": null,
+   "totalMinutes": 7071,
+   "companyMinutes": 0,
+   "joined": "2026-11-09"
   }
  ],
- "pilotsCapturedAt": "2026-11-24T02:23:21.793Z",
+ "pilotsCapturedAt": "2026-11-24T12:47:21.826Z",
  "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "date": "2026-11-24",
+   "minutes": 302,
+   "nm": 2875.87,
+   "paid": true
+  },
+  {
+   "pilot": "Julianajp",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "OMDM",
+   "destination": "SBCP",
+   "date": "2026-11-24",
+   "minutes": 898,
+   "nm": 6283.21,
+   "paid": true
+  },
   {
    "pilot": "astronauta",
    "prefix": "N6D7I2",
@@ -477,6 +491,17 @@
    "date": "2026-11-23",
    "minutes": 386,
    "nm": 2875.87,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-23",
+   "minutes": 248,
+   "nm": 2372.45,
    "paid": true
   },
   {
@@ -1373,7 +1398,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 82,
+  "readCount": 85,
   "groups": [
    {
     "origin": "LEMD",
@@ -1664,20 +1689,29 @@
     "state": "queda"
    },
    {
-    "origin": "OTHH",
-    "destination": "LEMD",
-    "model": "Airbus A380",
-    "count": 1,
-    "lastDate": "2026-11-23",
-    "change": null,
-    "state": "unico"
-   },
-   {
     "origin": "EFHK",
     "destination": "OTHH",
     "model": "Airbus A380",
-    "count": 1,
+    "count": 2,
     "lastDate": "2026-11-23",
+    "change": 0.065363,
+    "state": "estavel"
+   },
+   {
+    "origin": "OTHH",
+    "destination": "LEMD",
+    "model": "Airbus A380",
+    "count": 2,
+    "lastDate": "2026-11-24",
+    "change": -0.416842,
+    "state": "queda"
+   },
+   {
+    "origin": "OMDM",
+    "destination": "SBCP",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-24",
     "change": null,
     "state": "unico"
    }
