@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-24T12:47:21.826Z",
+ "capturedAt": "2026-11-25T11:29:23.709Z",
  "reportedFleet": 18,
  "fleet": [
   {
@@ -91,7 +91,7 @@
    "model": "Douglas MD-11",
    "airport": "SBCP",
    "base": "OTHH",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NK4I2I",
@@ -117,7 +117,7 @@
   {
    "prefix": "N6D7I2",
    "model": "Airbus A380",
-   "airport": "LEMD",
+   "airport": "OTHH",
    "base": "LEMD",
    "status": "EM USO"
   }
@@ -335,8 +335,8 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 136197,
-   "companyMinutes": 125897,
+   "totalMinutes": 136706,
+   "companyMinutes": 126406,
    "joined": "2026-05-23"
   },
   {
@@ -351,7 +351,7 @@
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 12807,
+   "totalMinutes": 13021,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -404,6 +404,14 @@
    "joined": "2026-11-03"
   },
   {
+   "name": "FabianoEgidio",
+   "role": null,
+   "level": null,
+   "totalMinutes": 164107,
+   "companyMinutes": 0,
+   "joined": "2026-11-24"
+  },
+  {
    "name": "waponttes",
    "role": null,
    "level": null,
@@ -436,7 +444,7 @@
    "joined": "2026-11-09"
   }
  ],
- "pilotsCapturedAt": "2026-11-24T12:47:21.826Z",
+ "pilotsCapturedAt": "2026-11-25T11:29:23.709Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -458,6 +466,28 @@
    "date": "2026-11-24",
    "minutes": 898,
    "nm": 6283.21,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "date": "2026-11-24",
+   "minutes": 274,
+   "nm": 2372.45,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "date": "2026-11-24",
+   "minutes": 234,
+   "nm": 1590.35,
    "paid": true
   },
   {
@@ -1398,7 +1428,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 85,
+  "readCount": 87,
   "groups": [
    {
     "origin": "LEMD",
@@ -1683,19 +1713,19 @@
     "origin": "LEMD",
     "destination": "EFHK",
     "model": "Airbus A380",
-    "count": 2,
-    "lastDate": "2026-11-23",
-    "change": -0.122643,
+    "count": 3,
+    "lastDate": "2026-11-24",
+    "change": -0.470225,
     "state": "queda"
    },
    {
     "origin": "EFHK",
     "destination": "OTHH",
     "model": "Airbus A380",
-    "count": 2,
-    "lastDate": "2026-11-23",
-    "change": 0.065363,
-    "state": "estavel"
+    "count": 3,
+    "lastDate": "2026-11-24",
+    "change": -0.299605,
+    "state": "queda"
    },
    {
     "origin": "OTHH",
