@@ -18,7 +18,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=16">
+  <link rel="stylesheet" href="./style.css?v=17">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=3"></script>
@@ -27,7 +27,7 @@
   <script defer src="./movimentacoes.js?v=2"></script>
   <script defer src="./tempos.js?v=2"></script>
   <script defer src="./malha.js?v=1"></script>
-  <script defer src="./planner.js?v=22"></script>
+  <script defer src="./planner.js?v=23"></script>
 </head>
 <body>
   <header class="top">
@@ -43,45 +43,80 @@
     </div>
   </header>
   <main class="shell">
-    <div class="intro hero">
-      <img class="hero-logo" src="./img/logo-512.webp" alt="Logo da Vortex Airways" width="190" height="190">
+    <section class="intro hero" aria-labelledby="page-heading">
+      <img class="hero-logo" src="./img/logo-512.webp" alt="" width="144" height="144">
       <div class="hero-text">
-        <p class="eyebrow" data-en="VTX / OPERATIONS">VTX / OPERAÇÕES</p>
-        <h1 data-en="Route planner">Planejador de rotas</h1>
-        <p data-en="Pick an aircraft or an airport, check the distance and range of each route and build a sequence of legs.">Escolha uma aeronave ou um aeroporto, veja distância e alcance de cada rota e monte uma sequência de trechos.</p>
+        <h1 id="page-heading" data-en="Route planner">Planejador de rotas</h1>
+        <p data-en="Find Vortex departures, choose an aircraft and check how to get back.">Consulte as partidas da Vortex, escolha a aeronave e veja como voltar.</p>
+        <a class="hero-action" href="#planejar" data-en="Plan a flight →">Planejar voo →</a>
       </div>
       <div class="summary" aria-label="Totais da coleta" data-en-label="Sync totals">
         <div><strong id="total-fleet">–</strong><span data-en="Aircraft">Aeronaves</span></div>
         <div><strong id="total-routes">–</strong><span data-en="Routes">Rotas</span></div>
         <div><strong id="total-hubs">–</strong><span>Hubs</span></div>
       </div>
-    </div>
-    <aside class="notice" aria-label="Situação dos dados" data-en-label="Data status">
-      <div><strong id="snapshot-time">Carregando dados da Vortex…</strong><p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p><p id="fleet-alert" class="fleet-alert" hidden></p><p id="revenue-alert" class="fleet-alert" hidden></p></div>
-    </aside>
-    <section id="operation-card" class="card operation-card" aria-labelledby="operation-heading">
-      <div class="section-heading">
-        <div><p class="eyebrow" data-en="INDIVIDUAL FLIGHTS · WEEKLY CHALLENGE">VOOS INDIVIDUAIS · DESAFIO SEMANAL</p><h2 id="operation-heading" data-en="Operation of the week">Operação da semana</h2></div>
-      </div>
-      <div class="pad">
-        <h3 id="operation-title"></h3>
-        <p id="operation-period" class="meta"></p>
-        <p id="operation-path" class="operation-path" hidden></p>
-        <p class="detail" data-en="Each pilot flies individually. Complete the featured-route challenge and share your flights on the Vortex Discord. The weekly ranking below counts completed paid flights on all Vortex routes, independently of the challenge.">Cada piloto voa individualmente. Complete o desafio das rotas em destaque e compartilhe seus voos no Discord da Vortex. O ranking semanal abaixo conta os voos remunerados concluídos em todas as rotas da Vortex, independentemente do desafio.</p>
-        <div id="operation-stats" class="stat-row"></div>
-        <div id="operation-routes" class="operation-routes"></div>
-        <h3 data-en="Vortex weekly ranking · partial">Ranking semanal da Vortex · parcial</h3>
-        <p id="weekly-period" class="meta"></p>
-        <div id="operation-ranking" class="table-wrap"></div>
-        <p id="weekly-note" class="meta"></p>
-      </div>
     </section>
-    <section class="card filters" aria-label="Filtros" data-en-label="Filters">
+    <nav class="section-nav" aria-label="Seções do planejador" data-en-label="Planner sections">
+      <a href="#operation-card" data-en="Challenge">Desafio</a>
+      <a href="#weekly-ranking-card" data-en="Weekly ranking">Ranking semanal</a>
+      <a href="#alerts-card" data-en="Fleet movements">Movimentações da frota</a>
+      <a href="#realloc-card" data-en="Relocation">Realocação</a>
+      <a href="#ranking-card" data-en="Pilot activity">Atividade dos pilotos</a>
+    </nav>
+    <aside class="notice" aria-label="Situação dos dados" data-en-label="Data status">
+      <div class="snapshot-heading">
+        <strong id="snapshot-time">Carregando dados da Vortex…</strong>
+        <span id="snapshot-age" class="tag neutral" hidden></span>
+      </div>
+      <p id="snapshot-note">A frota e as rotas vêm da última coleta no PilOps.</p>
+      <p id="fleet-alert" class="fleet-alert" hidden></p>
+      <p id="revenue-alert" class="fleet-alert" hidden></p>
+    </aside>
+    <div class="briefing-grid">
+      <section id="operation-card" class="card operation-card" aria-labelledby="operation-heading">
+        <div class="section-heading">
+          <h2 id="operation-heading" data-en="Route challenge">Desafio de rotas</h2>
+          <span id="operation-phase" class="tag neutral" hidden></span>
+        </div>
+        <div class="pad">
+          <h3 id="operation-title"></h3>
+          <p id="operation-period" class="meta"></p>
+          <p id="operation-path" class="operation-path" hidden></p>
+          <div id="operation-stats" class="stat-row"></div>
+          <details id="operation-legs" class="explain" hidden>
+            <summary data-en="View challenge legs">Ver trechos do desafio</summary>
+            <div id="operation-routes" class="operation-routes"></div>
+          </details>
+        </div>
+      </section>
+      <section id="weekly-ranking-card" class="card" aria-labelledby="weekly-heading">
+        <div class="section-heading">
+          <h2 id="weekly-heading" data-en="Weekly ranking">Ranking semanal</h2>
+        </div>
+        <div class="pad">
+          <p id="weekly-period" class="meta"></p>
+          <div id="operation-ranking" class="table-wrap"></div>
+          <p id="weekly-note" class="meta"></p>
+        </div>
+      </section>
+    </div>
+    <section id="planejar" class="card filters" aria-labelledby="filters-heading">
+      <div class="filter-intro">
+        <h2 id="filters-heading" data-en="Find a departure">Buscar partida</h2>
+        <p class="meta" data-en="Select an airport to see departures or an aircraft to start from its last recorded position.">Escolha um aeroporto para ver as partidas ou uma aeronave para começar pela última posição registrada.</p>
+      </div>
       <label><span data-en="Departure airport">Aeroporto de partida</span> <select id="airport"><option value="">Todos os aeroportos</option></select></label>
       <label><span data-en="Aircraft by registration">Aeronave por prefixo</span> <select id="aircraft"><option value="">Toda a frota</option></select></label>
       <button id="reset" class="secondary" type="button" data-en="Clear selection">Limpar seleção</button>
       <a class="secondary small simulation-link" href="#route-simulator" data-en="Simulate a new route">Simular nova rota</a>
-      <p class="meta time-note" data-en="Times use the median of up to 10 completed PilOps flights on the same route and aircraft model. Without valid history, a catalogue estimate is shown. References update after manual Vortex sync.">Os tempos usam a mediana de até 10 voos concluídos no PilOps na mesma rota e modelo. Sem histórico válido, aparece a estimativa de catálogo. As referências são atualizadas após a sincronização manual da Vortex.</p>
+      <details class="explain planning-guide">
+        <summary data-en="How to read route information">Como interpretar as rotas</summary>
+        <div class="guide-grid">
+          <p><strong data-en="Direction">Sentido</strong><span data-en="Each direction is registered separately. If there is no direct return, open Plan round trip to see connections or a ferry option.">Cada sentido é cadastrado separadamente. Se faltar volta direta, abra Planejar ida e volta para ver conexões ou traslado.</span></p>
+          <p><strong data-en="Duration">Duração</strong><span data-en="The PilOps estimate uses the median of up to 10 flights on the same route and aircraft model. With no valid history, the planner uses catalogue performance.">O tempo pelo PilOps é a mediana de até 10 voos na mesma rota e modelo. Sem histórico válido, o planejador estima pelo catálogo.</span></p>
+          <p><strong data-en="Before flying">Antes de voar</strong><span data-en="Check current aircraft availability, cargo and passengers in PilOps. Use the simulator to check fuel and runway performance.">Confira a aeronave, a carga e os passageiros disponíveis no PilOps. Verifique combustível e desempenho de pista no simulador.</span></p>
+        </div>
+      </details>
     </section>
     <div class="layout">
       <section class="card map-card" aria-labelledby="map-title">
@@ -220,7 +255,7 @@
       <p id="coverage-summary" class="detail pad"></p>
       <ul id="coverage" class="list pad"></ul>
     </section>
-    <section class="card wide" aria-labelledby="ranking-title">
+    <section id="ranking-card" class="card wide" aria-labelledby="ranking-title">
       <div class="section-heading">
         <div><p class="eyebrow" data-en="PILOTS">PILOTOS</p><h2 id="ranking-title" data-en="Vortex ranking">Ranking da Vortex</h2></div>
       </div>

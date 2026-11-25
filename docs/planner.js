@@ -444,22 +444,39 @@ function renderReturnOptions() {
 
 document.querySelector("#return-aircraft").addEventListener("change", renderReturnOptions);
 
+function returnTag(route) {
+  if (VortexNetwork.direct(routes, route.destination, route.origin)) {
+    return element("span", "tag neutral", T("Volta direta cadastrada", "Direct return registered"));
+  }
+  if (routes.some(candidate => candidate.origin === route.destination)) {
+    return element("span", "tag warn", T("Sem volta direta", "No direct return"));
+  }
+  return element("span", "tag warn", T("Sem saída cadastrada de ", "No registered departures from ") + route.destination);
+}
+
 function routeRow({ route, miles }) {
   const plane = selectedPlane();
-  const row = element("li");
+  const row = element("li", "route-result");
   const head = element("div", "row-head");
-  head.append(button(route.origin + " → " + route.destination, "item-heading", () => {
+  const focusButton = button(route.origin + " → " + route.destination, "item-heading", () => {
     state.focus = state.focus === route ? null : route;
     render(false);
     frame(listedRoutes());
-  }));
+  });
+  focusButton.setAttribute("aria-pressed", String(state.focus === route));
+  head.append(focusButton);
   if (currentOrigin()) head.append(button(T("Adicionar ao plano", "Add to plan"), "secondary small", () => addLeg(route)));
   row.append(head);
-  row.append(element("span", "meta", [route.code, placeName(route.destination), nm(miles),
+  row.append(element("span", "route-cities", placeName(route.origin) + " → " + placeName(route.destination)));
+  row.append(element("span", "meta", [route.code, nm(miles),
     blockLabel(miles, plane, route.origin, route.destination)].filter(Boolean).join(" · ")));
+  const tags = element("div", "tags");
+  tags.append(returnTag(route));
   if (plane) {
-    row.append(reachTag(plane, miles));
-  } else if (currentOrigin()) {
+    tags.append(reachTag(plane, miles));
+  }
+  row.append(tags);
+  if (!plane && currentOrigin()) {
     const able = fleet.filter(item => item.airport === route.origin && !unavailable(item) &&
       ["ok", "limite"].includes(reach(item, miles)));
     row.append(element("span", "meta", able.length
@@ -467,7 +484,7 @@ function routeRow({ route, miles }) {
       : T("Nenhuma aeronave disponível aqui alcança este trecho.", "No available aircraft here can fly this leg.")));
   }
   const status = coverage.get(route)?.status;
-  if (!plane && status === "comprar") row.append(element("span", "tag bad", T("Nenhuma aeronave da frota alcança esta rota", "No aircraft in the fleet can fly this route")));
+  if (!plane && status === "comprar") tags.append(element("span", "tag bad", T("Frota sem alcance para este trecho", "Leg beyond fleet range")));
   appendAirportWarning(row, route, plane?.model);
   const actions = element("div", "plan-actions share-action");
   actions.append(returnButton(route, plane), button(T("Compartilhar voo", "Share flight"), "secondary small", () => openShare([route], plane)));
@@ -542,14 +559,14 @@ function render(moveMap = true) {
   aircraftSelect.value = state.prefix;
   document.querySelector("#selection").textContent = [plane?.prefix,
     origin && (plane || state.plan.length ? T("a partir de ", "from ") + origin : origin)].filter(Boolean).join(" ") || T("Toda a rede", "Whole network");
-  let detail = origin ? airportName(origin) : T("Rotas cadastradas e frota do levantamento", "Registered routes and fleet from the last sync");
+  let detail = origin ? airportName(origin) : T("Selecione uma origem para filtrar as partidas.", "Choose an origin to filter departures.");
   if (plane) {
     const performance = performanceOf(plane.model);
     detail = plane.model + T(" · Posição no PilOps: ", " · Position on PilOps: ") + plane.airport + " · Hangar: " + (plane.base || T("não informado", "not given")) +
       " · " + statusLabel(plane.status) + (performance
         ? T(" · Alcance ≈ ", " · Range ≈ ") + number.format(performance.range) + T(" nm, cruzeiro ≈ ", " nm, cruise ≈ ") + performance.speed + " kt"
         : T(" · Alcance não cadastrado para este modelo", " · No range on file for this model")) + ".";
-    if (unavailable(plane)) detail += T(" Aeronave indisponível agora.", " Aircraft unavailable right now.");
+    if (unavailable(plane)) detail += T(" Indisponível na última coleta.", " Unavailable at the last sync.");
     if (origin && origin !== plane.airport) detail += T(" Planejando a partir de " + origin + ", não da posição atual.",
       " Planning from " + origin + ", not from its current position.");
   }
@@ -1394,20 +1411,42 @@ async function start() {
   paintAll();
 }
 
+function renderSnapshotStatus() {
+  const stamp = Date.parse(capturedAt);
+  const time = document.querySelector("#snapshot-time");
+  const note = document.querySelector("#snapshot-note");
+  const age = document.querySelector("#snapshot-age");
+  const known = Number.isFinite(stamp);
+  age.hidden = !known;
+  if (!known) {
+    time.textContent = T("Coleta com horário desconhecido", "Sync time unknown");
+    note.textContent = T("Confira a posição da frota e as vagas diretamente no PilOps.",
+      "Check fleet positions and slots directly in PilOps.");
+    return;
+  }
+  const date = new Intl.DateTimeFormat(locale(), {
+    dateStyle: lang === "en" ? "medium" : "short", timeStyle: "short", timeZone: "America/Sao_Paulo",
+  }).format(stamp);
+  const minutes = Math.max(0, Math.floor((Date.now() - stamp) / 60000));
+  const hours = Math.floor(minutes / 60);
+  const stale = hours >= 24;
+  age.className = "tag " + (stale ? "warn" : "neutral");
+  age.textContent = new Intl.RelativeTimeFormat(locale(), { numeric: "auto" }).format(
+    hours ? -hours : -minutes, hours ? "hour" : "minute");
+  time.textContent = T("Última coleta · ", "Last sync · ") + date +
+    T(" (Brasília)", " (Brasília time)");
+  note.textContent = stale
+    ? T("Coleta de 24 horas ou mais. Confira as posições da frota, a carga e os passageiros no PilOps antes de voar.",
+      "This sync is at least 24 hours old. Check fleet positions, cargo and passengers in PilOps before flying.")
+    : T("Dados da última sincronização manual. Confira a disponibilidade atual de aeronaves, carga e passageiros no PilOps.",
+      "Data from the last manual sync. Check current aircraft, cargo and passenger availability in PilOps.");
+}
+
 // Tudo o que depende do idioma: textos fixos, cabeçalho da coleta, listas dos filtros e todas as seções.
 function paintAll() {
   applyStaticTexts();
   if (!fleet.length) return;
-  // Em inglês a data sai por extenso ("7 Nov 2026"), sem a ambiguidade dia/mês do formato numérico.
-  const date = new Intl.DateTimeFormat(locale(), {
-    dateStyle: lang === "en" ? "medium" : "short", timeStyle: "short", timeZone: "America/Sao_Paulo",
-  }).format(new Date(capturedAt));
-  document.querySelector("#snapshot-time").textContent = T("Última coleta no PilOps · ", "Last PilOps sync · ") + date +
-    T(" (Brasília)", " (Brasília time)");
-  document.querySelector("#snapshot-note").textContent = T(
-    fleet.length + (fleet.length === 1 ? " aeronave" : " aeronaves") + " e " + routes.length +
-      (routes.length === 1 ? " rota mapeada" : " rotas mapeadas") + " nesta coleta.",
-    fleet.length + " aircraft and " + routes.length + (routes.length === 1 ? " route" : " routes") + " mapped in this sync.");
+  renderSnapshotStatus();
 
   airportSelect.replaceChildren(new Option(T("Todos os aeroportos", "All airports"), ""));
   const simulationAirports = document.querySelector("#simulation-airports");
@@ -1859,11 +1898,15 @@ function renderOperation() {
   const path = document.querySelector("#operation-path");
   const stats = document.querySelector("#operation-stats");
   const cards = document.querySelector("#operation-routes");
+  const phase = document.querySelector("#operation-phase");
+  const legs = document.querySelector("#operation-legs");
   stats.replaceChildren();
   cards.replaceChildren();
   path.hidden = true;
   path.textContent = "";
   if (!operationConfig) {
+    legs.hidden = true;
+    phase.hidden = true;
     title.textContent = T("Aguardando definição da administração", "Awaiting the administration’s selection");
     period.textContent = T("A configuração do desafio está indisponível.", "The challenge configuration is unavailable.");
     return;
@@ -1872,9 +1915,15 @@ function renderOperation() {
   const challenge = VortexOperation.progress(operation, flightLog);
   const { completed } = challenge;
   const today = VortexActivity.today();
-  const phase = today < operation.start ? T("Agendada", "Scheduled") : today > operation.end ? T("Encerrada", "Finished") : T("Em andamento", "In progress");
+  const active = today >= operation.start && today <= operation.end;
+  phase.hidden = false;
+  phase.className = "tag " + (active ? "ok" : "neutral");
+  phase.textContent = active ? T("Em andamento", "In progress") : today < operation.start
+    ? T("Agendado", "Scheduled") : T("Encerrado", "Finished");
+  if (legs.hidden) legs.open = active;
+  legs.hidden = false;
   title.textContent = operation.title[lang];
-  period.textContent = dayText(operation.start) + " → " + dayText(operation.end) + T(" · datas de Brasília · ", " · Brasília dates · ") + phase;
+  period.textContent = dayText(operation.start) + " → " + dayText(operation.end) + T(" · horário de Brasília", " · Brasília time");
   if (operation.routes.length > 1 && operation.routes.every((item, index) => item.route &&
       (!index || operation.routes[index - 1].destination === item.origin))) {
     path.textContent = [operation.routes[0].origin, ...operation.routes.map(item => item.destination)].join(" → ");
@@ -1900,8 +1949,10 @@ function renderOperation() {
     const available = coverage.get(route);
     const reference = available.here[0] || available.capable[0];
     const minutes = blockMinutes(available.miles, reference, route.origin, route.destination);
-    card.append(element("p", "meta", route.code + " · " + nm(available.miles)),
-      element("span", "tag " + coverageText()[available.status][1], coverageText()[available.status][0]));
+    const tags = element("div", "tags");
+    const [label, tone] = coverageText()[available.status];
+    tags.append(element("span", "tag " + tone, label), returnTag(route));
+    card.append(element("p", "meta", route.code + " · " + nm(available.miles)), tags);
     if (minutes !== null) card.append(element("p", "meta", blockLabel(available.miles, reference, route.origin, route.destination) + T(" · referência ", " · reference ") + reference.model));
     appendAirportWarning(card, route, reference?.model);
     card.append(element("p", "meta", T("Voos lidos no período: ", "Flights read in the period: ") +
@@ -1948,8 +1999,8 @@ function renderWeeklyRanking(today = VortexActivity.today()) {
   } else standings.append(element("p", "meta", T("Nenhum voo remunerado concluído e sincronizado nas rotas da Vortex neste período.",
     "No completed and synced paid flights on Vortex routes in this period.")));
   document.querySelector("#weekly-note").textContent = T(
-    "Conta os voos remunerados concluídos de segunda a domingo nas rotas da Vortex, até a última coleta. Em caso de empate, vale a variedade de rotas, seguida da ordem alfabética.",
-    "Counts completed paid flights on Vortex routes from Monday through Sunday, through the last sync. Route variety and then alphabetical order break ties.");
+    "Conta voos remunerados concluídos nas rotas da Vortex, de segunda a domingo. A classificação é parcial e usa a última coleta. Desempate por rotas diferentes e ordem alfabética.",
+    "Counts completed paid flights on Vortex routes from Monday through Sunday. Results are partial and use the last sync. Route variety and then alphabetical order break ties.");
 }
 
 function openShare(legs, preferredPlane) {
@@ -2014,7 +2065,13 @@ function refreshActivityDay() {
   if (activityDay && activityDay !== today) renderRanking();
   if (weeklyPeriod && (today < weeklyPeriod.start || today > weeklyPeriod.end)) renderWeeklyRanking(today);
 }
-setInterval(() => { refreshActivityDay(); void refreshData(); }, 60000);
-document.addEventListener("visibilitychange", () => { refreshActivityDay(); void refreshData(); });
+function updatePage() {
+  if (document.hidden || !fleet.length) return;
+  renderSnapshotStatus();
+  refreshActivityDay();
+  void refreshData();
+}
+setInterval(updatePage, 60000);
+document.addEventListener("visibilitychange", updatePage);
 
 start();
