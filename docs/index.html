@@ -18,7 +18,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=17">
+  <link rel="stylesheet" href="./style.css?v=18">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=3"></script>
@@ -27,7 +27,8 @@
   <script defer src="./movimentacoes.js?v=2"></script>
   <script defer src="./tempos.js?v=2"></script>
   <script defer src="./malha.js?v=1"></script>
-  <script defer src="./planner.js?v=23"></script>
+  <script defer src="./cargas.js?v=1"></script>
+  <script defer src="./planner.js?v=24"></script>
 </head>
 <body>
   <header class="top">
@@ -59,6 +60,7 @@
     <nav class="section-nav" aria-label="Seções do planejador" data-en-label="Planner sections">
       <a href="#operation-card" data-en="Challenge">Desafio</a>
       <a href="#weekly-ranking-card" data-en="Weekly ranking">Ranking semanal</a>
+      <a href="#load-card" data-en="Compare routes and loads">Comparar rotas e cargas</a>
       <a href="#alerts-card" data-en="Fleet movements">Movimentações da frota</a>
       <a href="#realloc-card" data-en="Relocation">Realocação</a>
       <a href="#ranking-card" data-en="Pilot activity">Atividade dos pilotos</a>
@@ -148,6 +150,55 @@
         <ul id="results"></ul>
       </section>
     </div>
+    <section id="load-card" class="card wide load-card" aria-labelledby="load-title">
+      <div class="section-heading"><h2 id="load-title" data-en="Compare routes and loads">Comparar rotas e cargas</h2></div>
+      <div class="pad">
+        <p class="meta" data-en="Compare registered routes using PilOps offers and the costs you enter. The values stay in this tab and reset when the page reloads.">Compare rotas cadastradas com ofertas do PilOps e custos que você informar. Os valores ficam nesta aba e são descartados ao recarregar a página.</p>
+        <form id="load-form" class="load-form">
+          <div class="load-selectors">
+            <label><span data-en="Vortex route">Rota da Vortex</span><select id="load-route" required></select></label>
+            <label><span data-en="Aircraft">Aeronave</span><select id="load-plane" required></select></label>
+            <label><span data-en="Weight unit for all fields">Unidade de todos os pesos</span><select id="load-unit" aria-describedby="load-unit-help"><option value="lb">lb</option><option value="kg">kg</option></select></label>
+          </div>
+          <p id="load-unit-help" class="meta" data-en="Choose the unit before entering weights. Check the limits shown on the aircraft card in PilOps.">Escolha a unidade antes de digitar os pesos. Confira os limites no cartão da aeronave no PilOps.</p>
+          <p id="load-reference" class="meta"></p>
+          <fieldset>
+            <legend data-en="Aircraft limits and current load">Limites da aeronave e carga atual</legend>
+            <div class="load-fields">
+              <label><span data-en="Combined weight limit in PilOps">Limite combinado no PilOps</span><input id="load-limit" type="number" min="0.001" max="2000000" step="0.001" required></label>
+              <label><span data-en="Planned fuel">Combustível planejado</span><input id="load-fuel" type="number" min="0.001" max="2000000" step="0.001" required></label>
+              <label><span data-en="Tank capacity (optional)">Capacidade do tanque (opcional)</span><input id="load-tank" type="number" min="0.001" max="2000000" step="0.001"></label>
+              <label><span data-en="Seat limit">Limite de assentos</span><input id="load-seats" type="number" min="0" max="2000" step="1" required></label>
+              <label><span data-en="Cargo and passenger weight already aboard">Peso de carga e passageiros a bordo</span><input id="load-weight" type="number" min="0" max="2000000" step="0.001" value="0"></label>
+              <label><span data-en="Seats already occupied">Assentos já ocupados</span><input id="load-occupied" type="number" min="0" max="2000" step="1" value="0"></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend data-en="Leg offers and costs">Ofertas e custos do trecho</legend>
+            <label><span data-en="Available lots to this destination">Lotes disponíveis para este destino</span>
+              <textarea id="load-lots" rows="4" maxlength="18000" aria-describedby="load-lots-help" placeholder="1200 | 0 | 6400&#10;360 | 3 | 3100"></textarea>
+            </label>
+            <p id="load-lots-help" class="meta" data-en="Use valid offers for this departure and destination. Enter one whole lot per line as total weight | passengers | gross payout. Use 0 passengers for cargo and omit thousands separators. Paste up to 200 lots.">Use ofertas vigentes para esta origem e destino. Informe um lote inteiro por linha no formato peso total | passageiros | pagamento bruto. Use 0 passageiros para carga e dispense separadores de milhar. Você pode colar até 200 lotes.</p>
+            <div class="load-fields">
+              <label><span data-en="Payout already aboard for this leg (P$)">Pagamento já a bordo para este destino (P$)</span><input id="load-payout" type="number" min="0" max="1000000000" step="0.01" value="0"></label>
+              <label><span data-en="Total costs (P$)">Custos totais (P$)</span><input id="load-cost" type="number" min="0" max="1000000000" step="0.01" aria-describedby="load-cost-help"></label>
+              <label><span data-en="Duration in minutes (optional)">Duração em minutos (opcional)</span><input id="load-time" type="number" min="1" max="2880" step="1"></label>
+            </div>
+            <p id="load-cost-help" class="meta" data-en="Include fuel, fees and other costs on the same basis as the payout. Leave costs blank to see a gross-only result.">Inclua combustível, taxas e demais custos na mesma base do pagamento. Deixe os custos em branco para ver apenas o bruto.</p>
+          </fieldset>
+          <div class="plan-actions">
+            <button type="submit" class="primary" data-en="Calculate and compare">Calcular e comparar</button>
+            <button id="load-reset" type="button" class="secondary" data-en="Clear inputs">Limpar campos</button>
+          </div>
+          <p id="load-feedback" class="meta" role="status"></p>
+        </form>
+        <div id="load-results" hidden>
+          <h3 data-en="Scenarios in this tab">Cenários nesta aba</h3>
+          <p class="meta" data-en="Ordered by estimated net result per hour, then by net result per flight. Use matching cost assumptions when comparing scenarios.">Ordenados pelo resultado líquido estimado por hora e, depois, por voo. Use os mesmos critérios de custo para comparar os cenários.</p>
+          <div id="load-comparison"></div>
+        </div>
+      </div>
+    </section>
     <section id="alerts-card" class="card wide" aria-labelledby="alerts-title">
       <div class="section-heading">
         <div><p class="eyebrow" data-en="ALERTS AND NETWORK RETURNS">AVISOS E RETORNOS À MALHA</p><h2 id="alerts-title" data-en="Fleet movements">Movimentações da frota</h2></div>
