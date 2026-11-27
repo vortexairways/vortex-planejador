@@ -1,0 +1,5011 @@
+{
+ "version": 1,
+ "capturedAt": "2026-11-27T18:24:56.046Z",
+ "total": 184,
+ "stands": [
+  {
+   "airport": "UTAA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ashgabat, TM",
+   "code": "UTAA-C-01",
+   "expires": "2026-12-16",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UTAA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ashgabat, TM",
+   "code": "UTAA-C-02",
+   "expires": "2026-12-16",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UTAA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ashgabat, TM",
+   "code": "UTAA-C-03",
+   "expires": "2026-12-16",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LIPZ",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Venice, IT",
+   "code": "LIPZ-C-04",
+   "expires": "2026-12-20",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LIPZ",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Venice, IT",
+   "code": "LIPZ-C-05",
+   "expires": "2026-12-20",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LIPZ",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Venice, IT",
+   "code": "LIPZ-C-06",
+   "expires": "2026-12-20",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HDAM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Djibouti City, DJ",
+   "code": "HDAM-C-05",
+   "expires": "2026-12-23",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HDAM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Djibouti City, DJ",
+   "code": "HDAM-C-06",
+   "expires": "2026-12-23",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HDAM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Djibouti City, DJ",
+   "code": "HDAM-C-07",
+   "expires": "2026-12-23",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HLLM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tripoli, LY",
+   "code": "HLLM-C-07",
+   "expires": "2026-12-23",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HLLM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tripoli, LY",
+   "code": "HLLM-C-06",
+   "expires": "2026-12-23",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HLLM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tripoli, LY",
+   "code": "HLLM-C-05",
+   "expires": "2026-12-23",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HLLM",
+   "cargo": {
+    "max": 90000,
+    "pct": 7,
+    "text": "6.484 lbs / 90.000 lbs 7%",
+    "unit": "lb",
+    "value": 6484
+   },
+   "city": "Tripoli, LY",
+   "code": "HLLM-C-04",
+   "expires": "2026-12-23",
+   "pax": {
+    "max": 1500,
+    "pct": 85,
+    "text": "1270 / 1500 Passageiros 85%",
+    "value": 1270
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HLLM",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.997 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89997
+   },
+   "city": "Tripoli, LY",
+   "code": "HLLM-C-03",
+   "expires": "2026-12-23",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HLLM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tripoli, LY",
+   "code": "HLLM-C-02",
+   "expires": "2026-12-23",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBCP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Campos Dos Goytacazes, BR",
+   "code": "SBCP-C-03",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SOCA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Matoury, GF",
+   "code": "SOCA-C-03",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SOCA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Matoury, GF",
+   "code": "SOCA-C-04",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SOCA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Matoury, GF",
+   "code": "SOCA-C-05",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SOCA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Matoury, GF",
+   "code": "SOCA-C-06",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SOCA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Matoury, GF",
+   "code": "SOCA-C-07",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SMJP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Zandery, SR",
+   "code": "SMJP-C-01",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SMJP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Zandery, SR",
+   "code": "SMJP-C-02",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SMJP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Zandery, SR",
+   "code": "SMJP-C-03",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SMJP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Zandery, SR",
+   "code": "SMJP-C-04",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ENTC",
+   "cargo": {
+    "max": 90000,
+    "pct": 76,
+    "text": "68.280 lbs / 90.000 lbs 76%",
+    "unit": "lb",
+    "value": 68280
+   },
+   "city": "Tromsø, NO",
+   "code": "ENTC-C-01",
+   "expires": "2026-12-24",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ENTC",
+   "cargo": {
+    "max": 90000,
+    "pct": 18,
+    "text": "15.873 lbs / 90.000 lbs 18%",
+    "unit": "lb",
+    "value": 15873
+   },
+   "city": "Tromsø, NO",
+   "code": "ENTC-C-02",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 53,
+    "text": "799 / 1500 Passageiros 53%",
+    "value": 799
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ENTC",
+   "cargo": {
+    "max": 90000,
+    "pct": 46,
+    "text": "41.671 lbs / 90.000 lbs 46%",
+    "unit": "lb",
+    "value": 41671
+   },
+   "city": "Tromsø, NO",
+   "code": "ENTC-C-03",
+   "expires": "2026-12-24",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ENTC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tromsø, NO",
+   "code": "ENTC-C-04",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ENTC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tromsø, NO",
+   "code": "ENTC-C-05",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UWSG",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Saratov, RU",
+   "code": "UWSG-C-03",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UWSG",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Saratov, RU",
+   "code": "UWSG-C-01",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UWSG",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Saratov, RU",
+   "code": "UWSG-C-02",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UWSG",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Saratov, RU",
+   "code": "UWSG-C-04",
+   "expires": "2026-12-24",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SMJP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Zandery, SR",
+   "code": "SMJP-C-05",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SMJP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Zandery, SR",
+   "code": "SMJP-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SMJP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Zandery, SR",
+   "code": "SMJP-C-07",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "URRP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Rostov-on-Don, RU",
+   "code": "URRP-C-03",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OPKC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Karachi, PK",
+   "code": "OPKC-C-04",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OPKC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Karachi, PK",
+   "code": "OPKC-C-05",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LCLK",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Larnaca, CY",
+   "code": "LCLK-C-04",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCRR",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "San Bartolomé, ES",
+   "code": "GCRR-C-05",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCXO",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tenerife, ES",
+   "code": "GCXO-C-01",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KBNA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Nashville, US",
+   "code": "KBNA-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "CYHZ",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Halifax, CA",
+   "code": "CYHZ-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ENTC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tromsø, NO",
+   "code": "ENTC-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ENTC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tromsø, NO",
+   "code": "ENTC-C-07",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "URRP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Rostov-on-Don, RU",
+   "code": "URRP-C-02",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "URRP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Rostov-on-Don, RU",
+   "code": "URRP-C-04",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "URRP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Rostov-on-Don, RU",
+   "code": "URRP-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OPKC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Karachi, PK",
+   "code": "OPKC-C-01",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OPKC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Karachi, PK",
+   "code": "OPKC-C-02",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OPKC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Karachi, PK",
+   "code": "OPKC-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZSNB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ningbo, CN",
+   "code": "ZSNB-C-01",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZSNB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ningbo, CN",
+   "code": "ZSNB-C-02",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZSNB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ningbo, CN",
+   "code": "ZSNB-C-05",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LCLK",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Larnaca, CY",
+   "code": "LCLK-C-03",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LCLK",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Larnaca, CY",
+   "code": "LCLK-C-05",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "MYNN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Nassau, BS",
+   "code": "MYNN-C-05",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "MYNN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Nassau, BS",
+   "code": "MYNN-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "MYNN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Nassau, BS",
+   "code": "MYNN-C-07",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "CYHZ",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Halifax, CA",
+   "code": "CYHZ-C-07",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ROAH",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Naha, JP",
+   "code": "ROAH-C-07",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "URRP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Rostov-on-Don, RU",
+   "code": "URRP-C-01",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "URRP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Rostov-on-Don, RU",
+   "code": "URRP-C-05",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OPKC",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Karachi, PK",
+   "code": "OPKC-C-03",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCFV",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "El Matorral, ES",
+   "code": "GCFV-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCXO",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tenerife, ES",
+   "code": "GCXO-C-02",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZSNB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ningbo, CN",
+   "code": "ZSNB-C-03",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZSNB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ningbo, CN",
+   "code": "ZSNB-C-04",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZSNB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ningbo, CN",
+   "code": "ZSNB-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LCLK",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Larnaca, CY",
+   "code": "LCLK-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCRR",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "San Bartolomé, ES",
+   "code": "GCRR-C-04",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCRR",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "San Bartolomé, ES",
+   "code": "GCRR-C-06",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UWSG",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Saratov, RU",
+   "code": "UWSG-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UWSG",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Saratov, RU",
+   "code": "UWSG-C-06",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UBBB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baku, AZ",
+   "code": "UBBB-C-02",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UBBB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baku, AZ",
+   "code": "UBBB-C-03",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UBBB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baku, AZ",
+   "code": "UBBB-C-04",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UBBB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baku, AZ",
+   "code": "UBBB-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UBBB",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baku, AZ",
+   "code": "UBBB-C-06",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ORBI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baghdad, IQ",
+   "code": "ORBI-C-03",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ORBI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baghdad, IQ",
+   "code": "ORBI-C-04",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ORBI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baghdad, IQ",
+   "code": "ORBI-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ORBI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baghdad, IQ",
+   "code": "ORBI-C-06",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ORBI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Baghdad, IQ",
+   "code": "ORBI-C-07",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZYTL",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ganjingzi, Dalian, CN",
+   "code": "ZYTL-C-01",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZYTL",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ganjingzi, Dalian, CN",
+   "code": "ZYTL-C-02",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZYTL",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ganjingzi, Dalian, CN",
+   "code": "ZYTL-C-03",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZYTL",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ganjingzi, Dalian, CN",
+   "code": "ZYTL-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZYTL",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ganjingzi, Dalian, CN",
+   "code": "ZYTL-C-04",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "ZYTL",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Ganjingzi, Dalian, CN",
+   "code": "ZYTL-C-06",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UUWW",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Moscow, RU",
+   "code": "UUWW-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UUWW",
+   "cargo": {
+    "max": 90000,
+    "pct": 15,
+    "text": "13.636 lbs / 90.000 lbs 15%",
+    "unit": "lb",
+    "value": 13636
+   },
+   "city": "Moscow, RU",
+   "code": "UUWW-C-02",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 73,
+    "text": "1094 / 1500 Passageiros 73%",
+    "value": 1094
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UUWW",
+   "cargo": {
+    "max": 90000,
+    "pct": 52,
+    "text": "46.878 lbs / 90.000 lbs 52%",
+    "unit": "lb",
+    "value": 46878
+   },
+   "city": "Moscow, RU",
+   "code": "UUWW-C-03",
+   "expires": "2026-12-26",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UUWW",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Moscow, RU",
+   "code": "UUWW-C-04",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UUWW",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Moscow, RU",
+   "code": "UUWW-C-06",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UUWW",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Moscow, RU",
+   "code": "UUWW-C-07",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HEGN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Hurghada, EG",
+   "code": "HEGN-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HEGN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Hurghada, EG",
+   "code": "HEGN-C-06",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HEGN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Hurghada, EG",
+   "code": "HEGN-C-07",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LATI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tirana, AL",
+   "code": "LATI-C-01",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LATI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tirana, AL",
+   "code": "LATI-C-02",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LATI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tirana, AL",
+   "code": "LATI-C-03",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LATI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tirana, AL",
+   "code": "LATI-C-04",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LATI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tirana, AL",
+   "code": "LATI-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LATI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tirana, AL",
+   "code": "LATI-C-06",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LATI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tirana, AL",
+   "code": "LATI-C-07",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "EINN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Shannon, IE",
+   "code": "EINN-C-02",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "EINN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Shannon, IE",
+   "code": "EINN-C-03",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "EINN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Shannon, IE",
+   "code": "EINN-C-04",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "EINN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Shannon, IE",
+   "code": "EINN-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "EINN",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Shannon, IE",
+   "code": "EINN-C-06",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SAEZ",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Buenos Aires (Ezeiza), AR",
+   "code": "SAEZ-C-02",
+   "expires": "2027-01-03",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KMKE",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Milwaukee, US",
+   "code": "KMKE-C-06",
+   "expires": "2027-01-07",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KMKE",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Milwaukee, US",
+   "code": "KMKE-C-05",
+   "expires": "2027-01-07",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LPPT",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.815 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89815
+   },
+   "city": "Lisbon, PT",
+   "code": "LPPT-C-06",
+   "expires": "2027-01-20",
+   "pax": {
+    "max": 1500,
+    "pct": 98,
+    "text": "1475 / 1500 Passageiros 98%",
+    "value": 1475
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LSGG",
+   "cargo": {
+    "max": 24000,
+    "pct": 0,
+    "text": "0 lbs / 24.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Geneva, CH",
+   "code": "LSGG-B-04",
+   "expires": "2027-02-05",
+   "pax": {
+    "max": 400,
+    "pct": 0,
+    "text": "0 / 400 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 6,
+    "text": "0 / 6"
+   },
+   "size": "medium"
+  },
+  {
+   "airport": "CYYT",
+   "cargo": {
+    "max": 90000,
+    "pct": 97,
+    "text": "87.282 lbs / 90.000 lbs 97%",
+    "unit": "lb",
+    "value": 87282
+   },
+   "city": "St. John's, CA",
+   "code": "CYYT-C-07",
+   "expires": "2027-02-07",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBCP",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Campos Dos Goytacazes, BR",
+   "code": "SBCP-C-02",
+   "expires": "2027-02-11",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBCP",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "89.060 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 89060
+   },
+   "city": "Campos Dos Goytacazes, BR",
+   "code": "SBCP-C-01",
+   "expires": "2027-02-11",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1486 / 1500 Passageiros 99%",
+    "value": 1486
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "DAAG",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Algiers, DZ",
+   "code": "DAAG-C-01",
+   "expires": "2027-02-19",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LEAL",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Alicante, ES",
+   "code": "LEAL-C-03",
+   "expires": "2027-02-19",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OMDM",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.631 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89631
+   },
+   "city": "Dubai, AE",
+   "code": "OMDM-C-01",
+   "expires": "2027-02-20",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1480 / 1500 Passageiros 99%",
+    "value": 1480
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OMDM",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "89.008 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 89008
+   },
+   "city": "Dubai, AE",
+   "code": "OMDM-C-03",
+   "expires": "2027-02-20",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1478 / 1500 Passageiros 99%",
+    "value": 1478
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KRDU",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "88.850 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 88850
+   },
+   "city": "Raleigh/Durham, US",
+   "code": "KRDU-C-02",
+   "expires": "2027-02-28",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1487 / 1500 Passageiros 99%",
+    "value": 1487
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UHHH",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Khabarovsk, RU",
+   "code": "UHHH-C-02",
+   "expires": "2027-03-02",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "UHHH",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Khabarovsk, RU",
+   "code": "UHHH-C-03",
+   "expires": "2027-03-02",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBKP",
+   "cargo": {
+    "full": true,
+    "max": 8000,
+    "pct": 100,
+    "text": "7.993 lbs / 8.000 lbs 100%",
+    "unit": "lb",
+    "value": 7993
+   },
+   "city": "Campinas, BR",
+   "code": "SBKP-A-01",
+   "expires": "2027-03-05",
+   "pax": {
+    "full": true,
+    "max": 120,
+    "pct": 100,
+    "text": "120 / 120 Passageiros 100%",
+    "value": 120
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 4,
+    "text": "1 / 4"
+   },
+   "size": "small"
+  },
+  {
+   "airport": "GCRR",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "San Bartolomé, ES",
+   "code": "GCRR-C-02",
+   "expires": "2027-03-07",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCRR",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "San Bartolomé, ES",
+   "code": "GCRR-C-03",
+   "expires": "2027-03-07",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KMKE",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "88.830 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 88830
+   },
+   "city": "Milwaukee, US",
+   "code": "KMKE-C-07",
+   "expires": "2027-03-07",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1491 / 1500 Passageiros 99%",
+    "value": 1491
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCTS",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Tenerife, ES",
+   "code": "GCTS-C-06",
+   "expires": "2027-03-09",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KSDF",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Louisville, US",
+   "code": "KSDF-C-07",
+   "expires": "2027-03-09",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KSDF",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Louisville, US",
+   "code": "KSDF-C-05",
+   "expires": "2027-03-09",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KSDF",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Louisville, US",
+   "code": "KSDF-C-06",
+   "expires": "2027-03-09",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KSDF",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Louisville, US",
+   "code": "KSDF-C-04",
+   "expires": "2027-03-09",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KSDF",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Louisville, US",
+   "code": "KSDF-C-01",
+   "expires": "2027-03-09",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCTS",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "88.726 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 88726
+   },
+   "city": "Tenerife, ES",
+   "code": "GCTS-C-05",
+   "expires": "2027-03-09",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1499 / 1500 Passageiros 100%",
+    "value": 1499
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "GCTS",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.993 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89993
+   },
+   "city": "Tenerife, ES",
+   "code": "GCTS-C-07",
+   "expires": "2027-03-09",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HDAM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Djibouti City, DJ",
+   "code": "HDAM-C-01",
+   "expires": "2027-03-16",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HDAM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Djibouti City, DJ",
+   "code": "HDAM-C-02",
+   "expires": "2027-03-16",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HDAM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Djibouti City, DJ",
+   "code": "HDAM-C-03",
+   "expires": "2027-03-16",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "HDAM",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Djibouti City, DJ",
+   "code": "HDAM-C-04",
+   "expires": "2027-03-16",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LTAI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Antalya, TR",
+   "code": "LTAI-C-05",
+   "expires": "2027-10-03",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SABE",
+   "cargo": {
+    "max": 90000,
+    "pct": 98,
+    "text": "88.341 lbs / 90.000 lbs 98%",
+    "unit": "lb",
+    "value": 88341
+   },
+   "city": "Buenos Aires, AR",
+   "code": "SABE-C-02",
+   "expires": "2027-10-03",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1494 / 1500 Passageiros 100%",
+    "value": 1494
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBCT",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.893 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89893
+   },
+   "city": "Curitiba, BR",
+   "code": "SBCT-C-02",
+   "expires": "2027-10-03",
+   "pax": {
+    "max": 1500,
+    "pct": 92,
+    "text": "1379 / 1500 Passageiros 92%",
+    "value": 1379
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SABE",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Buenos Aires, AR",
+   "code": "SABE-C-03",
+   "expires": "2027-10-03",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OTHH",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "88.857 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 88857
+   },
+   "city": "Doha, QA",
+   "code": "OTHH-C-01",
+   "expires": "2027-10-05",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1484 / 1500 Passageiros 99%",
+    "value": 1484
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBCF",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Belo Horizonte, BR",
+   "code": "SBCF-C-02",
+   "expires": "2027-10-16",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "EFHK",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.987 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89987
+   },
+   "city": "Helsinki, FI",
+   "code": "EFHK-C-02",
+   "expires": "2027-10-18",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1494 / 1500 Passageiros 100%",
+    "value": 1494
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OTHH",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.962 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89962
+   },
+   "city": "Doha, QA",
+   "code": "OTHH-C-03",
+   "expires": "2027-10-18",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LPMT",
+   "cargo": {
+    "max": 90000,
+    "pct": 98,
+    "text": "88.412 lbs / 90.000 lbs 98%",
+    "unit": "lb",
+    "value": 88412
+   },
+   "city": "Montijo, PT",
+   "code": "LPMT-C-01",
+   "expires": "2027-10-20",
+   "pax": {
+    "max": 1500,
+    "pct": 93,
+    "text": "1400 / 1500 Passageiros 93%",
+    "value": 1400
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBEG",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Manaus, BR",
+   "code": "SBEG-C-02",
+   "expires": "2027-10-20",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBGL",
+   "cargo": {
+    "max": 90000,
+    "pct": 97,
+    "text": "87.502 lbs / 90.000 lbs 97%",
+    "unit": "lb",
+    "value": 87502
+   },
+   "city": "Rio De Janeiro, BR",
+   "code": "SBGL-C-05",
+   "expires": "2027-10-20",
+   "pax": {
+    "max": 1500,
+    "pct": 98,
+    "text": "1473 / 1500 Passageiros 98%",
+    "value": 1473
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBEG",
+   "cargo": {
+    "max": 90000,
+    "pct": 94,
+    "text": "84.854 lbs / 90.000 lbs 94%",
+    "unit": "lb",
+    "value": 84854
+   },
+   "city": "Manaus, BR",
+   "code": "SBEG-C-03",
+   "expires": "2027-10-20",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1483 / 1500 Passageiros 99%",
+    "value": 1483
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBRF",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "89.456 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 89456
+   },
+   "city": "Recife, BR",
+   "code": "SBRF-C-03",
+   "expires": "2027-10-20",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1496 / 1500 Passageiros 100%",
+    "value": 1496
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBGL",
+   "cargo": {
+    "max": 90000,
+    "pct": 71,
+    "text": "63.993 lbs / 90.000 lbs 71%",
+    "unit": "lb",
+    "value": 63993
+   },
+   "city": "Rio De Janeiro, BR",
+   "code": "SBGL-C-04",
+   "expires": "2027-10-20",
+   "pax": {
+    "max": 1500,
+    "pct": 98,
+    "text": "1472 / 1500 Passageiros 98%",
+    "value": 1472
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "EDDH",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Hamburg, DE",
+   "code": "EDDH-C-02",
+   "expires": "2027-10-20",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBRJ",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Rio de Janeiro, BR",
+   "code": "SBRJ-C-02",
+   "expires": "2027-10-28",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBKP",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "89.506 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 89506
+   },
+   "city": "Campinas, BR",
+   "code": "SBKP-C-02",
+   "expires": "2027-10-28",
+   "pax": {
+    "max": 1500,
+    "pct": 97,
+    "text": "1454 / 1500 Passageiros 97%",
+    "value": 1454
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBSJ",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "São José Dos Campos, BR",
+   "code": "SBSJ-C-01",
+   "expires": "2027-10-28",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "RJTT",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.999 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89999
+   },
+   "city": "Tokyo, JP",
+   "code": "RJTT-C-05",
+   "expires": "2027-10-29",
+   "pax": {
+    "max": 1500,
+    "pct": 98,
+    "text": "1474 / 1500 Passageiros 98%",
+    "value": 1474
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "RJTT",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.865 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89865
+   },
+   "city": "Tokyo, JP",
+   "code": "RJTT-C-06",
+   "expires": "2027-10-29",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1482 / 1500 Passageiros 99%",
+    "value": 1482
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "RJTT",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "88.854 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 88854
+   },
+   "city": "Tokyo, JP",
+   "code": "RJTT-C-07",
+   "expires": "2027-10-29",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1482 / 1500 Passageiros 99%",
+    "value": 1482
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "RJTT",
+   "cargo": {
+    "max": 90000,
+    "pct": 98,
+    "text": "87.972 lbs / 90.000 lbs 98%",
+    "unit": "lb",
+    "value": 87972
+   },
+   "city": "Tokyo, JP",
+   "code": "RJTT-C-01",
+   "expires": "2027-10-29",
+   "pax": {
+    "max": 1500,
+    "pct": 98,
+    "text": "1470 / 1500 Passageiros 98%",
+    "value": 1470
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KRDU",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Raleigh/Durham, US",
+   "code": "KRDU-C-01",
+   "expires": "2027-10-30",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KRDU",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.978 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89978
+   },
+   "city": "Raleigh/Durham, US",
+   "code": "KRDU-C-03",
+   "expires": "2027-11-02",
+   "pax": {
+    "max": 1500,
+    "pct": 98,
+    "text": "1472 / 1500 Passageiros 98%",
+    "value": 1472
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LTAI",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.830 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89830
+   },
+   "city": "Antalya, TR",
+   "code": "LTAI-C-02",
+   "expires": "2027-11-03",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LTAY",
+   "cargo": {
+    "max": 24000,
+    "pct": 0,
+    "text": "0 lbs / 24.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Denizli, TR",
+   "code": "LTAY-B-03",
+   "expires": "2027-11-03",
+   "pax": {
+    "max": 400,
+    "pct": 0,
+    "text": "0 / 400 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 6,
+    "text": "0 / 6"
+   },
+   "size": "medium"
+  },
+  {
+   "airport": "EFHK",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "89.099 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 89099
+   },
+   "city": "Helsinki, FI",
+   "code": "EFHK-C-04",
+   "expires": "2027-11-09",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1487 / 1500 Passageiros 99%",
+    "value": 1487
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LTAI",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.970 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89970
+   },
+   "city": "Antalya, TR",
+   "code": "LTAI-C-06",
+   "expires": "2027-11-10",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SUMU",
+   "cargo": {
+    "max": 90000,
+    "pct": 4,
+    "text": "3.981 lbs / 90.000 lbs 4%",
+    "unit": "lb",
+    "value": 3981
+   },
+   "city": "Montevideo, UY",
+   "code": "SUMU-C-01",
+   "expires": "2027-11-10",
+   "pax": {
+    "max": 1500,
+    "pct": 92,
+    "text": "1385 / 1500 Passageiros 92%",
+    "value": 1385
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBCG",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "89.236 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 89236
+   },
+   "city": "Campo Grande, BR",
+   "code": "SBCG-C-01",
+   "expires": "2027-11-10",
+   "pax": {
+    "max": 1500,
+    "pct": 98,
+    "text": "1477 / 1500 Passageiros 98%",
+    "value": 1477
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBMA",
+   "cargo": {
+    "max": 90000,
+    "pct": 97,
+    "text": "87.636 lbs / 90.000 lbs 97%",
+    "unit": "lb",
+    "value": 87636
+   },
+   "city": "Marabá, BR",
+   "code": "SBMA-C-01",
+   "expires": "2027-11-10",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1481 / 1500 Passageiros 99%",
+    "value": 1481
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "OTHH",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Doha, QA",
+   "code": "OTHH-C-02",
+   "expires": "2027-11-18",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LEMD",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.979 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89979
+   },
+   "city": "Madrid, ES",
+   "code": "LEMD-C-02",
+   "expires": "2027-11-18",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LEMD",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 129,
+    "text": "116.448 lbs / 90.000 lbs 129%",
+    "unit": "lb",
+    "value": 116448
+   },
+   "city": "Madrid, ES",
+   "code": "LEMD-C-05",
+   "expires": "2027-11-28",
+   "pax": {
+    "max": 1500,
+    "pct": 97,
+    "text": "1449 / 1500 Passageiros 97%",
+    "value": 1449
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LEMD",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.987 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89987
+   },
+   "city": "Madrid, ES",
+   "code": "LEMD-C-06",
+   "expires": "2027-11-28",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 103,
+    "text": "1549 / 1500 Passageiros 103%",
+    "value": 1549
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "EFHK",
+   "cargo": {
+    "max": 90000,
+    "pct": 97,
+    "text": "86.977 lbs / 90.000 lbs 97%",
+    "unit": "lb",
+    "value": 86977
+   },
+   "city": "Helsinki, FI",
+   "code": "EFHK-C-01",
+   "expires": "2028-01-18",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1478 / 1500 Passageiros 99%",
+    "value": 1478
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LEMD",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 119,
+    "text": "107.170 lbs / 90.000 lbs 119%",
+    "unit": "lb",
+    "value": 107170
+   },
+   "city": "Madrid, ES",
+   "code": "LEMD-C-01",
+   "expires": "2028-01-18",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 110,
+    "text": "1650 / 1500 Passageiros 110%",
+    "value": 1650
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LEMD",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.980 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89980
+   },
+   "city": "Madrid, ES",
+   "code": "LEMD-C-03",
+   "expires": "2028-01-18",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBSP",
+   "cargo": {
+    "max": 90000,
+    "pct": 97,
+    "text": "87.273 lbs / 90.000 lbs 97%",
+    "unit": "lb",
+    "value": 87273
+   },
+   "city": "São Paulo, BR",
+   "code": "SBSP-C-02",
+   "expires": "2028-10-03",
+   "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1478 / 1500 Passageiros 99%",
+    "value": 1478
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBSP",
+   "cargo": {
+    "max": 90000,
+    "pct": 99,
+    "text": "89.086 lbs / 90.000 lbs 99%",
+    "unit": "lb",
+    "value": 89086
+   },
+   "city": "São Paulo, BR",
+   "code": "SBSP-C-03",
+   "expires": "2028-10-03",
+   "pax": {
+    "max": 1500,
+    "pct": 96,
+    "text": "1442 / 1500 Passageiros 96%",
+    "value": 1442
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  }
+ ]
+}
