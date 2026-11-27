@@ -61,3 +61,35 @@ test("sem custos, o bruto por hora ainda ordena os cenários", () => {
   const result = load.simulate({ ...base, costs: null, text: "1 | 0 | 2" });
   assert.equal(result.grossPerHour, 3);
 });
+
+// Trecho como sai ao copiar a lista "Selecione carga & rota" do PilOps (P$ seguido de espaço não separável).
+const pilops = [
+  "22 Passageiro(s)", "", "VTX0090", "EFHK", "P$ 80,056.57", "1.590 NM", "4.224 LBS", "Adicionar", "",
+  "Cargo", "", "EFHK", "P$ 251,319.12", "1.590 NM", "7.520 LBS", "Adicionar", "",
+  "1 Passageiro(s)", "", "EXECUTIVOS", "EFHK", "P$ 861.30", "1.590 NM", "143 LBS", "Aceita apenas Jatos", "Bloqueado", "",
+  "2 Passageiro(s)", "", "LEMX", "P$ 415.59", "57 NM", "332 LBS", "Adicionar",
+].join("\n");
+const md11 = { limit: 21000, fuel: 9000, tank: null, seatLimit: 381, loadedWeight: 0, loadedSeats: 0, loadedPayout: 0,
+  costs: null, minutes: 120 };
+
+test("lê a lista copiada do PilOps, só para o destino da rota e sem ofertas bloqueadas", () => {
+  const result = load.simulate({ ...md11, text: pilops, destination: "EFHK" });
+  assert.equal(result.format, "pilops");
+  assert.equal(result.offered, 2); assert.equal(result.ignored, 1); assert.equal(result.blocked, 1);
+  assert.deepEqual([...result.items], [1, 2]);
+  assert.equal(result.gross, 331375.69);
+  assert.equal(result.remainingWeight, 12000 - 4224 - 7520);
+  assert.equal(result.remainingSeats, 381 - 22);
+  const tight = load.simulate({ ...md11, limit: 17000, text: pilops, destination: "EFHK" });
+  assert.deepEqual([...tight.items], [2]);
+  assert.equal(load.simulate({ ...md11, text: pilops }).offered, 3);
+});
+
+test("ofertas em LBS viram kg quando o cenário está em kg", () => {
+  const kg = load.simulate({ ...md11, limit: 9000, fuel: 4000, unit: "kg", text: pilops, destination: "EFHK" });
+  assert.deepEqual([...kg.items], [2]);
+  assert.ok(Math.abs(kg.remainingWeight - (5000 - 7520 * 0.45359237)) < 0.01);
+  const table = load.simulate({ ...md11, limit: 1000, fuel: 0, unit: "kg", text: "1.000 LBS | 0 | 10" });
+  assert.equal(table.remainingWeight, 1000 - 453.592);
+  assert.equal(load.simulate({ ...md11, text: "Cargo\nEFHK\nP$ 10\n1.590 NM" }).error, "lot-format");
+});

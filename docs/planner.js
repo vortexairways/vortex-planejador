@@ -1287,7 +1287,8 @@ function fleetLoadRows(route) {
     let offers = null;
     if (lots.trim() && limit && fuel && seats !== null) {
       offers = VortexLoad.simulate({ minutes: time.minutes, limit: fromPounds(limit), tank: null, fuel: fromPounds(fuel.fuel),
-        seatLimit: seats, loadedWeight: 0, loadedSeats: 0, loadedPayout: 0, costs: null, text: lots });
+        seatLimit: seats, loadedWeight: 0, loadedSeats: 0, loadedPayout: 0, costs: null, text: lots,
+        unit: loadUnit(), destination: route.destination });
     }
     const problems = [];
     if (unavailable(plane)) problems.push(statusLabel(plane.status));
@@ -1304,7 +1305,8 @@ function fleetLoadRows(route) {
 }
 
 function incomeNote(row) {
-  if (row.fromOffers) return row.offers.items.length + "/" + row.offers.offered + T(" lotes · ofertas coladas", " lots · pasted offers");
+  if (row.fromOffers) return row.offers.items.length + "/" + row.offers.offered + T(" lotes · ofertas coladas", " lots · pasted offers") +
+    (row.offers.ignored ? " · " + row.offers.ignored + T(" de outro destino", " to other destinations") : "");
   if (!row.income) return T("sem voos pagos deste modelo", "no paid flights for this model");
   return row.income.basis === "route" ? T("histórico desta rota · ", "history on this route · ") + flightCount(row.income.count)
     : row.income.basis === "route-other" ? T("outros modelos nesta rota, pela capacidade livre", "other models on this route, scaled by free capacity")
@@ -1470,7 +1472,12 @@ function renderLoadResults() {
     card.append(element("p", "meta", T("Lotes selecionados: ", "Lots selected: ") + items.length + "/" + scenario.offered +
       T(" · Peso livre: ", " · Weight left: ") + number.format(scenario.remainingWeight) + " " + unit +
       T(" · Assentos livres: ", " · Seats left: ") + scenario.remainingSeats));
-    if (items.length) card.append(element("p", "load-lots-picked", T("Linhas dos lotes: ", "Selected lot lines: ") + items.join(", ")));
+    if (scenario.format === "pilops" && (scenario.ignored || scenario.blocked)) card.append(element("p", "meta",
+      T("Fora da conta: ", "Left out: ") + [scenario.ignored ? scenario.ignored + (scenario.ignored === 1 ? T(" oferta para outro destino", " offer to another destination") : T(" ofertas para outro destino", " offers to other destinations")) : "",
+        scenario.blocked ? scenario.blocked + (scenario.blocked === 1 ? T(" bloqueada para este avião", " blocked for this aircraft") : T(" bloqueadas para este avião", " blocked for this aircraft")) : ""].filter(Boolean).join(" · ")));
+    if (items.length) card.append(element("p", "load-lots-picked", (scenario.format === "pilops"
+      ? T("Ofertas a escolher (posição na lista do PilOps, de cima para baixo): ", "Offers to pick (position in the PilOps list, top to bottom): ")
+      : T("Linhas dos lotes: ", "Selected lot lines: ")) + items.join(", ")));
     if (!scenario.exhaustive) card.append(element("p", "meta", T("Melhor combinação encontrada dentro do limite de cálculo.",
       "Best combination found within the search limit.")));
     list.append(card);
@@ -1479,7 +1486,7 @@ function renderLoadResults() {
 
 loadInput("route").addEventListener("change", () => { applyLoadFuel(); renderLoadReference(); });
 loadInput("plane").addEventListener("change", () => { applyLoadPlane(); renderLoadReference(); });
-// Trocar a unidade converte os pesos já digitados; os lotes colados seguem a unidade escolhida.
+// Trocar a unidade converte os pesos já digitados; lotes sem unidade seguem a escolhida, e "LBS"/"KG" são convertidos.
 let loadUnitShown = "lb";
 loadInput("unit").addEventListener("change", () => {
   const next = loadUnit();
@@ -1514,7 +1521,7 @@ loadForm.addEventListener("submit", event => {
   const scenario = VortexLoad.simulate({ minutes, limit: loadNumber("limit"), tank: loadNumber("tank"),
     fuel: loadNumber("fuel"), seatLimit: loadNumber("seats"), loadedWeight: loadNumber("weight") ?? 0,
     loadedSeats: loadNumber("occupied") ?? 0, loadedPayout: loadNumber("payout") ?? 0,
-    costs: loadNumber("cost"), text: loadInput("lots").value });
+    costs: loadNumber("cost"), text: loadInput("lots").value, unit, destination: route.destination });
   const feedback = loadInput("feedback");
   const errors = {
     "lot-limit": T("Use até 200 lotes por cenário.", "Use up to 200 lots per scenario."),

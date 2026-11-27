@@ -27,9 +27,9 @@
   <script defer src="./movimentacoes.js?v=2"></script>
   <script defer src="./tempos.js?v=2"></script>
   <script defer src="./malha.js?v=1"></script>
-  <script defer src="./cargas.js?v=2"></script>
+  <script defer src="./cargas.js?v=3"></script>
   <script defer src="./combustivel.js?v=3"></script>
-  <script defer src="./planner.js?v=27"></script>
+  <script defer src="./planner.js?v=28"></script>
 </head>
 <body>
   <header class="top">
@@ -177,10 +177,10 @@
           </fieldset>
           <fieldset>
             <legend data-en="Leg offers and costs">Ofertas e custos do trecho</legend>
-            <label><span data-en="Available lots to this destination">Lotes disponíveis para este destino</span>
-              <textarea id="load-lots" rows="4" maxlength="18000" aria-describedby="load-lots-help" placeholder="1200 | 0 | 6400&#10;360 | 3 | 3100"></textarea>
+            <label><span data-en="Offers copied from PilOps (or one lot per line)">Ofertas copiadas do PilOps (ou um lote por linha)</span>
+              <textarea id="load-lots" rows="4" maxlength="60000" aria-describedby="load-lots-help" placeholder="1200 | 0 | 6400&#10;360 | 3 | 3100"></textarea>
             </label>
-            <p id="load-lots-help" class="meta" data-en="Use valid offers for this departure and destination. Enter one whole lot per line as total weight | passengers | gross payout. Use 0 passengers for cargo. Values can be pasted as PilOps shows them, such as 1,200 LBS | 0 | P$ 6,400. Paste up to 200 lots.">Use ofertas vigentes para esta origem e destino. Informe um lote inteiro por linha no formato peso total | passageiros | pagamento bruto. Use 0 passageiros para carga. Os valores podem vir como o PilOps mostra, por exemplo 1,200 LBS | 0 | P$ 6,400. Você pode colar até 200 lotes.</p>
+            <p id="load-lots-help" class="meta" data-en="In PilOps, on the &quot;Select cargo &amp; route&quot; step, filter by the destination if you like, scroll to the end of the list, select the offers with the mouse, copy and paste them here. Offers to other destinations and blocked offers are left out on their own. You can also type one lot per line as total weight | passengers | gross payout (0 passengers for cargo), such as 1,200 LBS | 0 | P$ 6,400. Up to 200 lots.">No PilOps, no passo &quot;Selecione carga &amp; rota&quot;, filtre pelo destino se quiser, role até o fim da lista, selecione as ofertas com o mouse, copie e cole aqui. Ofertas para outro destino e as bloqueadas ficam de fora sozinhas. Também dá para digitar um lote por linha no formato peso total | passageiros | pagamento bruto (0 passageiros para carga), por exemplo 1,200 LBS | 0 | P$ 6,400. Até 200 lotes.</p>
             <div class="load-fields">
               <label><span data-en="Payout already aboard for this leg (P$)">Pagamento já a bordo para este destino (P$)</span><input id="load-payout" type="number" min="0" max="1000000000" step="0.01" value="0"></label>
               <label><span data-en="Total costs (P$)">Custos totais (P$)</span><input id="load-cost" type="number" min="0" max="1000000000" step="0.01" aria-describedby="load-cost-help"></label>

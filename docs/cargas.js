@@ -22,20 +22,67 @@ const VortexLoad = (() => {
     return /^\d+[.,]\d+$/.test(text) && text.split(/[.,]/)[1].length <= digits ? Number(text.replace(",", ".")) : NaN;
   }
 
-  function parseLots(text) {
+  // Peso na unidade do cenário: "1.200 LBS" vira kg quando o cenário está em kg (e vice-versa).
+  const kgPerPound = 0.45359237;
+  function weightIn(raw, unit) {
+    const value = decimal(raw, 3), suffix = /(lbs?|kg)\.?\s*$/i.exec(raw)?.[1].toLowerCase();
+    if (!suffix || (suffix === "kg") === (unit === "kg")) return value;
+    return unit === "kg" ? value * kgPerPound : value / kgPerPound;
+  }
+  const validLot = ({ weight, seats, payout }) => weight > 0 && weight <= 2e6 && Number.isInteger(seats) && seats <= 2000 &&
+    payout >= 0 && payout <= 1e9;
+
+  // Lista copiada da tela "Selecione carga & rota" do PilOps. Cada oferta vem em linhas:
+  //   "22 Passageiro(s)" ou "Cargo", [etiqueta], [VTX0090], destino, "P$ 80,056.57", "1.590 NM", "4.224 LBS",
+  //   "Adicionar" ou "Aceita apenas Jatos" + "Bloqueado".
+  // Ofertas bloqueadas e as de outro destino ficam de fora. "line" é a posição da oferta na lista colada.
+  const offerStart = /^(?:(\d+)\s+(?:passageiros?|passengers?|pasajeros?)(?:\(s\))?|cargo|carga)$/i;
+  const isPilops = lines => !lines.some(line => /[|;\t]/.test(line)) && lines.some(line => offerStart.test(line.trim())) &&
+    lines.some(line => /^P\$/i.test(line.trim()));
+  function parsePilops(lines, unit, destination) {
+    const offers = [];
+    let offer = null, previous = "";
+    for (const [index, raw] of lines.entries()) {
+      const line = raw.trim();
+      if (!line) continue;
+      const start = offerStart.exec(line);
+      if (start) {
+        offer = { line: offers.length + 1, textLine: index + 1, seats: start[1] ? Number(start[1]) : 0, blocked: false };
+        offers.push(offer);
+      } else if (offer) {
+        if (/^P\$/i.test(line)) {
+          offer.payout = decimal(line, 2);
+          if (/^[A-Z0-9]{3,5}$/.test(previous)) offer.destination = previous;
+        } else if (/^[\d.,]+\s*(lbs?|kg)\.?$/i.test(line)) offer.weight = weightIn(line, unit);
+        else if (/^(bloqueado|blocked|bloqueada)$/i.test(line)) offer.blocked = true;
+      }
+      previous = line;
+    }
     const lots = [];
-    for (const [index, raw] of text.split(/\r?\n/).entries()) {
+    let ignored = 0, blocked = 0;
+    for (const item of offers) {
+      if (!validLot(item)) return { error: "lot-format", line: item.textLine };
+      if (item.blocked) { blocked++; continue; }
+      if (destination && item.destination && item.destination !== destination) { ignored++; continue; }
+      if (lots.length === maxLots) return { error: "lot-limit" };
+      lots.push({ line: item.line, weight: mass(item.weight), seats: item.seats, payout: cents(item.payout) });
+    }
+    return { lots, format: "pilops", ignored, blocked };
+  }
+
+  function parseLots(text, unit = "lb", destination = null) {
+    const lines = text.split(/\r?\n/);
+    if (isPilops(lines)) return parsePilops(lines, unit, destination);
+    const lots = [];
+    for (const [index, raw] of lines.entries()) {
       if (!raw.trim()) continue;
       if (lots.length === maxLots) return { error: "lot-limit" };
       const fields = raw.trim().split(/[|;\t]/).map(value => value.trim());
-      const [weight, seats, payout] = fields.map((value, index) => decimal(value, [3, 0, 2][index]));
-      if (fields.length !== 3 || !(weight > 0 && weight <= 2e6) ||
-          !Number.isInteger(seats) || seats > 2000 || !(payout >= 0 && payout <= 1e9)) {
-        return { error: "lot-format", line: index + 1 };
-      }
-      lots.push({ line: index + 1, weight: mass(weight), seats, payout: cents(payout) });
+      const lot = { weight: weightIn(fields[0], unit), seats: decimal(fields[1] ?? "", 0), payout: decimal(fields[2] ?? "", 2) };
+      if (fields.length !== 3 || !validLot(lot)) return { error: "lot-format", line: index + 1 };
+      lots.push({ line: index + 1, weight: mass(lot.weight), seats: lot.seats, payout: cents(lot.payout) });
     }
-    return { lots };
+    return { lots, format: "table", ignored: 0, blocked: 0 };
   }
 
   function selectLots(lots, weightLimit, seatLimit) {
@@ -89,8 +136,8 @@ const VortexLoad = (() => {
   }
 
   function simulate({ limit, tank, fuel, seatLimit, loadedWeight, loadedSeats,
-    loadedPayout, costs, minutes, text }) {
-    const parsed = parseLots(text);
+    loadedPayout, costs, minutes, text, unit = "lb", destination = null }) {
+    const parsed = parseLots(text, unit, destination);
     if (parsed.error) return parsed;
     if (tank !== null && fuel > tank) return { error: "tank" };
     if (loadedSeats > seatLimit) return { error: "seats" };
@@ -106,7 +153,7 @@ const VortexLoad = (() => {
       grossPerHour: minutes ? gross * 0.6 / minutes : null,
       remainingWeight: (weightBudget - selected.weight) / 1000,
       remainingSeats: seatLimit - loadedSeats - selected.seats,
-      offered: parsed.lots.length,
+      offered: parsed.lots.length, format: parsed.format, ignored: parsed.ignored, blocked: parsed.blocked,
     };
   }
 
