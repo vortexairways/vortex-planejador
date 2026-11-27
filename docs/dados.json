@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-27T12:57:56.523Z",
+ "capturedAt": "2026-11-27T22:25:55.244Z",
  "reportedFleet": 18,
  "fleet": [
   {
@@ -35,21 +35,21 @@
    "model": "Airbus A320neo",
    "airport": "LEMD",
    "base": "EFHK",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N6KZLB",
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "KJFK",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
-   "airport": "RJTT",
+   "airport": "LEMD",
    "base": "LEMD",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N4XBCS",
@@ -75,14 +75,14 @@
   {
    "prefix": "NZ66EU",
    "model": "Airbus A330",
-   "airport": "SUMU",
+   "airport": "SBCG",
    "base": "SBGL",
    "status": "Sem alerta no cartão"
   },
   {
    "prefix": "NTXJ5N",
    "model": "Douglas MD-11",
-   "airport": "SBGL",
+   "airport": "LEMD",
    "base": "RJTT",
    "status": "Sem alerta no cartão"
   },
@@ -117,7 +117,7 @@
   {
    "prefix": "N6D7I2",
    "model": "Airbus A380",
-   "airport": "ENTC",
+   "airport": "UUWW",
    "base": "LEMD",
    "status": "EM USO"
   }
@@ -125,12 +125,12 @@
  "routes": [
   {
    "origin": "ENTC",
-   "destination": "UUWW",
+   "destination": "HLLM",
    "code": "VTX0000"
   },
   {
    "origin": "UUWW",
-   "destination": "GCTS",
+   "destination": "ENTC",
    "code": "VTX0000"
   },
   {
@@ -154,17 +154,32 @@
    "code": "VTX0000"
   },
   {
-   "origin": "LEMD",
-   "destination": "KRDU",
+   "origin": "ENTC",
+   "destination": "UUWW",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "HLLM",
+   "destination": "ENTC",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "UUWW",
+   "destination": "GCTS",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "SBSP",
+   "destination": "EFHK",
    "code": "VTX0001"
   },
   {
-   "origin": "RJTT",
-   "destination": "KRDU",
+   "origin": "SBRF",
+   "destination": "SBGL",
    "code": "VTX0001"
   },
   {
-   "origin": "LEMD",
+   "origin": "EFHK",
    "destination": "RJTT",
    "code": "VTX0001"
   },
@@ -174,28 +189,23 @@
    "code": "VTX0001"
   },
   {
-   "origin": "EFHK",
+   "origin": "LEMD",
+   "destination": "KRDU",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "KRDU",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "LEMD",
    "destination": "RJTT",
    "code": "VTX0001"
   },
   {
-   "origin": "SBRF",
-   "destination": "SBGL",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "SBSP",
+   "origin": "RJTT",
    "destination": "EFHK",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "SBGL",
-   "destination": "SUMU",
-   "code": "VTX0002"
-  },
-  {
-   "origin": "KRDU",
-   "destination": "SBGL",
    "code": "VTX0002"
   },
   {
@@ -204,13 +214,18 @@
    "code": "VTX0002"
   },
   {
+   "origin": "SBGL",
+   "destination": "SUMU",
+   "code": "VTX0002"
+  },
+  {
    "origin": "RJTT",
    "destination": "LEMD",
    "code": "VTX0002"
   },
   {
-   "origin": "RJTT",
-   "destination": "EFHK",
+   "origin": "KRDU",
+   "destination": "SBGL",
    "code": "VTX0002"
   },
   {
@@ -224,13 +239,13 @@
    "code": "VTX0005"
   },
   {
-   "origin": "LPMT",
-   "destination": "LPPT",
+   "origin": "SBKP",
+   "destination": "SBGL",
    "code": "VTX0006"
   },
   {
-   "origin": "SBKP",
-   "destination": "SBGL",
+   "origin": "LPMT",
+   "destination": "LPPT",
    "code": "VTX0006"
   },
   {
@@ -289,18 +304,8 @@
    "code": "VTX0099"
   },
   {
-   "origin": "CYYT",
-   "destination": "KMKE",
-   "code": "VTX2222"
-  },
-  {
    "origin": "LTAI",
    "destination": "GCTS",
-   "code": "VTX2222"
-  },
-  {
-   "origin": "GCTS",
-   "destination": "CYYT",
    "code": "VTX2222"
   },
   {
@@ -314,6 +319,16 @@
    "code": "VTX2222"
   },
   {
+   "origin": "CYYT",
+   "destination": "KMKE",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "GCTS",
+   "destination": "CYYT",
+   "code": "VTX2222"
+  },
+  {
    "origin": "SBCP",
    "destination": "OMDM",
    "code": "VTX3331"
@@ -322,11 +337,6 @@
    "origin": "SBKP",
    "destination": "KRDU",
    "code": "VTX3333"
-  },
-  {
-   "origin": "RJTT",
-   "destination": "OMDM",
-   "code": "VTX4444"
   },
   {
    "origin": "OMDM",
@@ -339,13 +349,18 @@
    "code": "VTX4444"
   },
   {
-   "origin": "LTAI",
-   "destination": "OTHH",
-   "code": "VTX5555"
+   "origin": "RJTT",
+   "destination": "OMDM",
+   "code": "VTX4444"
   },
   {
    "origin": "OMDM",
    "destination": "RJTT",
+   "code": "VTX5555"
+  },
+  {
+   "origin": "LTAI",
+   "destination": "OTHH",
    "code": "VTX5555"
   }
  ],
@@ -365,17 +380,25 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 138172,
-   "companyMinutes": 127872,
+   "totalMinutes": 138440,
+   "companyMinutes": 128140,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 23928,
-   "companyMinutes": 11815,
+   "totalMinutes": 24061,
+   "companyMinutes": 11948,
    "joined": "2026-10-20"
+  },
+  {
+   "name": "FabianoEgidio",
+   "role": null,
+   "level": null,
+   "totalMinutes": 166947,
+   "companyMinutes": 2840,
+   "joined": "2026-11-24"
   },
   {
    "name": "nassis89",
@@ -384,14 +407,6 @@
    "totalMinutes": 14415,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
-  },
-  {
-   "name": "FabianoEgidio",
-   "role": null,
-   "level": null,
-   "totalMinutes": 165684,
-   "companyMinutes": 1577,
-   "joined": "2026-11-24"
   },
   {
    "name": "PaxArcturia",
@@ -450,6 +465,14 @@
    "joined": "2026-11-11"
   },
   {
+   "name": "wolfwet",
+   "role": null,
+   "level": null,
+   "totalMinutes": 0,
+   "companyMinutes": 0,
+   "joined": "2026-11-27"
+  },
+  {
    "name": "Harris",
    "role": null,
    "level": null,
@@ -474,7 +497,7 @@
    "joined": "2026-11-09"
   }
  ],
- "pilotsCapturedAt": "2026-11-27T12:57:56.523Z",
+ "pilotsCapturedAt": "2026-11-27T22:25:55.244Z",
  "flights": [
   {
    "pilot": "astronauta",
@@ -485,6 +508,50 @@
    "date": "2026-11-27",
    "minutes": 321,
    "nm": 2875.87,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NZ66EU",
+   "model": "Airbus A330",
+   "origin": "SUMU",
+   "destination": "SBCG",
+   "date": "2026-11-27",
+   "minutes": 132,
+   "nm": 865.05,
+   "paid": true
+  },
+  {
+   "pilot": "FabianoEgidio",
+   "prefix": "NTXJ5N",
+   "model": "Douglas MD-11",
+   "origin": "SBGL",
+   "destination": "LEMD",
+   "date": "2026-11-27",
+   "minutes": 515,
+   "nm": 4395.57,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "ENTC",
+   "destination": "UUWW",
+   "date": "2026-11-27",
+   "minutes": 267,
+   "nm": 976.34,
+   "paid": true
+  },
+  {
+   "pilot": "FabianoEgidio",
+   "prefix": "N2IUPG",
+   "model": "Douglas MD-11",
+   "origin": "RJTT",
+   "destination": "LEMD",
+   "date": "2026-11-27",
+   "minutes": 747,
+   "nm": 5810.2,
    "paid": true
   },
   {
@@ -1579,7 +1646,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 97,
+  "readCount": 101,
   "groups": [
    {
     "origin": "LEMD",
@@ -1603,10 +1670,10 @@
     "origin": "RJTT",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 4,
-    "lastDate": "2026-11-17",
-    "change": 0.136176,
-    "state": "alta"
+    "count": 5,
+    "lastDate": "2026-11-27",
+    "change": -0.024454,
+    "state": "estavel"
    },
    {
     "origin": "EFHK",
@@ -1657,10 +1724,10 @@
     "origin": "SUMU",
     "destination": "SBCG",
     "model": "Airbus A330",
-    "count": 2,
-    "lastDate": "2026-11-19",
-    "change": -0.034451,
-    "state": "estavel"
+    "count": 3,
+    "lastDate": "2026-11-27",
+    "change": -0.301361,
+    "state": "queda"
    },
    {
     "origin": "SBCG",
@@ -1729,10 +1796,10 @@
     "origin": "SBGL",
     "destination": "LEMD",
     "model": "Douglas MD-11",
-    "count": 5,
-    "lastDate": "2026-11-25",
-    "change": -0.345923,
-    "state": "queda"
+    "count": 6,
+    "lastDate": "2026-11-27",
+    "change": 0.062135,
+    "state": "recuperada"
    },
    {
     "origin": "LEMD",
@@ -1931,6 +1998,15 @@
     "lastDate": "2026-11-26",
     "change": null,
     "state": "unico"
+   },
+   {
+    "origin": "ENTC",
+    "destination": "UUWW",
+    "model": "Airbus A380",
+    "count": 1,
+    "lastDate": "2026-11-27",
+    "change": null,
+    "state": "unico"
    }
   ]
  },
@@ -1942,6 +2018,34 @@
     "model": "Douglas MD-11",
     "count": 10,
     "fuel": 69992
+   },
+   {
+    "origin": "SUMU",
+    "destination": "SBCG",
+    "model": "Airbus A330",
+    "count": 3,
+    "fuel": 27738
+   },
+   {
+    "origin": "SBGL",
+    "destination": "LEMD",
+    "model": "Douglas MD-11",
+    "count": 6,
+    "fuel": 119435
+   },
+   {
+    "origin": "ENTC",
+    "destination": "UUWW",
+    "model": "Airbus A380",
+    "count": 1,
+    "fuel": 41826
+   },
+   {
+    "origin": "RJTT",
+    "destination": "LEMD",
+    "model": "Douglas MD-11",
+    "count": 5,
+    "fuel": 145653
    },
    {
     "origin": "LEMD",
@@ -1984,13 +2088,6 @@
     "model": "Airbus A320neo",
     "count": 2,
     "fuel": 20629
-   },
-   {
-    "origin": "SBGL",
-    "destination": "LEMD",
-    "model": "Douglas MD-11",
-    "count": 5,
-    "fuel": 125709
    },
    {
     "origin": "OTHH",
@@ -2098,13 +2195,6 @@
     "fuel": 33919
    },
    {
-    "origin": "SUMU",
-    "destination": "SBCG",
-    "model": "Airbus A330",
-    "count": 2,
-    "fuel": 27886
-   },
-   {
     "origin": "SBCG",
     "destination": "SBMA",
     "model": "Airbus A330",
@@ -2124,13 +2214,6 @@
     "model": "Airbus A320neo",
     "count": 1,
     "fuel": 8070
-   },
-   {
-    "origin": "RJTT",
-    "destination": "LEMD",
-    "model": "Douglas MD-11",
-    "count": 4,
-    "fuel": 145251
    },
    {
     "origin": "LYBE",
@@ -2218,22 +2301,22 @@
     "perNm": 28.9
    },
    {
+    "model": "Airbus A330",
+    "count": 12,
+    "perHour": 11672,
+    "perNm": 33.1
+   },
+   {
     "model": "Airbus A380",
-    "count": 10,
-    "perHour": 27221,
-    "perNm": 53.1
+    "count": 11,
+    "perHour": 27125,
+    "perNm": 51.3
    },
    {
     "model": "Airbus A320neo",
     "count": 8,
     "perHour": 2338,
     "perNm": 7.9
-   },
-   {
-    "model": "Airbus A330",
-    "count": 11,
-    "perHour": 11644,
-    "perNm": 33.1
    },
    {
     "model": "Boeing 787-10 Dreamliner",
