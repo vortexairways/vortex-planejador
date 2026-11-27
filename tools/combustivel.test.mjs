@@ -19,3 +19,9 @@ test("previsão soma viagem e 45 minutos de reserva, arredondando para cima", ()
   assert.equal(fuel.estimate("Modelo desconhecido", 60), null);
   assert.equal(fuel.estimate("Douglas MD-11", null), null);
 });
+
+test("tanque e limite combinado seguem o Mercado de Aeronaves do PilOps", () => {
+  const md11 = fuel.info("Douglas MD-11");
+  assert.equal(md11.tank, 256900); assert.equal(md11.limit, 361323);
+  for (const plane of fleet) { const item = fuel.info(plane.model); assert.ok(item.limit > item.tank, plane.model); }
+});

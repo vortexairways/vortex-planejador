@@ -1214,18 +1214,24 @@ const loadMedian = values => {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
-// O limite combinado (combustível + carga) de cada modelo aparece no PilOps; o piloto informa uma vez
-// e o navegador lembra, em libras, só neste aparelho.
+// O limite combinado (combustível + carga) de cada modelo vem da ficha; se o piloto digitar outro, ele fica
+// guardado em libras, só neste aparelho.
 const limitKey = "vortex-limites-v1";
 function savedLimits() {
   try { return JSON.parse(localStorage.getItem(limitKey) || "{}") || {}; } catch { return {}; }
 }
+// O que o piloto digitou vale primeiro; senão, o limite do Mercado de Aeronaves do PilOps na ficha.
 const knownLimit = model => {
   const value = savedLimits()[model];
-  return Number.isFinite(value) && value > 0 ? value : null;
+  return Number.isFinite(value) && value > 0 ? value : VortexFuel.info(model)?.limit ?? null;
 };
+// Devolve true quando o valor difere da ficha e ficou guardado; igual à ficha, apaga o valor próprio.
 function rememberLimit(model, pounds) {
-  try { localStorage.setItem(limitKey, JSON.stringify({ ...savedLimits(), [model]: Math.round(pounds) })); } catch { /* sem armazenamento */ }
+  const limits = savedLimits(), official = VortexFuel.info(model)?.limit;
+  const own = !official || Math.abs(pounds - official) > 1;
+  if (own) limits[model] = Math.round(pounds); else delete limits[model];
+  try { localStorage.setItem(limitKey, JSON.stringify(limits)); } catch { /* sem armazenamento */ }
+  return own;
 }
 
 // Renda por voo segundo o histórico publicado: mesma rota e modelo; senão P$/lb da rota com a carga típica
@@ -1500,9 +1506,10 @@ loadForm.addEventListener("submit", event => {
   const source = manualMinutes ? "manual" : estimate.source;
   const key = VortexOperation.pair(route) + "|" + plane.prefix;
   loadScenarios.set(key, { ...scenario, source, minutes, route, plane, unit });
-  rememberLimit(plane.model, toPounds(loadNumber("limit")));
-  feedback.textContent = T("Cenário calculado para ", "Scenario calculated for ") + loadPair(route) +
-    T(". O limite do ", ". The limit for ") + plane.model + T(" ficou guardado neste aparelho.", " is saved on this device.");
+  const ownLimit = rememberLimit(plane.model, toPounds(loadNumber("limit")));
+  feedback.textContent = T("Cenário calculado para ", "Scenario calculated for ") + loadPair(route) + (ownLimit
+    ? T(". O limite que você digitou para o ", ". The limit you entered for the ") + plane.model + T(" ficou guardado neste aparelho.", " is saved on this device.")
+    : ".");
   renderLoadResults();
   renderLoadFleet();
 });
