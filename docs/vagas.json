@@ -1,6 +1,6 @@
 {
  "version": 1,
- "capturedAt": "2026-11-27T18:28:38.487Z",
+ "capturedAt": "2026-11-27T18:28:55.979Z",
  "total": 184,
  "stands": [
   {
@@ -4900,20 +4900,20 @@
    "cargo": {
     "full": true,
     "max": 90000,
-    "pct": 119,
-    "text": "107.170 lbs / 90.000 lbs 119%",
+    "pct": 100,
+    "text": "89.980 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 107170
+    "value": 89980
    },
    "city": "Madrid, ES",
-   "code": "LEMD-C-01",
+   "code": "LEMD-C-03",
    "expires": "2028-01-18",
    "pax": {
     "full": true,
     "max": 1500,
-    "pct": 110,
-    "text": "1650 / 1500 Passageiros 110%",
-    "value": 1650
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],
@@ -4929,20 +4929,20 @@
    "cargo": {
     "full": true,
     "max": 90000,
-    "pct": 100,
-    "text": "89.980 lbs / 90.000 lbs 100%",
+    "pct": 119,
+    "text": "107.170 lbs / 90.000 lbs 119%",
     "unit": "lb",
-    "value": 89980
+    "value": 107170
    },
    "city": "Madrid, ES",
-   "code": "LEMD-C-03",
+   "code": "LEMD-C-01",
    "expires": "2028-01-18",
    "pax": {
     "full": true,
     "max": 1500,
-    "pct": 100,
-    "text": "1500 / 1500 Passageiros 100%",
-    "value": 1500
+    "pct": 110,
+    "text": "1650 / 1500 Passageiros 110%",
+    "value": 1650
    },
    "routes": {
     "codes": [],
