@@ -27,10 +27,10 @@ globalThis.VortexStandsReader = (() => {
     if (!clean && !Number.isFinite(ratio)) return null;
     if (/^[—–-]+$/.test(clean) && !Number.isFinite(ratio)) return null;
     const result = { text: clean.slice(0, 80) };
-    const unit = /\bkg\b/i.test(clean) ? "kg" : /\blbs?\b/i.test(clean) ? "lb" : null;
+    const unit = /kg\b/i.test(clean) ? "kg" : /lbs?\b/i.test(clean) ? "lb" : null;
     if (unit) result.unit = unit;
     const percent = /(\d+(?:[.,]\d+)?)\s*%/.exec(clean);
-    const stripped = clean.replace(/\d+(?:[.,]\d+)?\s*%/g, " ").replace(/\b(lbs?|kg)\b/gi, " ");
+    const stripped = clean.replace(/\d+(?:[.,]\d+)?\s*%/g, " ").replace(/(lbs?|kg)\b/gi, " ");
     const values = [...stripped.matchAll(/\d[\d.,]*[kKmM]?(?![\w])/g)].map(match => number(match[0])).filter(Number.isFinite);
     const pair = /\d[\d.,]*[kKmM]?\s*(?:\/|\bde\b|\bof\b)\s*\d/i.test(stripped);
     if (pair && values.length >= 2) { result.value = values[0]; result.max = values[1]; }
@@ -49,14 +49,17 @@ globalThis.VortexStandsReader = (() => {
     return month ? match[3] + "-" + String(month).padStart(2, "0") + "-" + match[1].padStart(2, "0") : null;
   }
 
-  // Rotas ligadas à vaga: códigos VTX e aeroportos de destino que aparecem na célula.
+  // Rotas ligadas à vaga: códigos VTX e aeroportos de destino que aparecem na célula. O dono vê "0 / 10"
+  // (rotas ligadas / máximo da vaga), lido em "count" e "limit".
   function routesOf(text, origin) {
     const clean = String(text ?? "").replace(/ /g, " ").trim();
     if (!clean || /^[—–-]+$/.test(clean)) return null;
     const codes = [...new Set(clean.match(/\bVTX\d{3,5}\b/g) || [])];
     const destinations = [...new Set((clean.match(/\b[A-Z][A-Z0-9]{3}\b/g) || []).filter(code => code !== origin && !/^VTX/.test(code)))];
-    const count = Number(/(\d+)\s+rotas?/i.exec(clean)?.[1]);
-    return { codes, destinations, count: Number.isInteger(count) ? count : codes.length || destinations.length, text: clean.slice(0, 120) };
+    const slots = /^(\d+)\s*\/\s*(\d+)\b/.exec(clean);
+    const count = Number(slots?.[1] ?? /(\d+)\s+rotas?/i.exec(clean)?.[1]);
+    return { codes, destinations, count: Number.isInteger(count) ? count : codes.length || destinations.length,
+      ...(slots ? { limit: Number(slots[2]) } : {}), text: clean.slice(0, 120) };
   }
 
   function cellText(cell) {

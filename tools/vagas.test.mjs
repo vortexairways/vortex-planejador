@@ -23,6 +23,13 @@ test("leitor entende os números das barras de carga e passageiros", () => {
   assert.equal(reader.amount(""), null);
 });
 
+test("leitor entende a tabela que o dono vê (print do Astro, 27/11/2026)", () => {
+  assert.deepEqual(plain(reader.amount("0 lbs / 90.000 lbs\n0%")), { text: "0 lbs / 90.000 lbs 0%", unit: "lb", value: 0, max: 90000, pct: 0 });
+  assert.deepEqual(plain(reader.amount("0lbs/90.000lbs 0%")), { text: "0lbs/90.000lbs 0%", unit: "lb", value: 0, max: 90000, pct: 0 });
+  assert.deepEqual(plain(reader.amount("320 / 1500 Passageiros 21%")), { text: "320 / 1500 Passageiros 21%", value: 320, max: 1500, pct: 21 });
+  assert.deepEqual(plain(reader.routesOf("0 / 10", "UTAA")), { codes: [], destinations: [], count: 0, limit: 10, text: "0 / 10" });
+});
+
 test("leitor converte validade e rotas da vaga", () => {
   assert.equal(reader.expiry("18d 19h restantes\n16 dez 2026"), "2026-12-16");
   assert.equal(reader.expiry("3 fev. 2027"), "2027-02-03");
