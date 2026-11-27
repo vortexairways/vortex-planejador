@@ -1,5 +1,6 @@
-// Somente este resultado pode ser enviado ao GitHub. O histórico voo a voo fica local; desde 27/11/2026,
-// por decisão do Rafael, a renda estimada sai publicada só como medianas por rota e modelo (sem voo individual).
+// Somente este resultado pode ser enviado ao GitHub aberto. O histórico voo a voo fica local. A renda estimada
+// (medianas de P$) foi publicada só em 27/11/2026: desde então, por decisão do Rafael, ela sai daqui e fica só
+// na versão dos admins (cifrada, fora deste repositório). O público vê variações percentuais e consumo.
 // As "lbs" do histórico do PilOps são o COMBUSTÍVEL UTILIZADO em cada voo (campo fuel), não a carga.
 const median = values => {
   const sorted = [...values].sort((a, b) => a - b), mid = Math.floor(sorted.length / 2);
@@ -32,26 +33,6 @@ export function percentageMonitor(flights) {
     const { origin, destination, model } = list[0];
     return { origin, destination, model, count: list.length, lastDate: list.at(-1).date, change, state };
   }) };
-}
-
-// Renda de referência para o comparador: medianas dos últimos voos pagos (até 10 por rota e modelo, até 30 por
-// modelo). Nada identifica um voo, um piloto ou uma data.
-export function revenueEstimates(flights) {
-  const paid = newestFirst(flights.filter(f => positive(f.revenue) && positive(f.minutes) && positive(f.nm) &&
-    typeof f.date === "string"));
-  const routes = grouped(paid, routeKey).map(all => {
-    const list = all.slice(0, 10), { origin, destination, model } = list[0];
-    return { origin, destination, model, count: list.length,
-      perFlight: Math.round(median(list.map(f => f.revenue))),
-      perHour: Math.round(median(list.map(f => f.revenue / f.minutes * 60))) };
-  });
-  const models = grouped(paid, f => f.model).map(all => {
-    const list = all.slice(0, 30);
-    return { model: list[0].model, count: list.length,
-      perNm: Math.round(median(list.map(f => f.revenue / f.nm)) * 100) / 100,
-      perHour: Math.round(median(list.map(f => f.revenue / f.minutes * 60))) };
-  });
-  return { routes, models };
 }
 
 // Consumo real da frota: combustível utilizado nos voos da Vortex. Por modelo, lb por hora e por nm (voos de
@@ -87,7 +68,6 @@ export function publicSnapshot(data) {
       paid: Number.isFinite(f.revenue) ? f.revenue > 0 : f.paid === true })),
     flightsSince: data.flightsSince || null,
     revenueMonitor: percentageMonitor(data.flights || []),
-    revenueEstimates: revenueEstimates(data.flights || []),
     fuelStats: fuelStats(data.flights || []),
   };
 }

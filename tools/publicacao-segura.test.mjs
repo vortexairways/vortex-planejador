@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { fuelStats, percentageMonitor, publicSnapshot, revenueEstimates } from "../coletor/publicacao.mjs";
+import { fuelStats, percentageMonitor, publicSnapshot } from "../coletor/publicacao.mjs";
 import { buildSnapshot } from "../coletor/dados.mjs";
 
 // fuel: combustível utilizado no voo (as "lbs" do histórico do PilOps).
@@ -78,21 +78,19 @@ test("catálogo publicado não contém preços e a interface não oferece valore
   assert.ok(!planner.includes("flight.revenue") && !planner.includes("flight.payload") && !planner.includes("money("));
 });
 
-test("renda estimada publica só medianas por rota e modelo, sem piloto, data ou voo individual", () => {
-  const flights = [flight("2026-11-10", 300, 100), flight("2026-11-09", 100, 100), flight("2026-11-08", 200, 50),
-    flight("2026-11-07", 0, 100), flight("2026-11-06", 900, 100, "Outro modelo")];
-  const result = revenueEstimates(flights);
-  const route = result.routes.find(item => item.model === "Test Plane");
-  assert.deepEqual({ ...route }, { origin: "LEMD", destination: "KRDU", model: "Test Plane", count: 3,
-    perFlight: 200, perHour: 200 });
-  const model = result.models.find(item => item.model === "Test Plane");
-  assert.deepEqual({ ...model }, { model: "Test Plane", count: 3, perNm: 0.07, perHour: 200 });
-  const text = JSON.stringify(result);
-  assert.ok(!text.includes("Piloto") && !text.includes("2026-11") && !text.includes("NABCDE"));
-  audit(result);
-  const many = Array.from({ length: 12 }, (_, i) => flight("2026-10-" + String(10 + i), i < 2 ? 1000 : 100));
-  assert.equal(revenueEstimates(many).routes[0].count, 10);
-  assert.equal(revenueEstimates(many).routes[0].perFlight, 100);
+test("renda em P$ não é publicada: nem por voo nem como mediana (fica só na versão dos admins, cifrada)", () => {
+  const flights = [flight("2026-11-10", 71234.5, 100), flight("2026-11-09", 81234.5, 100), flight("2026-11-08", 91234.5, 50)];
+  const safe = publicSnapshot({ ...base, flights });
+  assert.equal("revenueEstimates" in safe, false);
+  const text = JSON.stringify(safe);
+  // O consumo (lb/h e lb/nm em fuelStats) continua público; P$ não, nem a mediana (81234,5).
+  for (const word of ["perFlight", "revenue\"", "71234", "81234", "91234"]) assert.ok(!text.includes(word), word);
+  const site = readFileSync(new URL("../docs/dados.json", import.meta.url), "utf8");
+  assert.ok(!site.includes("revenueEstimates") && !site.includes("perFlight"));
+  const planner = readFileSync(new URL("../docs/planner.js", import.meta.url), "utf8");
+  for (const word of ["revenueEstimates", "Renda estimada", "Melhor enchimento", "fillExtension", "encher"]) {
+    assert.ok(!planner.includes(word), "o planejador público ainda cita " + word);
+  }
 });
 
 test("consumo publicado vem do combustível utilizado, sem voo, piloto ou data", () => {

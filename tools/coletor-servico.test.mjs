@@ -59,7 +59,13 @@ async function fixture() {
     assert.ok(path.basename(resolved).startsWith("vortex-sync-test-"));
     rmSync(resolved, { recursive: true, force: true });
   };
-  return { repo, remote, original, launch, ready, post, cleanup };
+  return { root, repo, remote, original, launch, ready, post, cleanup };
+}
+
+// Pasta privada de teste ao lado do repositório (o coletor procura ../../vortex-privado/coletor.js).
+function privateHook(root, body) {
+  mkdirSync(path.join(root, "vortex-privado"));
+  writeFileSync(path.join(root, "vortex-privado/coletor.js"), body);
 }
 
 test("origem restrita, pedido exclusivo e porta unica protegem coleta manual e automatica", async () => {
@@ -160,5 +166,46 @@ test("voo publicado pelo dono entra no histórico privado sem receita e continua
     assert.deepEqual(data.flights.map(flight => [flight.pilot, flight.paid]), [["Piloto", true], ["astronauta", true]]);
     const remote = execFileSync("git", ["--git-dir", f.remote, "rev-parse", "refs/heads/main"], { encoding: "utf8", windowsHide: true }).trim();
     assert.equal(git(f.repo, "rev-parse", "HEAD"), remote);
+  } finally { await f.cleanup(); }
+});
+
+test("pasta privada junta o histórico e publica o arquivo cifrado no mesmo commit da coleta", async () => {
+  const f = await fixture();
+  try {
+    privateHook(f.root, `export async function historico(previous) {
+  return { ...previous, flights: [...(previous.flights || []), { pilot: "Admin", prefix: "NABCDE", model: "Test Plane",
+    origin: "LEMD", destination: "KRDU", date: "2026-11-20", minutes: 480, nm: 3400, fuel: 90000, revenue: 800000 }] };
+}
+export async function arquivos(snapshot) {
+  return [{ path: "docs/reservado.json", content: JSON.stringify({ versao: 1, voos: snapshot.flights.length }) + "\\n" }];
+}
+`);
+    const child = f.launch(); await f.ready(child);
+    const { lease } = await (await f.post("job", {})).json();
+    const response = await f.post("snapshot", { ...input, lease, flights: [{ pilot: "Piloto", prefix: "NABCDE", model: "Test Plane",
+      origin: "KRDU", destination: "LEMD", date: "2026-11-27", minutes: 470, nm: 3400, fuel: 100000, revenue: 900000 }] });
+    assert.equal(response.status, 200, child.output); assert.equal(await child.done, 0, child.output);
+    assert.deepEqual(JSON.parse(readFileSync(path.join(f.repo, "docs/reservado.json"))), { versao: 1, voos: 2 });
+    assert.deepEqual(git(f.repo, "show", "--name-only", "--format=", "HEAD").split("\n").sort(), ["docs/dados.json", "docs/reservado.json"]);
+    const data = JSON.parse(readFileSync(path.join(f.repo, "docs/dados.json")));
+    assert.deepEqual(data.flights.map(flight => flight.pilot), ["Piloto", "Admin"]);
+    assert.ok(!JSON.stringify(data).includes("800000") && !("revenueEstimates" in data));
+    const remote = execFileSync("git", ["--git-dir", f.remote, "rev-parse", "refs/heads/main"], { encoding: "utf8", windowsHide: true }).trim();
+    assert.equal(git(f.repo, "rev-parse", "HEAD"), remote);
+  } finally { await f.cleanup(); }
+});
+
+test("pasta privada não consegue publicar arquivo fora do combinado", async () => {
+  const f = await fixture();
+  try {
+    privateHook(f.root, `export async function historico(previous) { return previous; }
+export async function arquivos() { return [{ path: "docs/segredo.json", content: "{}" }]; }
+`);
+    const child = f.launch(); await f.ready(child);
+    const { lease } = await (await f.post("job", {})).json();
+    const response = await f.post("snapshot", { ...input, lease });
+    assert.equal(response.status, 503); assert.equal(await child.done, 1);
+    assert.match(child.output, /arquivo inesperado/);
+    assert.equal(git(f.repo, "log", "-1", "--format=%s"), "Fixture");
   } finally { await f.cleanup(); }
 });

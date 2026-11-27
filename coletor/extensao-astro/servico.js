@@ -1,8 +1,8 @@
 // Extensão do dono da Vortex. O botão "Sincronizar Vortex (dono)" do planejador pede:
 //   1. a leitura da Vortex no PilOps (frota, hangares, hubs, rotas, pilotos e os 10 últimos voos), com o mesmo
 //      leitor do coletor do Rafael (leitura-vortex.js), e a publicação da parte pública em docs/dados.json:
-//      frota ao vivo e voos novos SEM receita nem combustível; a renda e o consumo de referência, que só o
-//      histórico privado do Rafael calcula, ficam como estavam;
+//      frota ao vivo e voos novos SEM receita nem combustível; as variações percentuais e o consumo de referência,
+//      que só o histórico privado calcula, ficam como estavam;
 //   2. a leitura da aba Vagas (carga e passageiros, que só o dono vê) e a publicação em docs/vagas.json.
 // leitura-vortex.js, dados.js e publicacao.js são cópias geradas por tools/empacotar-extensao-vagas.ps1.
 import "./leitura-vortex.js";
@@ -104,8 +104,9 @@ function liveData(reading, previous, now) {
   const built = buildSnapshot(reading, previous, now);
   if (!built) throw new Failure("format", "A leitura da Vortex veio incompleta ou inválida. Nada foi publicado.");
   const next = publicSnapshot(built.snapshot);
-  // Renda e consumo de referência saem do histórico privado do Rafael: ficam como estavam.
-  for (const key of ["revenueMonitor", "revenueEstimates", "fuelStats"]) if (previous[key]) next[key] = previous[key];
+  // Variações e consumo de referência saem do histórico privado: ficam como estavam. Renda em P$ nunca é publicada.
+  for (const key of ["revenueMonitor", "fuelStats"]) if (previous[key]) next[key] = previous[key];
+  delete next.revenueEstimates;
   if (next.flights.some(flight => "revenue" in flight || "fuel" in flight || "payload" in flight)) {
     throw new Failure("format", "A publicação incluiria receita ou combustível de voo. Nada foi publicado.");
   }

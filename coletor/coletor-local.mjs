@@ -1,10 +1,10 @@
 // Coleta única: espera a extensão do Chrome ler a Vortex no PilOps, grava docs/dados.json
 // e publica no GitHub (commit + push). Rode pelo atalho "Sincronizar Vortex".
 import { createHash, randomUUID } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { execFileSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { buildSnapshot, withPublished } from "./dados.mjs";
 import { publicSnapshot } from "./publicacao.mjs";
 
@@ -12,6 +12,13 @@ const repo = fileURLToPath(new URL("../", import.meta.url));
 const dataFile = new URL("../docs/dados.json", import.meta.url);
 const privateDir = new URL("../.vortex-local/", import.meta.url);
 const privateFile = new URL("dados.json", privateDir);
+// Pasta privada da Vortex (fora do repositório, só no computador do Rafael). Se tiver coletor.js, ele junta ao
+// histórico os voos que os admins sincronizaram e devolve arquivos a mais para o commit (sempre cifrados).
+const privateRoot = process.env.VORTEX_PRIVADO || fileURLToPath(new URL("../../vortex-privado/", import.meta.url));
+const privateHookFile = privateRoot.replace(/[\\/]*$/, "") + "/coletor.js";
+const privateHook = existsSync(privateHookFile) ? await import(pathToFileURL(privateHookFile).href) : null;
+// Único arquivo a mais que uma coleta pode publicar: o histórico financeiro cifrado devolvido pela pasta privada.
+const extraAllowed = /^docs\/reservado\.json$/;
 const manifest = JSON.parse(readFileSync(new URL("./extensao-chrome/manifest.json", import.meta.url), "utf8"));
 const hex = createHash("sha256").update(Buffer.from(manifest.key, "base64")).digest("hex").slice(0, 32);
 const extensionOrigin = "chrome-extension://" + [...hex].map(n => String.fromCharCode(97 + parseInt(n, 16))).join("");
@@ -46,7 +53,7 @@ function bringPublished() {
   if (!pullRebase()) throw new Error("Não foi possível trazer do GitHub o que já foi publicado (internet ou commits locais pendentes). Nada foi alterado.");
 }
 
-function publish(snapshot, report) {
+function publish(snapshot, report, extras = []) {
   // A coleta nunca inclui arquivos editados pelo usuário no seu commit.
   if (git("status", "--porcelain")) throw new Error(localChanges);
   if (automatic && git("branch", "--show-current") !== "main") throw new Error("A coleta automática só publica a branch main.");
@@ -54,7 +61,7 @@ function publish(snapshot, report) {
     const ahead = git("log", "--format=%H", "origin/main..HEAD").split("\n").filter(Boolean);
     for (const commit of ahead) {
       const paths = git("diff-tree", "--no-commit-id", "--name-only", "-r", commit).split("\n").filter(Boolean);
-      if (!paths.length || paths.some(path => path !== "docs/dados.json")) {
+      if (!paths.length || paths.some(path => path !== "docs/dados.json" && !(privateHook && extraAllowed.test(path)))) {
         throw new Error("Há mudanças do projeto ainda não publicadas. A coleta automática não vai enviá-las.");
       }
     }
@@ -62,6 +69,7 @@ function publish(snapshot, report) {
   mkdirSync(privateDir, { recursive: true });
   writeFileSync(privateFile, JSON.stringify(snapshot, null, 1) + "\n");
   writeFileSync(dataFile, JSON.stringify(publicSnapshot(snapshot), null, 1) + "\n");
+  for (const extra of extras) writeFileSync(new URL("../" + extra.path, import.meta.url), extra.content);
   console.log("Coleta gravada: " + snapshot.fleet.length + " aeronaves, " + snapshot.routes.length +
     " rotas e " + snapshot.hubs.length + " hubs.");
   console.log(report.pilotsRead ? "Pilotos: " + snapshot.pilots.length + " lidos."
@@ -73,7 +81,7 @@ function publish(snapshot, report) {
     console.log("Observação: o contador do PilOps mostra " + snapshot.reportedFleet + " aeronaves, mas o PilOps lista " +
       snapshot.fleet.length + ". A coleta usa as listadas.");
   }
-  git("add", "docs/dados.json");
+  git("add", "docs/dados.json", ...extras.map(extra => extra.path));
   const stamp = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short",
     timeZone: "America/Sao_Paulo" }).format(new Date(snapshot.capturedAt));
   git("commit", "-q", "-m", "Dados da Vortex · coleta de " + stamp);
@@ -161,13 +169,17 @@ const server = createServer(async (req, res) => {
     try { previous = JSON.parse(readFileSync(privateFile, "utf8")); } catch { previous = published; }
     // Voos que o dono publicou desde a última coleta entram no histórico (sem receita, até serem relidos).
     previous = withPublished(previous, published);
+    if (privateHook) previous = await privateHook.historico(previous, repo);
     const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights }, previous);
     if (!built) {
       json(res, 422, { error: "Leitura incompleta." });
       return finish(1, "A leitura veio incompleta ou inválida. Os dados publicados foram mantidos.");
     }
     const { snapshot, report } = built;
-    publish(snapshot, report);
+    const extras = privateHook ? await privateHook.arquivos(snapshot, repo) : [];
+    if (!Array.isArray(extras) || extras.some(extra => !extraAllowed.test(extra?.path || "") || extra.path === "docs/dados.json" ||
+        typeof extra.content !== "string")) throw new Error("a pasta privada devolveu um arquivo inesperado.");
+    publish(snapshot, report, extras);
     json(res, 200, { capturedAt: snapshot.capturedAt, fleet: snapshot.fleet.length, routes: snapshot.routes.length });
     finish(0, "Sincronização concluída.");
   } catch (error) {

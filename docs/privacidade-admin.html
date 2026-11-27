@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacidade · Vortex · Admin</title>
+  <meta name="description" content="Política de privacidade da extensão Vortex · Admin para o Chrome.">
+  <link rel="icon" href="img/favicon-64.png">
+  <style>
+    :root { color-scheme: light dark; --bg: #f4f7ff; --card: #fff; --text: #0b1630; --muted: #4e5c72; --border: #d9e1ef; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #0d1424; --card: #151e33; --text: #e8eefc; --muted: #a3afc6; --border: #2c3854; } }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, "Segoe UI", sans-serif; }
+    main { max-width: 44rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+    article { background: var(--card); border: 1px solid var(--border); border-radius: 1rem; padding: 1.2rem 1.4rem; }
+    h1 { font-size: 1.5rem; margin: 0 0 .2rem; }
+    h2 { font-size: 1.08rem; margin: 1.4rem 0 .3rem; }
+    p, li { color: var(--muted); }
+    .meta { font-size: .88rem; }
+    a { color: inherit; }
+  </style>
+</head>
+<body>
+<main>
+  <article>
+    <h1>Política de privacidade · Vortex · Admin</h1>
+    <p class="meta">Extensão do Chrome usada pelos administradores da companhia virtual Vortex no PilOps. Atualizada em 27/11/2026.</p>
+
+    <h2>O que a extensão faz</h2>
+    <p>Ela mostra, no planejador da Vortex (vortexairways.github.io/vortex-planejador), as ferramentas dos administradores: renda estimada por avião, carga sugerida, preenchimento do voo aberto no PilOps e a sincronização dos dados da companhia.</p>
+
+    <h2>Dados que ela usa</h2>
+    <ul>
+      <li><strong>Login do PilOps (token de sessão):</strong> a extensão usa a sessão já aberta no seu navegador para ler o voo aberto, as ofertas de carga e passageiros e os dados da companhia Vortex, e para colocar no voo as ofertas que você aprovar. O token é usado só no seu navegador, só com o próprio PilOps (pilops.com), e não é guardado nem enviado a ninguém.</li>
+      <li><strong>Conteúdo das páginas do PilOps:</strong> frota, rotas, pilotos, voos e vagas da Vortex, lidos durante a sincronização.</li>
+      <li><strong>Código de acesso:</strong> o código que o administrador cola na extensão fica guardado só no armazenamento local da extensão, neste navegador. Ele contém a chave que abre o histórico financeiro cifrado da Vortex e, se incluído, um acesso ao repositório da Vortex no GitHub.</li>
+    </ul>
+
+    <h2>Para onde os dados vão</h2>
+    <ul>
+      <li>Na sincronização, os dados da companhia são publicados no repositório da própria Vortex no GitHub (github.com/vortexairways/vortex-planejador): a parte operacional em texto aberto, como já é hoje no planejador, e o histórico com valores em P$ só cifrado.</li>
+      <li>Nada é enviado a outros serviços, vendido, usado para publicidade ou para qualquer finalidade fora das ferramentas da Vortex.</li>
+      <li>A extensão não coleta histórico de navegação, senhas, dados de pagamento ou dados de outros sites.</li>
+    </ul>
+
+    <h2>Como apagar</h2>
+    <p>Na tela de opções da extensão, em Avançado, use "Apagar código de acesso". Remover a extensão do Chrome apaga tudo o que ela guardou.</p>
+
+    <h2>Contato</h2>
+    <p>Fale com os administradores da Vortex pelo PilOps ou abra uma issue em <a href="https://github.com/vortexairways/vortex-planejador/issues">github.com/vortexairways/vortex-planejador</a>.</p>
+  </article>
+</main>
+</body>
+</html>
