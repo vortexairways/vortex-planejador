@@ -16,6 +16,8 @@ Em **Planejar ida e volta**, cada rota permite montar um retorno direto cadastra
   - `extensao-chrome/`: extensão carregada sem compactação no Chrome.
   - `coletor-local.mjs`: serviço que recebe a leitura, grava e faz commit + push.
   - `dados.mjs`: validação da leitura e fusão do histórico de voos (sem repetir voos).
+  - `extensao-astro/`: extensão "Vortex · Vagas", do dono da companhia (ver "Vagas do dono da Vortex"). O pacote para baixar é `docs/extensao-vagas.zip`, gerado por `tools/empacotar-extensao-vagas.ps1`.
+- `docs/vagas.json`: carga e passageiros de cada vaga, publicados pela extensão do dono (não editar à mão).
 - `.vortex-local/dados.json`: histórico financeiro privado, voo a voo, para calcular os percentuais e as medianas publicadas. Fica fora de `docs/` e é ignorado pelo Git. Preserve esse arquivo ao mover o projeto.
 - `Sincronizar Vortex.cmd`: roda uma coleta manual e publica somente o resultado reduzido.
 
@@ -43,6 +45,26 @@ O monitor publica somente o percentual do último voo contra a mediana dos anter
 A página consulta os dados publicados a cada minuto para refletir uma coleta manual nova; isso não inicia coleta no PilOps. A seção de voos em andamento foi removida. Os scripts opcionais de agendamento continuam no repositório, mas a tarefa está desabilitada.
 
 A retirada dos dados atuais não apaga revisões antigas do GitHub. A limpeza do histórico exige uma operação separada de reescrita das revisões; não é feita pela sincronização.
+
+## Vagas do dono da Vortex
+
+No PilOps, a aba **Vagas** da companhia mostra a carga e os passageiros de cada vaga (duas barras, cheia ou não) só para o dono. Para os outros pilotos, essas colunas aparecem como "—". O botão **Sincronizar vagas (dono)**, no comparador de rotas e cargas do planejador, pede à extensão "Vortex · Vagas", instalada no Chrome do dono, que leia essa aba e publique `docs/vagas.json`. Com isso, o comparador mostra quanto há de carga e de passageiros nas vagas da origem e quanto cada avião levaria (assentos e peso livre, limite − combustível).
+
+Instalação, uma vez, no Chrome do dono:
+
+1. Baixe `extensao-vagas.zip` (link no próprio botão do planejador, ou em `docs/` neste repositório) e extraia. Sai a pasta `vortex-vagas`.
+2. Abra `chrome://extensions`, ligue o **Modo do desenvolvedor**, clique em **Carregar sem compactação** e escolha a pasta `vortex-vagas`.
+3. Crie um token do GitHub (quem tem acesso de escrita ao repositório cria; ninguém mais precisa vê-lo): GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token. Em *Repository access*, escolha **Only select repositories** → `vortexairways/vortex-planejador`. Em *Permissions → Repository permissions*, **Contents: Read and write**. Dê uma validade (por exemplo, 1 ano).
+4. Clique no ícone da extensão (abre as opções), cole o token e salve. Ele fica guardado só naquele Chrome.
+
+Para sincronizar: com o PilOps logado no mesmo Chrome, clique em **Sincronizar vagas (dono)** no planejador (ou em **Sincronizar agora** nas opções da extensão). A extensão abre a aba Vagas em segundo plano, lê as 184 vagas, fecha a aba e grava `docs/vagas.json` no GitHub. Os outros pilotos veem em 1 a 2 minutos.
+
+- Se a conta não for a do dono, as barras vêm vazias e nada é publicado.
+- O que é publicado: código, aeroporto e cidade da vaga, tamanho, as leituras das barras de carga e passageiros (número, limite, percentual e o texto curto mostrado), as rotas ligadas e a validade. Nenhum dado de piloto ou de voo.
+- A extensão guarda, só localmente, uma amostra do HTML da primeira vaga com números (botão **Copiar amostra** nas opções), para ajustar a leitura se o PilOps mudar o formato das barras.
+- Só o planejador publicado em `https://vortexairways.github.io/vortex-planejador/` pode chamar a extensão.
+- O "Sincronizar Vortex" do Rafael traz esses commits (`git pull --rebase`) antes de enviar a coleta, então os dois podem sincronizar sem conflito.
+- Ao mudar a extensão, rode `tools/empacotar-extensao-vagas.ps1` para atualizar o zip (o teste `tools/vagas.test.mjs` acusa zip desatualizado) e peça ao dono para baixar de novo e recarregar em `chrome://extensions`.
 
 ## Publicar mudanças no site
 

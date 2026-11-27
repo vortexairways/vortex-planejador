@@ -29,7 +29,8 @@
   <script defer src="./malha.js?v=1"></script>
   <script defer src="./cargas.js?v=3"></script>
   <script defer src="./combustivel.js?v=3"></script>
-  <script defer src="./planner.js?v=28"></script>
+  <script defer src="./vagas.js?v=1"></script>
+  <script defer src="./planner.js?v=29"></script>
 </head>
 <body>
   <header class="top">
@@ -155,6 +156,11 @@
       <div class="section-heading"><h2 id="load-title" data-en="Compare routes and loads">Comparar rotas e cargas</h2></div>
       <div class="pad">
         <p class="meta" data-en="Choose a route to see every Vortex aircraft side by side: time from history, planned fuel and estimated income. Then paste the PilOps offers to find the best load. Each model&#39;s combined limit and tank come from the PilOps Aircraft Market. Offers and costs stay in this tab.">Escolha uma rota para ver todas as aeronaves da Vortex lado a lado: tempo pelo histórico, combustível previsto e renda estimada. Depois cole as ofertas do PilOps para achar a melhor carga. O limite combinado e o tanque de cada modelo vêm do Mercado de Aeronaves do PilOps. Ofertas e custos ficam nesta aba.</p>
+        <div class="stands-box">
+          <p id="stands-status" class="meta"></p>
+          <button id="stands-sync" type="button" class="secondary small" data-en="Sync stands (owner)">Sincronizar vagas (dono)</button>
+          <p id="stands-feedback" class="meta" role="status"></p>
+        </div>
         <form id="load-form" class="load-form">
           <div class="load-selectors">
             <label><span data-en="Vortex route">Rota da Vortex</span><select id="load-route" required></select></label>

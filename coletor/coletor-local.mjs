@@ -59,6 +59,14 @@ function publish(snapshot, report) {
     timeZone: "America/Sao_Paulo" }).format(new Date(snapshot.capturedAt));
   git("commit", "-q", "-m", "Dados da Vortex · coleta de " + stamp);
   console.log("Enviando ao GitHub…");
+  // O dono da companhia publica docs/vagas.json direto no GitHub (botão "Sincronizar vagas" do planejador).
+  // Traz esses commits antes de enviar a coleta; se não der para juntar, nada é enviado.
+  try {
+    execFileSync("git", ["-C", repo, "pull", "--rebase", "-q"], { env: gitEnv, timeout: 60_000, windowsHide: true, stdio: "inherit" });
+  } catch {
+    try { git("rebase", "--abort"); } catch { /* não havia rebase em andamento */ }
+    throw new Error("Não foi possível juntar a coleta com as mudanças que já estão no GitHub. A coleta ficou no commit local; nada foi enviado.");
+  }
   // stdio herdado: na primeira vez o Git abre o login do GitHub no navegador.
   execFileSync("git", ["-C", repo, "push", "-q"], { env: gitEnv, timeout: 60_000, windowsHide: true, stdio: "inherit" });
   console.log("Publicado. O site atualiza em 1 a 2 minutos.");

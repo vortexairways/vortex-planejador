@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vortex · Vagas</title>
+  <style>
+    :root { color-scheme: light dark; --border: #c9d2e3; --muted: #5b6475; --blue: #184ccc; }
+    @media (prefers-color-scheme: dark) { :root { --border: #3a4256; --muted: #a3acbd; --blue: #7ea2ff; } }
+    body { font: 15px/1.5 system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.3rem; margin: 0 0 .25rem; }
+    h2 { font-size: 1.02rem; margin: 1.5rem 0 .4rem; }
+    p, li { color: var(--muted); }
+    label { display: block; font-weight: 600; margin: .8rem 0 .3rem; }
+    input { width: 100%; box-sizing: border-box; padding: .5rem .6rem; border: 1px solid var(--border); border-radius: .45rem; font: inherit; }
+    .actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+    button { font: inherit; padding: .45rem .9rem; border-radius: .45rem; border: 1px solid var(--blue); background: var(--blue); color: white; cursor: pointer; }
+    button.secondary { background: transparent; color: var(--blue); }
+    #status, #result { font-weight: 600; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .78rem; border: 1px solid var(--border); border-radius: .45rem; padding: .6rem; max-height: 16rem; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>Vortex · Vagas</h1>
+  <p>Esta extensão é do dono da Vortex. Ela lê a aba Vagas da companhia no PilOps (carga e passageiros de cada vaga, que só o dono vê) e publica no planejador, para todos os pilotos verem quanto cada vaga tem.</p>
+
+  <h2>Token do GitHub</h2>
+  <p>Cole aqui o token de acesso fino (fine-grained) que dá acesso só ao repositório <strong>vortexairways/vortex-planejador</strong>, com a permissão <strong>Contents: Read and write</strong>. Ele fica guardado só neste Chrome.</p>
+  <label for="token">Token</label>
+  <input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+  <div class="actions">
+    <button id="save" type="button">Salvar token</button>
+    <button id="forget" type="button" class="secondary">Apagar token</button>
+  </div>
+  <p id="status" role="status"></p>
+
+  <h2>Sincronizar</h2>
+  <p>Use o botão <strong>Sincronizar vagas</strong> no planejador da Vortex ou o botão abaixo. Deixe o PilOps logado neste Chrome; a extensão abre a aba Vagas em segundo plano, lê e fecha.</p>
+  <div class="actions"><button id="sync" type="button">Sincronizar agora</button></div>
+  <p id="result" role="status"></p>
+
+  <h2>Amostra da leitura</h2>
+  <p>O código HTML da primeira vaga com números, para conferir o formato das barras caso algo saia errado. Não é publicado.</p>
+  <div class="actions"><button id="copy" type="button" class="secondary">Copiar amostra</button></div>
+  <pre id="sample">Ainda não há amostra.</pre>
+  <script src="opcoes.js"></script>
+</body>
+</html>

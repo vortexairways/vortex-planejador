@@ -20,6 +20,7 @@ let pilotsCapturedAt = null;
 let revenueMonitor = { readCount: 0, groups: [] };
 let revenueEstimates = { routes: [], models: [] };
 let fuelStats = { routes: [], models: [] };
+let standsData = null;
 let refreshingData = false;
 let operationConfig = null;
 let shareLegs = [];
@@ -1328,6 +1329,8 @@ function renderLoadFleet() {
   if (lotsPasted && fleet.some(plane => !knownLimit(plane.model))) box.append(element("p", "meta load-hint", T(
     "Para usar as ofertas em todos os aviões, informe uma vez o limite combinado de cada modelo no PilOps (botão Usar no cálculo). O navegador guarda esse limite.",
     "To use the offers on every aircraft, enter each model's combined limit from PilOps once (Use in calculator button). The browser keeps that limit.")));
+  const stands = VortexStands.forRoute(standsData, route);
+  box.append(element("p", "meta stands-line", standsLine(route, stands)));
   const list = element("ol", "load-fleet-list");
   const chosen = loadInput("plane").value;
   fleetLoadRows(route).forEach((row, index) => {
@@ -1358,11 +1361,116 @@ function renderLoadFleet() {
       : T("Renda estimada por voo", "Estimated income per flight"), incomeNote(row));
     metric(row.perHour !== null ? whole(row.perHour) : "—", T("Renda por hora", "Income per hour"),
       row.limit ? T("limite ", "limit ") + weightText(row.limit) : "");
+    const seats = catalogEntry(row.plane.model)?.pax ?? null;
+    const taken = VortexStands.fill(stands, { seats, room: row.limit && row.fuel ? row.limit - row.fuel.fuel : null });
+    if (taken && (taken.seats !== null || taken.cargo !== null)) {
+      metric(taken.seats !== null ? taken.seats + "/" + seats : "—", T("Assentos pelas vagas", "Seats from stands"),
+        taken.cargo !== null ? T("carga ", "cargo ") + weightText(taken.cargo) + T(" de ", " of ") +
+          weightText(Math.max(row.limit - row.fuel.fuel, 0)) + T(" livres", " free") : "");
+    }
     item.append(head, tags, metrics);
     list.append(item);
   });
   box.append(list);
 }
+
+// ---- Vagas (carga e passageiros), sincronizadas pelo dono da Vortex ----
+const standsExtension = "oglmhhogefghbcegjiahbhbgkpfffgcn";
+
+async function loadStands() {
+  try {
+    const response = await fetch("./vagas.json?t=" + Date.now(), { cache: "no-store" });
+    if (!response.ok) return false;
+    const data = VortexStands.read(await response.json());
+    // Logo após sincronizar, o site pode ainda servir a versão anterior: a mais nova fica.
+    if (!data || (standsData && Date.parse(data.capturedAt) <= Date.parse(standsData.capturedAt))) return false;
+    standsData = data;
+    return true;
+  } catch { return false; }
+}
+
+const standsDate = iso => new Intl.DateTimeFormat(locale(), { dateStyle: lang === "en" ? "medium" : "short",
+  timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(iso));
+
+function standsLine(route, summary) {
+  if (!standsData) return T("Vagas: ainda não sincronizadas pelo dono da Vortex. Com elas, aparece aqui quanto de carga e de passageiros há na origem.",
+    "Stands: not synced yet by the Vortex owner. Once synced, the cargo and passengers waiting at the departure show here.");
+  if (!summary.count) return T("Vagas: a Vortex não tem vaga em ", "Stands: Vortex has no stand at ") + route.origin + ".";
+  const amount = (part, format) => part.value !== null ? format(part.value) + (part.max ? T(" de ", " of ") + format(part.max) : "")
+    : part.pct !== null ? part.pct + T("% em média", "% on average") : "—";
+  const people = value => number.format(Math.floor(value));
+  const full = summary.cargo.full + summary.pax.full;
+  return T("Vagas em ", "Stands at ") + route.origin + ": " + summary.count + (summary.count === 1 ? T(" vaga", " stand") : T(" vagas", " stands")) +
+    (summary.basis === "route" ? T(" ligadas a esta rota", " linked to this route") : "") + " · " +
+    T("carga ", "cargo ") + amount(summary.cargo, weightText) + " · " + amount(summary.pax, people) + T(" passageiros", " passengers") +
+    (full ? " · " + full + T(" barras lotadas", " full bars") : "") + " · " + T("sincronizado em ", "synced on ") + standsDate(standsData.capturedAt) + ".";
+}
+
+function renderStandsStatus() {
+  const status = document.querySelector("#stands-status");
+  status.textContent = standsData
+    ? T("Vagas sincronizadas pelo dono da Vortex em ", "Stands synced by the Vortex owner on ") + standsDate(standsData.capturedAt) +
+      " · " + standsData.stands.length + T(" vagas.", " stands.")
+    : T("Vagas ainda não sincronizadas. Só o dono da Vortex vê a carga e os passageiros de cada vaga no PilOps.",
+      "Stands not synced yet. Only the Vortex owner sees each stand's cargo and passengers in PilOps.");
+}
+
+function askStandsExtension(message, timeout) {
+  return new Promise((resolve, reject) => {
+    const runtime = window.chrome?.runtime;
+    if (!runtime?.sendMessage) { reject(new Error("missing")); return; }
+    const timer = setTimeout(() => reject(new Error("timeout")), timeout);
+    try {
+      runtime.sendMessage(standsExtension, message, response => {
+        clearTimeout(timer);
+        if (runtime.lastError || !response) reject(new Error("missing"));
+        else resolve(response);
+      });
+    } catch {
+      clearTimeout(timer);
+      reject(new Error("missing"));
+    }
+  });
+}
+
+function standsInstallHelp(feedback) {
+  const link = (href, text) => { const node = element("a", "", text); node.href = href; node.target = "_blank"; node.rel = "noopener"; return node; };
+  feedback.replaceChildren(
+    T("Este botão é do dono da Vortex e precisa da extensão Vortex · Vagas no Chrome dele. ", "This button is for the Vortex owner and needs the Vortex · Stands extension in their Chrome. "),
+    link("./extensao-vagas.zip", T("Baixar a extensão", "Download the extension")),
+    T(", extrair, abrir chrome://extensions, ligar o Modo do desenvolvedor, clicar em Carregar sem compactação e escolher a pasta vortex-vagas. ",
+      ", unzip it, open chrome://extensions, turn on Developer mode, click Load unpacked and choose the vortex-vagas folder. "),
+    link("https://github.com/vortexairways/vortex-planejador#vagas-do-dono-da-vortex", T("Passo a passo", "Step by step")), ".");
+}
+
+async function syncStands() {
+  const feedback = document.querySelector("#stands-feedback");
+  const trigger = document.querySelector("#stands-sync");
+  trigger.disabled = true;
+  feedback.textContent = T("Procurando a extensão Vortex · Vagas…", "Looking for the Vortex · Stands extension…");
+  try {
+    const status = await askStandsExtension({ type: "ping" }, 4000);
+    feedback.textContent = T("Lendo a aba Vagas no PilOps numa aba em segundo plano…", "Reading the Stands tab in PilOps in a background tab…") +
+      (status.token ? "" : T(" (a extensão ainda não tem o token do GitHub)", " (the extension has no GitHub token yet)"));
+    const result = await askStandsExtension({ type: "sync" }, 150000);
+    if (result.ok) {
+      standsData = VortexStands.read(result.data) || standsData;
+      feedback.textContent = T("Pronto: ", "Done: ") + result.message +
+        T(" Os outros pilotos veem em 1 a 2 minutos.", " Other pilots see it in 1 to 2 minutes.");
+      renderStandsStatus();
+      renderLoadReference();
+    } else {
+      feedback.textContent = result.message || T("A extensão não conseguiu sincronizar.", "The extension could not sync.");
+    }
+  } catch (error) {
+    if (error.message === "timeout") feedback.textContent = T("A extensão não respondeu a tempo. Confira se o PilOps está logado neste Chrome e tente de novo.",
+      "The extension did not answer in time. Check that PilOps is signed in on this Chrome and try again.");
+    else standsInstallHelp(feedback);
+  } finally {
+    trigger.disabled = false;
+  }
+}
+document.querySelector("#stands-sync").addEventListener("click", () => { void syncStands(); });
 
 function chooseLoadPlane(plane) {
   loadInput("plane").value = plane.prefix;
@@ -1741,6 +1849,7 @@ async function start() {
     const response = await fetch("./atividade.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) activityConfig = VortexActivity.read(await response.json());
   } catch { /* Sem configuração válida, não se atribui alerta de inatividade. */ }
+  await loadStands();
   coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
   // Só entram no filtro e no mapa os aeroportos que a Vortex usa: posição da frota, rotas e hubs.
   airportCodes = [...new Set([
@@ -1830,6 +1939,7 @@ function paintAll() {
   renderOperation();
   renderWeeklyRanking();
   renderSimulation();
+  renderStandsStatus();
   renderLoadSelectors();
   renderLoadResults();
 }
@@ -2219,6 +2329,7 @@ async function refreshData() {
   if (!fleet.length || refreshingData || document.hidden || document.querySelector("dialog[open]")) return;
   refreshingData = true;
   try {
+    if (await loadStands()) { renderStandsStatus(); renderLoadReference(); }
     const response = await fetch("./dados.json?t=" + Date.now(), { cache: "no-store" });
     if (!response.ok) return;
     const data = await response.json();

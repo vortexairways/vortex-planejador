@@ -69,6 +69,12 @@
 .load-fleet h3 { color: #163a93; font-size: .98rem; }
 .load-fleet > .meta { margin-top: .3rem; }
 .load-hint { color: #7a4b00; font-weight: 650; }
+.stands-box { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .2rem .75rem; align-items: center; margin: .5rem 0 .75rem;
+  padding: .55rem .7rem; border: 1px dashed var(--border); border-radius: .6rem; }
+.stands-box #stands-status { margin: 0; }
+.stands-box #stands-feedback { grid-column: 1 / -1; margin: 0; }
+.stands-box #stands-feedback:empty { display: none; }
+.stands-line { color: #163a93; font-weight: 600; }
 .load-fleet-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; margin: .65rem 0 0; padding: 0; list-style: none; }
 .load-fleet-row { min-width: 0; padding: .65rem .7rem; border: 1px solid var(--border); border-radius: .6rem; background: white; }
 .load-fleet-row.chosen { border-color: var(--blue); box-shadow: 0 0 0 2px #184ccc26; }

@@ -113,3 +113,24 @@ test("arquivos editados pelo usuario permanecem intactos e nao entram no commit 
     assert.equal(readFileSync(path.join(f.repo, "nota-do-usuario.txt"), "utf8"), "Preservar esta alteracao");
   } finally { await f.cleanup(); }
 });
+
+test("coleta junta o commit de vagas publicado pelo dono antes de enviar", async () => {
+  const f = await fixture();
+  try {
+    // Outro clone simula a extensão do dono gravando docs/vagas.json direto no GitHub.
+    const other = path.join(path.dirname(f.repo), "dono");
+    execFileSync("git", ["clone", "-q", "-b", "main", f.remote, other], { windowsHide: true, timeout: 10000 });
+    git(other, "config", "user.name", "Dono"); git(other, "config", "user.email", "dono@example.invalid");
+    writeFileSync(path.join(other, "docs/vagas.json"), JSON.stringify({ version: 1, stands: [] }));
+    git(other, "add", "docs/vagas.json"); git(other, "commit", "-m", "Vagas"); git(other, "push", "-q", "origin", "main");
+    const child = f.launch(); await f.ready(child);
+    const { lease } = await (await f.post("job", {})).json();
+    assert.equal((await f.post("snapshot", { ...input, lease })).status, 200);
+    assert.equal(await child.done, 0);
+    const remote = execFileSync("git", ["--git-dir", f.remote, "rev-parse", "refs/heads/main"], { encoding: "utf8", windowsHide: true }).trim();
+    assert.equal(git(f.repo, "rev-parse", "HEAD"), remote);
+    assert.match(git(f.repo, "log", "--format=%s", "-3"), /Vagas/);
+    assert.equal(JSON.parse(readFileSync(path.join(f.repo, "docs/vagas.json"))).version, 1);
+    assert.equal(git(f.repo, "status", "--porcelain"), "");
+  } finally { await f.cleanup(); }
+});

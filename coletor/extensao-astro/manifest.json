@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Vortex · Vagas",
+  "description": "Lê a aba Vagas da Vortex no PilOps (carga e passageiros, que só o dono vê) e publica no planejador.",
+  "version": "1.0.0",
+  "background": {
+    "service_worker": "servico.js"
+  },
+  "permissions": [
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://pilops.com/*",
+    "https://api.github.com/*"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "https://vortexairways.github.io/*"
+    ]
+  },
+  "options_page": "opcoes.html",
+  "action": {
+    "default_title": "Vortex · Vagas"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA34O5c7yo2LVHrpjB63qC2J8PQ+UxwW0JHxLCQaUoLTIpEGmUZ4YSdgEWCZkPzoeM3yAAZe9QrMb8QoQeKeCFhNaWP1F2dVOAufJsFtf6vS3da0ptzgHIYuzDTvVPV2kzWut8TLOAnvZJ5V5Jw/RAoVJUuSPKs+vlqyJdq4UkuI9Cas9rFTxEnJw43D1h4jp6vMXKcBKSYm6N52wpZsN2Aju4ugpIXcU2QxqwC9AuSiLzaO2p0km0fQzHXpIzwlUN/6L4qsoO+CaaMpnxNV64Xkc9WL71KQlgfhGQxUXDITUZeW+qS+/4w9yuNfj6G5GsnLAqKnTV4EqEbY5EYtG5GwIDAQAB"
+}
