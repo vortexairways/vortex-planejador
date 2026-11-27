@@ -18,7 +18,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=18">
+  <link rel="stylesheet" href="./style.css?v=19">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=3"></script>
@@ -27,8 +27,9 @@
   <script defer src="./movimentacoes.js?v=2"></script>
   <script defer src="./tempos.js?v=2"></script>
   <script defer src="./malha.js?v=1"></script>
-  <script defer src="./cargas.js?v=1"></script>
-  <script defer src="./planner.js?v=24"></script>
+  <script defer src="./cargas.js?v=2"></script>
+  <script defer src="./combustivel.js?v=1"></script>
+  <script defer src="./planner.js?v=25"></script>
 </head>
 <body>
   <header class="top">
@@ -153,7 +154,7 @@
     <section id="load-card" class="card wide load-card" aria-labelledby="load-title">
       <div class="section-heading"><h2 id="load-title" data-en="Compare routes and loads">Comparar rotas e cargas</h2></div>
       <div class="pad">
-        <p class="meta" data-en="Compare registered routes using PilOps offers and the costs you enter. The values stay in this tab and reset when the page reloads.">Compare rotas cadastradas com ofertas do PilOps e custos que você informar. Os valores ficam nesta aba e são descartados ao recarregar a página.</p>
+        <p class="meta" data-en="Choose a route to see every Vortex aircraft side by side: time from history, planned fuel and estimated income. Then paste the PilOps offers to find the best load. Offers and costs stay in this tab; only each model&#39;s combined limit is remembered on this device.">Escolha uma rota para ver todas as aeronaves da Vortex lado a lado: tempo pelo histórico, combustível previsto e renda estimada. Depois cole as ofertas do PilOps para achar a melhor carga. Ofertas e custos ficam nesta aba; só o limite combinado de cada modelo fica guardado neste aparelho.</p>
         <form id="load-form" class="load-form">
           <div class="load-selectors">
             <label><span data-en="Vortex route">Rota da Vortex</span><select id="load-route" required></select></label>
@@ -162,11 +163,12 @@
           </div>
           <p id="load-unit-help" class="meta" data-en="Choose the unit before entering weights. Check the limits shown on the aircraft card in PilOps.">Escolha a unidade antes de digitar os pesos. Confira os limites no cartão da aeronave no PilOps.</p>
           <p id="load-reference" class="meta"></p>
+          <div id="load-fleet" class="load-fleet" hidden></div>
           <fieldset>
             <legend data-en="Aircraft limits and current load">Limites da aeronave e carga atual</legend>
             <div class="load-fields">
               <label><span data-en="Combined weight limit in PilOps">Limite combinado no PilOps</span><input id="load-limit" type="number" min="0.001" max="2000000" step="0.001" required></label>
-              <label><span data-en="Planned fuel">Combustível planejado</span><input id="load-fuel" type="number" min="0.001" max="2000000" step="0.001" required></label>
+              <label><span data-en="Planned fuel (estimated, adjust if needed)">Combustível planejado (previsto, ajuste se quiser)</span><input id="load-fuel" type="number" min="0.001" max="2000000" step="0.001" required></label>
               <label><span data-en="Tank capacity (optional)">Capacidade do tanque (opcional)</span><input id="load-tank" type="number" min="0.001" max="2000000" step="0.001"></label>
               <label><span data-en="Seat limit">Limite de assentos</span><input id="load-seats" type="number" min="0" max="2000" step="1" required></label>
               <label><span data-en="Cargo and passenger weight already aboard">Peso de carga e passageiros a bordo</span><input id="load-weight" type="number" min="0" max="2000000" step="0.001" value="0"></label>
@@ -178,7 +180,7 @@
             <label><span data-en="Available lots to this destination">Lotes disponíveis para este destino</span>
               <textarea id="load-lots" rows="4" maxlength="18000" aria-describedby="load-lots-help" placeholder="1200 | 0 | 6400&#10;360 | 3 | 3100"></textarea>
             </label>
-            <p id="load-lots-help" class="meta" data-en="Use valid offers for this departure and destination. Enter one whole lot per line as total weight | passengers | gross payout. Use 0 passengers for cargo and omit thousands separators. Paste up to 200 lots.">Use ofertas vigentes para esta origem e destino. Informe um lote inteiro por linha no formato peso total | passageiros | pagamento bruto. Use 0 passageiros para carga e dispense separadores de milhar. Você pode colar até 200 lotes.</p>
+            <p id="load-lots-help" class="meta" data-en="Use valid offers for this departure and destination. Enter one whole lot per line as total weight | passengers | gross payout. Use 0 passengers for cargo. Values can be pasted as PilOps shows them, such as 1,200 LBS | 0 | P$ 6,400. Paste up to 200 lots.">Use ofertas vigentes para esta origem e destino. Informe um lote inteiro por linha no formato peso total | passageiros | pagamento bruto. Use 0 passageiros para carga. Os valores podem vir como o PilOps mostra, por exemplo 1,200 LBS | 0 | P$ 6,400. Você pode colar até 200 lotes.</p>
             <div class="load-fields">
               <label><span data-en="Payout already aboard for this leg (P$)">Pagamento já a bordo para este destino (P$)</span><input id="load-payout" type="number" min="0" max="1000000000" step="0.01" value="0"></label>
               <label><span data-en="Total costs (P$)">Custos totais (P$)</span><input id="load-cost" type="number" min="0" max="1000000000" step="0.01" aria-describedby="load-cost-help"></label>

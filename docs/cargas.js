@@ -5,8 +5,22 @@ const VortexLoad = (() => {
   // Todos os pesos do cenário usam a unidade escolhida. Inteiros evitam erro de arredondamento nos limites.
   const mass = value => Math.round(value * 1000);
   const cents = value => Math.round(value * 100);
-  const decimal = (text, digits) => /^\d+$/.test(text) ? Number(text)
-    : /^\d+[.,]\d+$/.test(text) && text.split(/[.,]/)[1].length <= digits ? Number(text.replace(",", ".")) : NaN;
+  // Aceita o que o PilOps mostra: "P$ 1,234.56", "1.200 LBS", "59,000". Grupos de três dígitos são milhar,
+  // nunca decimais: "1,200" é mil e duzentos, e não 1,2.
+  function decimal(raw, digits) {
+    const text = raw.replace(/^P\$\s*/i, "").replace(/\s*(lbs?|kg)\.?$/i, "").replace(/\s+/g, "");
+    if (/^\d+$/.test(text)) return Number(text);
+    const dot = text.lastIndexOf("."), comma = text.lastIndexOf(",");
+    if (dot >= 0 && comma >= 0) {
+      const point = Math.max(dot, comma), thousands = point === dot ? "," : ".";
+      const whole = text.slice(0, point), fraction = text.slice(point + 1);
+      const grouped = thousands === "," ? /^(0|[1-9]\d{0,2}(,\d{3})*)$/ : /^(0|[1-9]\d{0,2}(\.\d{3})*)$/;
+      return grouped.test(whole) && /^\d+$/.test(fraction) && fraction.length <= digits
+        ? Number(whole.split(thousands).join("") + "." + fraction) : NaN;
+    }
+    if (/^[1-9]\d{0,2}(\.\d{3})+$/.test(text) || /^[1-9]\d{0,2}(,\d{3})+$/.test(text)) return Number(text.replace(/[.,]/g, ""));
+    return /^\d+[.,]\d+$/.test(text) && text.split(/[.,]/)[1].length <= digits ? Number(text.replace(",", ".")) : NaN;
+  }
 
   function parseLots(text) {
     const lots = [];
@@ -89,6 +103,7 @@ const VortexLoad = (() => {
       items: selected.items.map(lot => lot.line), exhaustive: selected.exhaustive,
       gross: gross / 100, net: net === null ? null : net / 100,
       perHour: net === null || !minutes ? null : net * 0.6 / minutes,
+      grossPerHour: minutes ? gross * 0.6 / minutes : null,
       remainingWeight: (weightBudget - selected.weight) / 1000,
       remainingSeats: seatLimit - loadedSeats - selected.seats,
       offered: parsed.lots.length,

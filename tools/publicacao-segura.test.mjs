@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { percentageMonitor, publicSnapshot } from "../coletor/publicacao.mjs";
+import { percentageMonitor, publicSnapshot, revenueEstimates } from "../coletor/publicacao.mjs";
 import { buildSnapshot } from "../coletor/dados.mjs";
 
 const flight = (date, revenue, payload = 100, model = "Test Plane") => ({ pilot: "Piloto", prefix: "NABCDE", model,
@@ -65,4 +65,21 @@ test("catálogo publicado não contém preços e a interface não oferece valore
   assert.ok(!catalog.includes("price") && !catalog.includes("P$"));
   assert.ok(!html.includes('id="live-card"'));
   assert.ok(!planner.includes("flight.revenue") && !planner.includes("flight.payload") && !planner.includes("money("));
+});
+
+test("renda estimada publica só medianas por rota e modelo, sem piloto, data ou voo individual", () => {
+  const flights = [flight("2026-11-10", 300, 100), flight("2026-11-09", 100, 100), flight("2026-11-08", 200, 50),
+    flight("2026-11-07", 0, 100), flight("2026-11-06", 900, 100, "Outro modelo")];
+  const result = revenueEstimates(flights);
+  const route = result.routes.find(item => item.model === "Test Plane");
+  assert.deepEqual({ ...route }, { origin: "LEMD", destination: "KRDU", model: "Test Plane", count: 3,
+    perFlight: 200, perHour: 200, perLb: 3, lbs: 100 });
+  const model = result.models.find(item => item.model === "Test Plane");
+  assert.equal(model.perLbNm, 0.001); assert.equal(model.lbs, 100);
+  const text = JSON.stringify(result);
+  assert.ok(!text.includes("Piloto") && !text.includes("2026-11") && !text.includes("NABCDE"));
+  audit(result);
+  const many = Array.from({ length: 12 }, (_, i) => flight("2026-10-" + String(10 + i), i < 2 ? 1000 : 100));
+  assert.equal(revenueEstimates(many).routes[0].count, 10);
+  assert.equal(revenueEstimates(many).routes[0].perFlight, 100);
 });

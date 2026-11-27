@@ -18,6 +18,7 @@ let flightsSince = null;
 let capturedAt = null;
 let pilotsCapturedAt = null;
 let revenueMonitor = { readCount: 0, groups: [] };
+let revenueEstimates = { routes: [], models: [] };
 let refreshingData = false;
 let operationConfig = null;
 let shareLegs = [];
@@ -1203,6 +1204,141 @@ const loadRoute = () => routes.find(route => VortexOperation.pair(route) === loa
 const loadPlane = () => fleet.find(plane => plane.prefix === loadInput("plane").value);
 const loadNumber = name => loadInput(name).value === "" ? null : loadInput(name).valueAsNumber;
 const loadMoney = value => "P$ " + number.format(Math.round(value * 100) / 100);
+const kgPerPound = 0.45359237;
+const loadUnit = () => loadInput("unit").value;
+const fromPounds = pounds => loadUnit() === "kg" ? pounds * kgPerPound : pounds;
+const toPounds = value => loadUnit() === "kg" ? value / kgPerPound : value;
+const weightText = pounds => number.format(Math.round(fromPounds(pounds))) + " " + loadUnit();
+const loadMedian = values => {
+  const sorted = [...values].sort((a, b) => a - b), mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+};
+
+// O limite combinado (combustível + carga) de cada modelo aparece no PilOps; o piloto informa uma vez
+// e o navegador lembra, em libras, só neste aparelho.
+const limitKey = "vortex-limites-v1";
+function savedLimits() {
+  try { return JSON.parse(localStorage.getItem(limitKey) || "{}") || {}; } catch { return {}; }
+}
+const knownLimit = model => {
+  const value = savedLimits()[model];
+  return Number.isFinite(value) && value > 0 ? value : null;
+};
+function rememberLimit(model, pounds) {
+  try { localStorage.setItem(limitKey, JSON.stringify({ ...savedLimits(), [model]: Math.round(pounds) })); } catch { /* sem armazenamento */ }
+}
+
+// Renda por voo segundo o histórico publicado: mesma rota e modelo; senão P$/lb da rota com a carga típica
+// do modelo; senão a média do modelo ajustada pela distância.
+function incomeEstimate(route, model, miles) {
+  const same = revenueEstimates.routes.find(item => item.origin === route.origin &&
+    item.destination === route.destination && item.model === model);
+  if (same) return { perFlight: same.perFlight, basis: "route", count: same.count };
+  const typical = revenueEstimates.models.find(item => item.model === model);
+  if (!typical) return null;
+  const onRoute = revenueEstimates.routes.filter(item => item.origin === route.origin && item.destination === route.destination);
+  if (onRoute.length) return { perFlight: loadMedian(onRoute.map(item => item.perLb)) * typical.lbs, basis: "route-other",
+    count: onRoute.reduce((sum, item) => sum + item.count, 0) };
+  if (miles === null) return null;
+  return { perFlight: typical.perLbNm * miles * typical.lbs, basis: "model", count: typical.count };
+}
+
+function fleetLoadRows(route) {
+  const miles = distance(route.origin, route.destination);
+  const lots = loadInput("lots").value;
+  return fleet.map(plane => {
+    const time = blockEstimate(miles, plane, route.origin, route.destination);
+    const fuel = VortexFuel.estimate(plane.model, time.minutes);
+    const income = incomeEstimate(route, plane.model, miles);
+    const seats = catalogEntry(plane.model)?.pax ?? null;
+    const limit = knownLimit(plane.model);
+    let offers = null;
+    if (lots.trim() && limit && fuel && seats !== null) {
+      offers = VortexLoad.simulate({ minutes: time.minutes, limit: fromPounds(limit), tank: null, fuel: fromPounds(fuel.fuel),
+        seatLimit: seats, loadedWeight: 0, loadedSeats: 0, loadedPayout: 0, costs: null, text: lots });
+    }
+    const problems = [];
+    if (unavailable(plane)) problems.push(statusLabel(plane.status));
+    if (!rangeAllows(plane, miles)) problems.push(T("Fora do alcance", "Out of range"));
+    if (!airportAllows(plane, route)) problems.push(T("Aeroporto restrito", "Airport restriction"));
+    if (fuel?.overTank) problems.push(T("Combustível acima do tanque", "Fuel above tank capacity"));
+    if (offers?.error === "weight") problems.push(T("Combustível ocupa todo o limite", "Fuel fills the whole limit"));
+    const fromOffers = Boolean(offers && !offers.error);
+    const gross = fromOffers ? offers.gross : income ? income.perFlight : null;
+    const perHour = gross !== null && time.minutes ? gross / time.minutes * 60 : null;
+    return { plane, time, fuel, income, limit, offers, fromOffers, problems, gross, perHour, here: plane.airport === route.origin };
+  }).sort((a, b) => (a.problems.length > 0) - (b.problems.length > 0) || b.fromOffers - a.fromOffers ||
+    (b.perHour ?? -1) - (a.perHour ?? -1) || b.here - a.here || a.plane.prefix.localeCompare(b.plane.prefix));
+}
+
+function incomeNote(row) {
+  if (row.fromOffers) return row.offers.items.length + "/" + row.offers.offered + T(" lotes · ofertas coladas", " lots · pasted offers");
+  if (!row.income) return T("sem voos pagos deste modelo", "no paid flights for this model");
+  return row.income.basis === "route" ? T("histórico desta rota · ", "history on this route · ") + row.income.count +
+      (row.income.count === 1 ? T(" voo", " flight") : T(" voos", " flights"))
+    : row.income.basis === "route-other" ? T("P$/lb da rota × carga típica do modelo", "route P$/lb × model's typical load")
+      : T("média do modelo pela distância", "model average by distance");
+}
+
+function renderLoadFleet() {
+  const box = loadInput("fleet");
+  const route = loadRoute();
+  box.replaceChildren();
+  box.hidden = !route || !fleet.length;
+  if (box.hidden) return;
+  const lotsPasted = Boolean(loadInput("lots").value.trim());
+  box.append(element("h3", "", T("Toda a frota em ", "Whole fleet on ") + loadPair(route)),
+    element("p", "meta", T("Da melhor para a pior renda por hora. Tempo: mediana dos voos da Vortex (ou catálogo). Combustível previsto: consumo médio do modelo × tempo + " +
+      VortexFuel.reserveMinutes + " min de reserva. Renda: mediana dos últimos voos pagos da mesma rota e modelo; sem eles, uma estimativa pela rota ou pelo modelo. Com ofertas coladas abaixo, vale a melhor combinação de lotes que cabe em cada avião.",
+    "Best to worst income per hour. Time: median of Vortex flights (or catalogue). Planned fuel: model's average burn × time + " +
+      VortexFuel.reserveMinutes + " min reserve. Income: median of the latest paid flights on the same route and model; without them, an estimate from the route or the model. With offers pasted below, the best lot combination that fits each aircraft is used.")));
+  if (lotsPasted && fleet.some(plane => !knownLimit(plane.model))) box.append(element("p", "meta load-hint", T(
+    "Para usar as ofertas em todos os aviões, informe uma vez o limite combinado de cada modelo no PilOps (botão Usar no cálculo). O navegador guarda esse limite.",
+    "To use the offers on every aircraft, enter each model's combined limit from PilOps once (Use in calculator button). The browser keeps that limit.")));
+  const list = element("ol", "load-fleet-list");
+  const chosen = loadInput("plane").value;
+  fleetLoadRows(route).forEach((row, index) => {
+    const item = element("li", "load-fleet-row" + (row.problems.length ? " blocked" : "") + (row.plane.prefix === chosen ? " chosen" : ""));
+    const head = element("div", "row-head");
+    head.append(element("strong", "", row.plane.prefix + " · " + row.plane.model));
+    head.append(button(T("Usar no cálculo", "Use in calculator"), "secondary small", () => chooseLoadPlane(row.plane)));
+    const tags = element("div", "load-fleet-tags");
+    if (index === 0 && !row.problems.length && row.perHour !== null) tags.append(element("span", "tag ok", T("Maior renda por hora", "Highest income per hour")));
+    if (!row.fromOffers && row.income && row.income.basis !== "route") tags.append(element("span", "tag warn",
+      T("Sem voo deste modelo nesta rota", "No flight of this model on this route")));
+    tags.append(element("span", "tag " + (row.here ? "ok" : "neutral"), row.here ? T("Na origem", "At departure")
+      : T("Em ", "At ") + row.plane.airport + T(" · precisa de traslado", " · needs a ferry")));
+    for (const problem of row.problems) tags.append(element("span", "tag bad", problem));
+    const metrics = element("div", "load-fleet-metrics");
+    const metric = (value, label, note) => {
+      const box = element("div");
+      box.append(element("strong", "", value), element("span", "meta", label));
+      if (note) box.append(element("small", "", note));
+      metrics.append(box);
+    };
+    metric(row.time.minutes ? clock(row.time.minutes) : "—", T("Tempo", "Time"),
+      row.time.source === "pilops" ? T("histórico · ", "history · ") + row.time.count : row.time.minutes ? T("catálogo", "catalogue") : "");
+    metric(row.fuel ? weightText(row.fuel.fuel) : "—", T("Combustível previsto", "Planned fuel"),
+      row.fuel ? T("tanque ", "tank ") + weightText(row.fuel.tank) : T("modelo sem ficha", "no fuel sheet"));
+    const whole = value => "P$ " + number.format(Math.round(value));
+    metric(row.gross !== null ? whole(row.gross) : "—", row.fromOffers ? T("Melhor combinação", "Best combination")
+      : T("Renda estimada por voo", "Estimated income per flight"), incomeNote(row));
+    metric(row.perHour !== null ? whole(row.perHour) : "—", T("Renda por hora", "Income per hour"),
+      row.limit ? T("limite ", "limit ") + weightText(row.limit) : "");
+    item.append(head, tags, metrics);
+    list.append(item);
+  });
+  box.append(list);
+}
+
+function chooseLoadPlane(plane) {
+  loadInput("plane").value = plane.prefix;
+  applyLoadPlane();
+  renderLoadReference();
+  const target = loadInput("limit");
+  target.closest("fieldset").scrollIntoView({ behavior: "smooth", block: "start" });
+  target.focus({ preventScroll: true });
+}
 
 function loadContext(route, plane) {
   const miles = distance(route.origin, route.destination);
@@ -1220,6 +1356,7 @@ function renderLoadReference() {
   const route = loadRoute(), plane = loadPlane();
   const reference = loadInput("reference");
   reference.replaceChildren();
+  renderLoadFleet();
   if (!route || !plane) return;
   reference.append(loadContext(route, plane).text);
   appendAirportWarning(reference, route, plane.model);
@@ -1239,10 +1376,20 @@ function renderLoadSelectors() {
   renderLoadReference();
 }
 
+// Preenche o que já se sabe da aeronave: limite lembrado, tanque e combustível previsto pela ficha, assentos do catálogo.
+const loadField = pounds => pounds === null || pounds === undefined ? "" : String(Math.round(fromPounds(pounds)));
 function applyLoadPlane() {
   const plane = loadPlane();
-  for (const key of ["limit", "fuel", "tank"]) loadInput(key).value = "";
+  loadInput("limit").value = loadField(plane ? knownLimit(plane.model) : null);
+  loadInput("tank").value = loadField(plane ? VortexFuel.info(plane.model)?.tank : null);
+  applyLoadFuel();
   loadInput("seats").value = plane ? catalogEntry(plane.model)?.pax ?? "" : "";
+}
+function applyLoadFuel() {
+  const plane = loadPlane(), route = loadRoute();
+  if (!plane || !route) return void (loadInput("fuel").value = "");
+  const miles = distance(route.origin, route.destination);
+  loadInput("fuel").value = loadField(VortexFuel.estimate(plane.model, blockEstimate(miles, plane, route.origin, route.destination).minutes)?.fuel);
 }
 
 function openLoad(route, plane) {
@@ -1251,7 +1398,7 @@ function openLoad(route, plane) {
   if (candidate && candidate.prefix !== loadInput("plane").value) {
     loadInput("plane").value = candidate.prefix;
     applyLoadPlane();
-  }
+  } else applyLoadFuel();
   renderLoadReference();
   document.querySelector("#load-card").scrollIntoView({ block: "start" });
   loadInput("route").focus({ preventScroll: true });
@@ -1261,11 +1408,13 @@ function renderLoadResults() {
   const list = loadInput("comparison");
   list.replaceChildren();
   loadInput("results").hidden = !loadScenarios.size;
+  // Com custos, vale o líquido por hora; sem custos, o bruto por hora (depois dos cenários com líquido).
   const rank = value => value ?? -Infinity;
-  const sorted = [...loadScenarios].sort(([, a], [, b]) =>
-    rank(b.perHour) - rank(a.perHour) || rank(b.net) - rank(a.net));
+  const sorted = [...loadScenarios].sort(([, a], [, b]) => (b.perHour !== null) - (a.perHour !== null) ||
+    rank(b.perHour ?? b.grossPerHour) - rank(a.perHour ?? a.grossPerHour) || rank(b.net ?? b.gross) - rank(a.net ?? a.gross));
   for (const [key, scenario] of sorted) {
-    const { items, gross, net, perHour, unit, minutes, source, route, plane } = scenario;
+    const { items, gross, net, unit, minutes, source, route, plane } = scenario;
+    const perHour = scenario.perHour ?? scenario.grossPerHour;
     const card = element("article", "load-result");
     const head = element("div", "row-head");
     head.append(element("strong", "", loadPair(route) + " · " + plane.prefix),
@@ -1277,7 +1426,8 @@ function renderLoadResults() {
     appendAirportWarning(card, route, plane.model);
     const stats = element("div", "load-metrics");
     for (const [value, label] of [[gross, T("Bruto estimado", "Estimated gross")],
-      [net, T("Líquido por voo", "Net per flight")], [perHour, T("Líquido por hora", "Net per hour")]]) {
+      [net, T("Líquido por voo", "Net per flight")],
+      [perHour, net === null ? T("Bruto por hora", "Gross per hour") : T("Líquido por hora", "Net per hour")]]) {
       const metric = element("div");
       metric.append(element("strong", "", value === null ? "—" : loadMoney(value)), element("span", "meta", label));
       stats.append(metric);
@@ -1296,10 +1446,29 @@ function renderLoadResults() {
   }
 }
 
-loadInput("route").addEventListener("change", renderLoadReference);
+loadInput("route").addEventListener("change", () => { applyLoadFuel(); renderLoadReference(); });
 loadInput("plane").addEventListener("change", () => { applyLoadPlane(); renderLoadReference(); });
+// Trocar a unidade converte os pesos já digitados; os lotes colados seguem a unidade escolhida.
+let loadUnitShown = "lb";
+loadInput("unit").addEventListener("change", () => {
+  const next = loadUnit();
+  if (next === loadUnitShown) return;
+  const factor = next === "kg" ? kgPerPound : 1 / kgPerPound;
+  for (const key of ["limit", "fuel", "tank", "weight"]) {
+    const value = loadNumber(key);
+    if (Number.isFinite(value)) loadInput(key).value = String(Math.round(value * factor * 1000) / 1000);
+  }
+  loadUnitShown = next;
+  renderLoadFleet();
+});
+let loadLotsTimer = null;
+loadInput("lots").addEventListener("input", () => {
+  clearTimeout(loadLotsTimer);
+  loadLotsTimer = setTimeout(renderLoadFleet, 350);
+});
 loadInput("reset").addEventListener("click", () => {
   loadForm.reset();
+  loadUnitShown = "lb";
   loadInput("feedback").textContent = "";
   renderLoadReference();
 });
@@ -1331,8 +1500,11 @@ loadForm.addEventListener("submit", event => {
   const source = manualMinutes ? "manual" : estimate.source;
   const key = VortexOperation.pair(route) + "|" + plane.prefix;
   loadScenarios.set(key, { ...scenario, source, minutes, route, plane, unit });
-  feedback.textContent = T("Cenário calculado para ", "Scenario calculated for ") + loadPair(route) + ".";
+  rememberLimit(plane.model, toPounds(loadNumber("limit")));
+  feedback.textContent = T("Cenário calculado para ", "Scenario calculated for ") + loadPair(route) +
+    T(". O limite do ", ". The limit for ") + plane.model + T(" ficou guardado neste aparelho.", " is saved on this device.");
   renderLoadResults();
+  renderLoadFleet();
 });
 
 // ---------- Ranking de pilotos ----------
@@ -1520,6 +1692,7 @@ async function start() {
   capturedAt = data.capturedAt || null;
   pilotsCapturedAt = data.pilotsCapturedAt || null;
   revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
+  revenueEstimates = data.revenueEstimates || { routes: [], models: [] };
   try {
     const response = await fetch("./operacao.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) operationConfig = VortexOperation.read(await response.json(), routes);
@@ -2015,6 +2188,7 @@ async function refreshData() {
     pilots = data.pilots || []; flightLog = data.flights || []; flightsSince = data.flightsSince || null;
     capturedAt = data.capturedAt; pilotsCapturedAt = data.pilotsCapturedAt || null;
     revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
+    revenueEstimates = data.revenueEstimates || { routes: [], models: [] };
     const currentRoute = old => routes.find(route => VortexOperation.pair(route) === VortexOperation.pair(old));
     const plan = [];
     for (const route of state.plan) {

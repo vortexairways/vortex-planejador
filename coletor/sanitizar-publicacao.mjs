@@ -14,4 +14,4 @@ mkdirSync(privateDir, { recursive: true });
 writeFileSync(privateFile, JSON.stringify(history, null, 1) + "\n");
 const safe = publicSnapshot(history);
 writeFileSync(publicFile, JSON.stringify(safe, null, 1) + "\n");
-console.log("Publicação reduzida: " + safe.flights.length + " voos preservados; somente percentuais financeiros. Histórico completo guardado localmente fora do Git.");
+console.log("Publicação reduzida: " + safe.flights.length + " voos preservados; financeiro só em percentuais e medianas por rota e modelo. Histórico completo guardado localmente fora do Git.");

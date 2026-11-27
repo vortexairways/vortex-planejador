@@ -9,14 +9,14 @@ Em **Movimentações da frota**, o aviso fica ativo enquanto a última posição
 Em **Planejar ida e volta**, cada rota permite montar um retorno direto cadastrado, uma conexão na malha ou um traslado direto. A aeronave escolhida determina a triagem por trecho. Em **Simular nova rota**, informe dois códigos ICAO para ver os circuitos que a ligação fecharia, os modelos com alcance e as opções de reposicionamento segundo a última coleta. A simulação é local ao navegador. O aviso de compatibilidade começa por Congonhas e pelos modelos de código D, E e F catalogados no planejador. Sua referência é a [ficha do DECEA](https://aisweb.decea.mil.br/?codigo=SBSP&i=aerodromos). Alcance e porte são triagem para simulação. Validação: `node --test tools/malha.test.mjs`.
 
 - `docs/`: o site publicado pelo GitHub Pages.
-  - `dados.json`: frota, rotas, hubs, pilotos, histórico operacional e variações percentuais, sem valores financeiros absolutos (gerado pelo coletor; não editar à mão).
+  - `dados.json`: frota, rotas, hubs, pilotos, histórico operacional, variações percentuais e, desde 27/11/2026, a renda de referência do comparador de cargas (medianas por rota e modelo, sem voo, piloto ou data individual) (gerado pelo coletor; não editar à mão).
   - `aeronaves.js`: catálogo do Mercado de Aeronaves do PilOps (135 modelos, sem preços publicados) e alcance/cruzeiro aproximados de cada um. Ajuste aqui se um modelo tiver valores diferentes ou se o PilOps lançar aeronaves novas.
   - `aeroportos.js`: coordenadas do OurAirports (gerado por `tools/gerar-aeroportos.mjs`). Ao regenerar, aumente o `?v=` dele em `index.html`.
 - `coletor/`: lê a Vortex no PilOps pelo Chrome e publica o `dados.json`.
   - `extensao-chrome/`: extensão carregada sem compactação no Chrome.
   - `coletor-local.mjs`: serviço que recebe a leitura, grava e faz commit + push.
   - `dados.mjs`: validação da leitura e fusão do histórico de voos (sem repetir voos).
-- `.vortex-local/dados.json`: histórico financeiro privado para calcular os percentuais. Fica fora de `docs/` e é ignorado pelo Git. Preserve esse arquivo ao mover o projeto.
+- `.vortex-local/dados.json`: histórico financeiro privado, voo a voo, para calcular os percentuais e as medianas publicadas. Fica fora de `docs/` e é ignorado pelo Git. Preserve esse arquivo ao mover o projeto.
 - `Sincronizar Vortex.cmd`: roda uma coleta manual e publica somente o resultado reduzido.
 
 ## Atualizar os dados
@@ -34,7 +34,9 @@ O PilOps mostra só os 10 voos mais recentes da companhia. O coletor guarda todo
 
 ## Sincronização manual e privacidade
 
-A sincronização automática permanece desativada, conforme decisão da administração. Use **Sincronizar Vortex** para atualizar os dados. O coletor valida o histórico e guarda a versão completa apenas em `.vortex-local/dados.json`. A publicação é criada por uma lista explícita de campos permitidos em `coletor/publicacao.mjs`: não inclui receitas, cargas, preços, valores por unidade ou voos em andamento. O ranking de pilotos também não publica receita.
+A sincronização automática permanece desativada, conforme decisão da administração. Use **Sincronizar Vortex** para atualizar os dados. O coletor valida o histórico e guarda a versão completa apenas em `.vortex-local/dados.json`. A publicação é criada por uma lista explícita de campos permitidos em `coletor/publicacao.mjs`: não inclui receitas ou cargas de cada voo, preços de ofertas nem voos em andamento. Por decisão do Rafael (27/11/2026), publica a renda de referência do comparador: mediana de P$ por voo, por hora e por lb dos últimos 10 voos pagos de cada rota e modelo, e P$ por lb por nm de cada modelo. O ranking de pilotos não publica receita.
+
+O comparador de rotas e cargas mostra toda a frota na rota escolhida: tempo pelo histórico, combustível previsto pela ficha de `docs/combustivel.js` (consumo médio de catálogo × tempo + 45 min de reserva), renda estimada e renda por hora. Com ofertas coladas, calcula a melhor combinação de lotes para cada modelo cujo limite combinado o piloto já informou (guardado só no navegador dele).
 
 O monitor publica somente o percentual do último voo contra a mediana dos anteriores na mesma rota e modelo, normalizado pela carga. Os números usados no cálculo ficam no arquivo privado. Sem esse arquivo, é possível recuperar o histórico operacional público, mas as referências financeiras só voltam a ser conhecidas conforme os voos são relidos. A migração inicial é feita por `node coletor/sanitizar-publicacao.mjs`, preservando os voos já registrados.
 
@@ -54,7 +56,7 @@ Na coleta atual, LEMD → KRDU resulta em **8h45 no 787-10** e **8h27 no MD-11**
 
 ## Operação da semana e compartilhamento
 
-A operação fica no início do planejador. O botão **Editar operação** abre `docs/operacao.json` no GitHub. Uma conta com acesso de edição ao repositório pode alterar o título em português e inglês, as datas de início e fim (inclusive, no calendário de Brasília), a meta de voos e até cinco pares de origem/destino já cadastrados. Os trechos são numerados na ordem da seleção; uma sequência contínua também mostra o percurso completo em destaque. Ao salvar no GitHub, o Pages publica a seleção para todos. A sincronização de dados preserva esse arquivo.
+A operação fica no início do planejador. A página dos pilotos não tem botão de edição: a operação é alterada em `docs/operacao.json` direto no GitHub. Uma conta com acesso de edição ao repositório pode alterar o título em português e inglês, as datas de início e fim (inclusive, no calendário de Brasília), a meta de voos e até cinco pares de origem/destino já cadastrados. Os trechos são numerados na ordem da seleção; uma sequência contínua também mostra o percurso completo em destaque. Ao salvar no GitHub, o Pages publica a seleção para todos. A sincronização de dados preserva esse arquivo.
 
 O desafio considera os voos remunerados concluídos e lidos nas rotas em destaque dentro das datas configuradas. O **ranking semanal** conta voos remunerados concluídos em **todas as rotas cadastradas da Vortex** de segunda a domingo, pelo calendário de Brasília. O ranking vira automaticamente às segundas-feiras, inclusive com a página aberta, e usa os voos da última coleta. A variedade de rotas e depois a ordem alfabética desempatarão pilotos com o mesmo número de voos. As posições são consecutivas (1, 2, 3). Uma operação encerrada mantém seus resultados até a administração publicar a próxima.
 
