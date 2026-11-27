@@ -93,3 +93,20 @@ test("ofertas em LBS viram kg quando o cenário está em kg", () => {
   assert.equal(table.remainingWeight, 1000 - 453.592);
   assert.equal(load.simulate({ ...md11, text: "Cargo\nEFHK\nP$ 10\n1.590 NM" }).error, "lot-format");
 });
+
+test("melhor enchimento supera pegar sempre o maior P$ por peso e diz o que adicionar", () => {
+  const free = { ...md11, limit: 10, fuel: 0 };
+  // Maior P$/lb primeiro pega só o lote de 6 (P$ 60) e não cabe mais nada; a melhor combinação leva os dois de 5 (P$ 90).
+  const result = load.simulate({ ...free, text: "6 | 0 | 60\n5 | 0 | 45\n5 | 0 | 45" });
+  assert.deepEqual([...result.items], [2, 3]);
+  assert.equal(result.pickedPayout, 90);
+  assert.equal(result.ratioFirstPayout, 60); assert.equal(result.ratioFirstCount, 1);
+  assert.equal(result.usedWeight, 10); assert.equal(result.freeWeight, 10);
+  assert.deepEqual(JSON.parse(JSON.stringify(result.picked.map(lot => [lot.line, lot.weight, lot.seats, lot.payout, lot.destination]))),
+    [[2, 5, 0, 45, null], [3, 5, 0, 45, null]]);
+  // Ofertas do PilOps trazem o destino; quando tudo cabe, os dois métodos empatam.
+  const pasted = load.simulate({ ...md11, text: pilops, destination: "EFHK" });
+  assert.deepEqual(JSON.parse(JSON.stringify(pasted.picked.map(lot => [lot.line, lot.seats, lot.destination]))), [[1, 22, "EFHK"], [2, 0, "EFHK"]]);
+  assert.equal(pasted.pickedPayout, pasted.ratioFirstPayout);
+  assert.equal(pasted.usedSeats, 22); assert.equal(pasted.freeSeats, 381);
+});

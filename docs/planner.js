@@ -1585,13 +1585,46 @@ function renderLoadResults() {
     if (scenario.format === "pilops" && (scenario.ignored || scenario.blocked)) card.append(element("p", "meta",
       T("Fora da conta: ", "Left out: ") + [scenario.ignored ? scenario.ignored + (scenario.ignored === 1 ? T(" oferta para outro destino", " offer to another destination") : T(" ofertas para outro destino", " offers to other destinations")) : "",
         scenario.blocked ? scenario.blocked + (scenario.blocked === 1 ? T(" bloqueada para este avião", " blocked for this aircraft") : T(" bloqueadas para este avião", " blocked for this aircraft")) : ""].filter(Boolean).join(" · ")));
-    if (items.length) card.append(element("p", "load-lots-picked", (scenario.format === "pilops"
-      ? T("Ofertas a escolher (posição na lista do PilOps, de cima para baixo): ", "Offers to pick (position in the PilOps list, top to bottom): ")
-      : T("Linhas dos lotes: ", "Selected lot lines: ")) + items.join(", ")));
+    if (items.length) card.append(loadFill(scenario));
     if (!scenario.exhaustive) card.append(element("p", "meta", T("Melhor combinação encontrada dentro do limite de cálculo.",
       "Best combination found within the search limit.")));
     list.append(card);
   }
+}
+
+// Melhor enchimento do voo: as ofertas a adicionar no PilOps, com o ganho sobre "maior P$ por peso primeiro".
+function loadFill(scenario) {
+  const { unit, picked } = scenario;
+  const box = element("div", "load-fill");
+  const pct = (used, free) => free > 0 ? " (" + Math.round(used / free * 100) + "%)" : "";
+  box.append(element("h4", "", T("Melhor enchimento do voo", "Best way to fill the flight")),
+    element("p", "meta", picked.length + (picked.length === 1 ? T(" oferta", " offer") : T(" ofertas", " offers")) +
+      T(" · peso ", " · weight ") + number.format(scenario.usedWeight) + T(" de ", " of ") + number.format(scenario.freeWeight) + " " + unit +
+      pct(scenario.usedWeight, scenario.freeWeight) + T(" · assentos ", " · seats ") + scenario.usedSeats + T(" de ", " of ") +
+      scenario.freeSeats + " · " + loadMoney(scenario.pickedPayout)));
+  const list = element("ol", "load-picks");
+  for (const lot of picked) {
+    const item = element("li");
+    const kind = lot.seats ? lot.seats + (lot.seats === 1 ? T(" passageiro", " passenger") : T(" passageiros", " passengers")) : T("Carga", "Cargo");
+    item.append(element("strong", "", (scenario.format === "pilops" ? "#" + lot.line + " · " : T("Linha ", "Line ") + lot.line + " · ") +
+      kind + (lot.destination ? " → " + lot.destination : "")),
+      element("span", "", number.format(lot.weight) + " " + unit + " · " + loadMoney(lot.payout) + " · " +
+        loadMoney(lot.payout / lot.weight) + "/" + unit));
+    list.append(item);
+  }
+  box.append(list);
+  const gain = scenario.pickedPayout - scenario.ratioFirstPayout;
+  box.append(element("p", "meta", gain >= 0.005
+    ? T("Pegando sempre a oferta de maior P$ por ", "Always taking the offer with the highest P$ per ") + unit +
+      T(" que ainda cabe (como um robô que vai clicando em Adicionar), daria ", " that still fits (like a bot clicking Add) would give ") +
+      loadMoney(scenario.ratioFirstPayout) + T(". Esta combinação rende ", ". This combination earns ") + loadMoney(gain) + T(" a mais.", " more.")
+    : T("Igual a pegar sempre a oferta de maior P$ por ", "Same as always taking the offer with the highest P$ per ") + unit +
+      T(" que ainda cabe.", " that still fits.")));
+  box.append(element("p", "meta", scenario.format === "pilops"
+    ? T("No PilOps, clique em Adicionar nessas ofertas. O número é a posição na lista que você copiou, de cima para baixo; confira pelo P$ e pelo peso.",
+      "In PilOps, click Add on these offers. The number is the position in the list you copied, top to bottom; check by payout and weight.")
+    : T("O número é a linha no campo de lotes.", "The number is the line in the lots field.")));
+  return box;
 }
 
 loadInput("route").addEventListener("change", () => { applyLoadFuel(); renderLoadReference(); });

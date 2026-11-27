@@ -65,7 +65,8 @@ const VortexLoad = (() => {
       if (item.blocked) { blocked++; continue; }
       if (destination && item.destination && item.destination !== destination) { ignored++; continue; }
       if (lots.length === maxLots) return { error: "lot-limit" };
-      lots.push({ line: item.line, weight: mass(item.weight), seats: item.seats, payout: cents(item.payout) });
+      lots.push({ line: item.line, weight: mass(item.weight), seats: item.seats, payout: cents(item.payout),
+        destination: item.destination || null });
     }
     return { lots, format: "pilops", ignored, blocked };
   }
@@ -80,9 +81,22 @@ const VortexLoad = (() => {
       const fields = raw.trim().split(/[|;\t]/).map(value => value.trim());
       const lot = { weight: weightIn(fields[0], unit), seats: decimal(fields[1] ?? "", 0), payout: decimal(fields[2] ?? "", 2) };
       if (fields.length !== 3 || !validLot(lot)) return { error: "lot-format", line: index + 1 };
-      lots.push({ line: index + 1, weight: mass(lot.weight), seats: lot.seats, payout: cents(lot.payout) });
+      lots.push({ line: index + 1, weight: mass(lot.weight), seats: lot.seats, payout: cents(lot.payout), destination: null });
     }
     return { lots, format: "table", ignored: 0, blocked: 0 };
+  }
+
+  // Enchimento "maior P$ por peso primeiro" (desempate pelo mais leve): o que um robô que vai clicando
+  // na oferta de melhor P$/lb que ainda cabe consegue. Serve de comparação para a melhor combinação.
+  function ratioFirst(lots, weightLimit, seatLimit) {
+    const order = lots.filter(lot => lot.payout > 0)
+      .sort((a, b) => b.payout / b.weight - a.payout / a.weight || a.weight - b.weight || a.line - b.line);
+    let weight = 0, seats = 0, payout = 0, count = 0;
+    for (const lot of order) {
+      if (weight + lot.weight > weightLimit || seats + lot.seats > seatLimit) continue;
+      weight += lot.weight; seats += lot.seats; payout += lot.payout; count++;
+    }
+    return { payout, count };
   }
 
   function selectLots(lots, weightLimit, seatLimit) {
@@ -143,11 +157,17 @@ const VortexLoad = (() => {
     if (loadedSeats > seatLimit) return { error: "seats" };
     const weightBudget = mass(limit) - mass(fuel) - mass(loadedWeight);
     if (weightBudget < 0) return { error: "weight" };
-    const selected = selectLots(parsed.lots, weightBudget, seatLimit - loadedSeats);
+    const seatBudget = seatLimit - loadedSeats;
+    const selected = selectLots(parsed.lots, weightBudget, seatBudget);
+    const simple = ratioFirst(parsed.lots, weightBudget, seatBudget);
     const gross = cents(loadedPayout) + selected.payout;
     const net = costs === null ? null : gross - cents(costs);
     return {
       items: selected.items.map(lot => lot.line), exhaustive: selected.exhaustive,
+      picked: selected.items.map(lot => ({ line: lot.line, weight: lot.weight / 1000, seats: lot.seats, payout: lot.payout / 100,
+        destination: lot.destination })),
+      pickedPayout: selected.payout / 100, ratioFirstPayout: simple.payout / 100, ratioFirstCount: simple.count,
+      freeWeight: weightBudget / 1000, usedWeight: selected.weight / 1000, freeSeats: seatBudget, usedSeats: selected.seats,
       gross: gross / 100, net: net === null ? null : net / 100,
       perHour: net === null || !minutes ? null : net * 0.6 / minutes,
       grossPerHour: minutes ? gross * 0.6 / minutes : null,
