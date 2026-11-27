@@ -27,7 +27,7 @@ $("forget").addEventListener("click", async () => {
 
 $("sync").addEventListener("click", async () => {
   $("sync").disabled = true;
-  $("result").textContent = "Lendo a aba Vagas no PilOps…";
+  $("result").textContent = "Lendo a Vortex no PilOps (cerca de um minuto)…";
   try {
     const result = await chrome.runtime.sendMessage({ type: "sync" });
     $("result").textContent = result?.message || "Sem resposta da extensão.";

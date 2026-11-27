@@ -39,6 +39,22 @@ export function withFuel({ pilot, prefix, model, origin, destination, date, minu
   return { pilot, prefix, model, origin, destination, date, minutes, nm, fuel: used, revenue };
 }
 
+// Voos que a extensão do dono publicou no dados.json entre duas coletas do Rafael. Entram no histórico privado
+// na forma pública (sem receita nem combustível, só "paid"). Se o Rafael ainda vir o voo na lista do PilOps,
+// buildSnapshot troca essa versão pela completa (mesma chave operacional).
+export function withPublished(previous, published) {
+  if (!isRecord(published) || !Array.isArray(published.flights)) return previous;
+  const base = isRecord(previous) ? previous : published;
+  const known = new Set((base.flights || []).map(operationalKey));
+  const extra = published.flights.filter(f => isRecord(f) && pilotName.test(f.pilot || "") && tailCode.test(f.prefix || "") &&
+    label(f.model, 120) && validCode(f.origin) && validCode(f.destination) && isoDay.test(f.date || "") &&
+    count(f.minutes, 3000) && amount(f.nm, 0, 20000) && !known.has(operationalKey(f)))
+    .map(({ pilot, prefix, model, origin, destination, date, minutes, nm, paid }) =>
+      ({ pilot, prefix, model, origin, destination, date, minutes, nm, paid: paid === true }));
+  if (!extra.length) return base;
+  return { ...base, flights: [...(base.flights || []), ...extra], flightsSince: base.flightsSince || published.flightsSince || null };
+}
+
 // input: leitura da extensão; previous: dados.json publicado (ou null).
 export function buildSnapshot(input, previous, now = new Date()) {
   const data = input;

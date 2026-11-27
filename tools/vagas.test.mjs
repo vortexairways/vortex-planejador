@@ -92,3 +92,12 @@ test("o pacote baixado pelo dono traz a versão atual de cada arquivo da extens�
     assert.ok([text, text.replace(/\n/g, "\r\n")].some(form => zip.includes(Buffer.from(form))), name + " está desatualizado no zip; rode tools/empacotar-extensao-vagas.ps1");
   }
 });
+
+test("a extensão do dono usa as mesmas regras de leitura e publicação do coletor do Rafael", () => {
+  // Cópias feitas por tools/empacotar-extensao-vagas.ps1; se divergirem, o dono publicaria com regras velhas.
+  const same = (copy, canonical) => assert.equal(readFileSync(file(copy), "utf8").replace(/\r\n/g, "\n"),
+    readFileSync(file(canonical), "utf8").replace(/\r\n/g, "\n"), copy + " desatualizado; rode tools/empacotar-extensao-vagas.ps1");
+  same("coletor/extensao-astro/leitura-vortex.js", "coletor/extensao-chrome/leitura-vortex.js");
+  same("coletor/extensao-astro/dados.js", "coletor/dados.mjs");
+  same("coletor/extensao-astro/publicacao.js", "coletor/publicacao.mjs");
+});

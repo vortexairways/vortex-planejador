@@ -1436,29 +1436,31 @@ function askStandsExtension(message, timeout) {
 function standsInstallHelp(feedback) {
   const link = (href, text) => { const node = element("a", "", text); node.href = href; node.target = "_blank"; node.rel = "noopener"; return node; };
   feedback.replaceChildren(
-    T("Este botão é do dono da Vortex e precisa da extensão Vortex · Vagas no Chrome dele. ", "This button is for the Vortex owner and needs the Vortex · Stands extension in their Chrome. "),
+    T("Este botão é do dono da Vortex e precisa da extensão Vortex · Dono no Chrome dele. ", "This button is for the Vortex owner and needs the Vortex · Owner extension in their Chrome. "),
     link("./extensao-vagas.zip", T("Baixar a extensão", "Download the extension")),
-    T(", extrair, abrir chrome://extensions, ligar o Modo do desenvolvedor, clicar em Carregar sem compactação e escolher a pasta vortex-vagas. ",
-      ", unzip it, open chrome://extensions, turn on Developer mode, click Load unpacked and choose the vortex-vagas folder. "),
-    link("https://github.com/vortexairways/vortex-planejador#vagas-do-dono-da-vortex", T("Passo a passo", "Step by step")), ".");
+    T(", extrair, abrir chrome://extensions, ligar o Modo do desenvolvedor, clicar em Carregar sem compactação e escolher a pasta vortex-dono. ",
+      ", unzip it, open chrome://extensions, turn on Developer mode, click Load unpacked and choose the vortex-dono folder. "),
+    link("https://github.com/vortexairways/vortex-planejador#dono-da-vortex-frota-ao-vivo-voos-e-vagas", T("Passo a passo", "Step by step")), ".");
 }
 
 async function syncStands() {
-  const feedback = document.querySelector("#stands-feedback");
-  const trigger = document.querySelector("#stands-sync");
+  const feedback = document.querySelector("#owner-feedback");
+  const trigger = document.querySelector("#owner-sync");
   trigger.disabled = true;
-  feedback.textContent = T("Procurando a extensão Vortex · Vagas…", "Looking for the Vortex · Stands extension…");
+  feedback.textContent = T("Procurando a extensão Vortex · Dono…", "Looking for the Vortex · Owner extension…");
   try {
     const status = await askStandsExtension({ type: "ping" }, 4000);
-    feedback.textContent = T("Lendo a aba Vagas no PilOps numa aba em segundo plano…", "Reading the Stands tab in PilOps in a background tab…") +
-      (status.token ? "" : T(" (a extensão ainda não tem o token do GitHub)", " (the extension has no GitHub token yet)"));
-    const result = await askStandsExtension({ type: "sync" }, 150000);
+    feedback.textContent = status.token
+      ? T("Lendo a Vortex no PilOps numa aba em segundo plano (cerca de um minuto)…", "Reading Vortex in PilOps in a background tab (about a minute)…")
+      : T("A extensão ainda não tem o token do GitHub: abra as opções dela (clique no ícone) e cole o token.",
+        "The extension has no GitHub token yet: open its options (click its icon) and paste the token.");
+    if (!status.token) return;
+    const result = await askStandsExtension({ type: "sync" }, 240000);
     if (result.ok) {
-      standsData = VortexStands.read(result.data) || standsData;
-      feedback.textContent = T("Pronto: ", "Done: ") + result.message +
+      if (result.vagas) standsData = VortexStands.read(result.vagas) || standsData;
+      if (!applyData(result.dados)) { renderStandsStatus(); renderLoadReference(); }
+      feedback.textContent = T("Pronto. ", "Done. ") + result.message +
         T(" Os outros pilotos veem em 1 a 2 minutos.", " Other pilots see it in 1 to 2 minutes.");
-      renderStandsStatus();
-      renderLoadReference();
     } else {
       feedback.textContent = result.message || T("A extensão não conseguiu sincronizar.", "The extension could not sync.");
     }
@@ -1470,7 +1472,7 @@ async function syncStands() {
     trigger.disabled = false;
   }
 }
-document.querySelector("#stands-sync").addEventListener("click", () => { void syncStands(); });
+document.querySelector("#owner-sync").addEventListener("click", () => { void syncStands(); });
 
 function chooseLoadPlane(plane) {
   loadInput("plane").value = plane.prefix;
@@ -2332,35 +2334,40 @@ async function refreshData() {
     if (await loadStands()) { renderStandsStatus(); renderLoadReference(); }
     const response = await fetch("./dados.json?t=" + Date.now(), { cache: "no-store" });
     if (!response.ok) return;
-    const data = await response.json();
-    if (!Array.isArray(data.fleet) || !data.fleet.length || !Array.isArray(data.routes) || !Array.isArray(data.hubs) ||
-        data.capturedAt === capturedAt || !Number.isFinite(Date.parse(data.capturedAt))) return;
-    fleet = data.fleet; routes = data.routes; hubs = new Set(data.hubs);
-    pilots = data.pilots || []; flightLog = data.flights || []; flightsSince = data.flightsSince || null;
-    capturedAt = data.capturedAt; pilotsCapturedAt = data.pilotsCapturedAt || null;
-    revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
-    revenueEstimates = data.revenueEstimates || { routes: [], models: [] };
-    fuelStats = data.fuelStats || { routes: [], models: [] };
-    const currentRoute = old => routes.find(route => VortexOperation.pair(route) === VortexOperation.pair(old));
-    const plan = [];
-    for (const route of state.plan) {
-      const leg = route.code === "Traslado" ? route : currentRoute(route);
-      if (!leg) break;
-      plan.push(leg);
-    }
-    state.plan = plan;
-    state.focus = state.focus ? currentRoute(state.focus) || null : null;
-    if (!fleet.some(plane => plane.prefix === state.prefix)) state.prefix = "";
-    coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
-    airportCodes = [...new Set([...hubs, ...fleet.map(plane => plane.airport), ...routes.flatMap(route => [route.origin, route.destination])])].filter(Boolean).sort();
-    if (!airportCodes.includes(state.origin)) state.origin = "";
-    if (operationConfig) operationConfig = VortexOperation.read(operationConfig, routes);
-    document.querySelector("#total-fleet").textContent = fleet.length;
-    document.querySelector("#total-routes").textContent = routes.length;
-    document.querySelector("#total-hubs").textContent = hubs.size;
-    paintAll();
+    applyData(await response.json());
   } catch { /* Mantém a coleta anterior, seu horário e o aviso de dados antigos. */ }
   finally { refreshingData = false; }
+}
+
+// Aplica uma coleta mais nova que a da página (do site ou devolvida pela extensão do dono).
+function applyData(data) {
+  if (!Array.isArray(data?.fleet) || !data.fleet.length || !Array.isArray(data.routes) || !Array.isArray(data.hubs) ||
+      !Number.isFinite(Date.parse(data.capturedAt)) || Date.parse(data.capturedAt) <= Date.parse(capturedAt)) return false;
+  fleet = data.fleet; routes = data.routes; hubs = new Set(data.hubs);
+  pilots = data.pilots || []; flightLog = data.flights || []; flightsSince = data.flightsSince || null;
+  capturedAt = data.capturedAt; pilotsCapturedAt = data.pilotsCapturedAt || null;
+  revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
+  revenueEstimates = data.revenueEstimates || { routes: [], models: [] };
+  fuelStats = data.fuelStats || { routes: [], models: [] };
+  const currentRoute = old => routes.find(route => VortexOperation.pair(route) === VortexOperation.pair(old));
+  const plan = [];
+  for (const route of state.plan) {
+    const leg = route.code === "Traslado" ? route : currentRoute(route);
+    if (!leg) break;
+    plan.push(leg);
+  }
+  state.plan = plan;
+  state.focus = state.focus ? currentRoute(state.focus) || null : null;
+  if (!fleet.some(plane => plane.prefix === state.prefix)) state.prefix = "";
+  coverage = new Map(routes.map(route => [route, routeCoverage(route)]));
+  airportCodes = [...new Set([...hubs, ...fleet.map(plane => plane.airport), ...routes.flatMap(route => [route.origin, route.destination])])].filter(Boolean).sort();
+  if (!airportCodes.includes(state.origin)) state.origin = "";
+  if (operationConfig) operationConfig = VortexOperation.read(operationConfig, routes);
+  document.querySelector("#total-fleet").textContent = fleet.length;
+  document.querySelector("#total-routes").textContent = routes.length;
+  document.querySelector("#total-hubs").textContent = hubs.size;
+  paintAll();
+  return true;
 }
 
 function renderOperation() {

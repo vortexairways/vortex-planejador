@@ -46,25 +46,34 @@ A página consulta os dados publicados a cada minuto para refletir uma coleta ma
 
 A retirada dos dados atuais não apaga revisões antigas do GitHub. A limpeza do histórico exige uma operação separada de reescrita das revisões; não é feita pela sincronização.
 
-## Vagas do dono da Vortex
+## Dono da Vortex: frota ao vivo, voos e vagas
 
-No PilOps, a aba **Vagas** da companhia mostra a carga e os passageiros de cada vaga (duas barras, cheia ou não) só para o dono. Para os outros pilotos, essas colunas aparecem como "—". O botão **Sincronizar vagas (dono)**, no comparador de rotas e cargas do planejador, pede à extensão "Vortex · Vagas", instalada no Chrome do dono, que leia essa aba e publique `docs/vagas.json`. Com isso, o comparador mostra quanto há de carga e de passageiros nas vagas da origem e quanto cada avião levaria (assentos e peso livre, limite − combustível).
+O botão **Sincronizar Vortex (dono)**, logo abaixo da "Última coleta" no planejador, pede à extensão "Vortex · Dono", instalada no Chrome do dono, que faça a parte ao vivo do "Sincronizar Vortex" sem depender do PC do Rafael:
+
+- **Frota ao vivo**: aeronaves, posição, status, base e hangares, hubs, rotas e pilotos.
+- **Fila de voos**: os 10 últimos voos da aba Voos entram no planejador já na versão pública (sem P$, sem combustível, só "pago" ou não). Contam para o ranking, o desafio e a atividade dos pilotos.
+- **Vagas**: a aba **Vagas** mostra a carga e os passageiros de cada vaga (duas barras, cheia ou não) só para o dono; para os outros aparecem "—". A extensão publica `docs/vagas.json`, e o comparador de rotas e cargas mostra o que há nas vagas da origem e quanto cada avião levaria (assentos e peso livre, limite − combustível).
+
+Renda e consumo de referência (medianas de P$ e de combustível) continuam saindo só do histórico privado do Rafael; a extensão do dono mantém os valores já publicados.
+
+Quando o Rafael roda o "Sincronizar Vortex" dele, o coletor traz antes os commits do dono (`git pull --rebase`) e junta ao histórico privado os voos que o dono publicou. Se o voo ainda estiver entre os 10 últimos, a leitura do Rafael devolve o P$ e o combustível a ele. Se já tiver saído da lista, fica no histórico sem P$ e sem combustível: conta para ranking e atividade, mas não para as medianas de renda e consumo.
 
 Instalação, uma vez, no Chrome do dono:
 
-1. Baixe `extensao-vagas.zip` (link no próprio botão do planejador, ou em `docs/` neste repositório) e extraia. Sai a pasta `vortex-vagas`.
-2. Abra `chrome://extensions`, ligue o **Modo do desenvolvedor**, clique em **Carregar sem compactação** e escolha a pasta `vortex-vagas`.
+1. Baixe `extensao-vagas.zip` (link no próprio botão do planejador, ou em `docs/` neste repositório) e extraia. Sai a pasta `vortex-dono`. Se a versão antiga ("Vortex · Vagas", pasta `vortex-vagas`) estiver instalada, remova-a antes em `chrome://extensions`.
+2. Abra `chrome://extensions`, ligue o **Modo do desenvolvedor**, clique em **Carregar sem compactação** e escolha a pasta `vortex-dono`.
 3. Crie um token do GitHub (quem tem acesso de escrita ao repositório cria; ninguém mais precisa vê-lo): GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token. Em *Repository access*, escolha **Only select repositories** → `vortexairways/vortex-planejador`. Em *Permissions → Repository permissions*, **Contents: Read and write**. Dê uma validade (por exemplo, 1 ano).
 4. Clique no ícone da extensão (abre as opções), cole o token e salve. Ele fica guardado só naquele Chrome.
 
-Para sincronizar: com o PilOps logado no mesmo Chrome, clique em **Sincronizar vagas (dono)** no planejador (ou em **Sincronizar agora** nas opções da extensão). A extensão abre a aba Vagas em segundo plano, lê as 184 vagas, fecha a aba e grava `docs/vagas.json` no GitHub. Os outros pilotos veem em 1 a 2 minutos.
+Para sincronizar: com o PilOps logado no mesmo Chrome, clique em **Sincronizar Vortex (dono)** no planejador (ou em **Sincronizar agora** nas opções da extensão). A extensão abre a Vortex numa aba em segundo plano (que fica ativa por alguns segundos durante a leitura dos pilotos), lê tudo, fecha a aba e grava `docs/dados.json` e `docs/vagas.json` no GitHub. Leva cerca de um minuto; os outros pilotos veem em 1 a 2 minutos.
 
-- Se a conta não for a do dono, as barras vêm vazias e nada é publicado.
-- O que é publicado: código, aeroporto e cidade da vaga, tamanho, as leituras das barras de carga e passageiros (número, limite, percentual e o texto curto mostrado), as rotas ligadas e a validade. Nenhum dado de piloto ou de voo.
+- Se a conta não for a do dono, as barras das vagas vêm vazias e `vagas.json` não é publicado; a frota e os voos são publicados normalmente.
+- Das vagas, publica-se: código, aeroporto e cidade, tamanho, as leituras das barras de carga e passageiros (número, limite, percentual e o texto curto mostrado), as rotas ligadas e a validade.
+- A extensão recusa publicar se algum voo levar receita, combustível ou carga.
 - A extensão guarda, só localmente, uma amostra do HTML da primeira vaga com números (botão **Copiar amostra** nas opções), para ajustar a leitura se o PilOps mudar o formato das barras.
 - Só o planejador publicado em `https://vortexairways.github.io/vortex-planejador/` pode chamar a extensão.
-- O "Sincronizar Vortex" do Rafael traz esses commits (`git pull --rebase`) antes de enviar a coleta, então os dois podem sincronizar sem conflito.
-- Ao mudar a extensão, rode `tools/empacotar-extensao-vagas.ps1` para atualizar o zip (o teste `tools/vagas.test.mjs` acusa zip desatualizado) e peça ao dono para baixar de novo e recarregar em `chrome://extensions`.
+- Se o dono e o Rafael publicarem no mesmo instante, a extensão tenta de novo sozinha; o coletor do Rafael desfaz o próprio commit e pede para rodar o "Sincronizar Vortex" outra vez.
+- A extensão usa cópias dos arquivos do coletor (`leitura-vortex.js`, `dados.mjs`, `publicacao.mjs`). Ao mudar qualquer um deles ou a extensão, rode `tools/empacotar-extensao-vagas.ps1` (os testes em `tools/vagas.test.mjs` acusam cópia ou zip desatualizados) e peça ao dono para baixar de novo e recarregar em `chrome://extensions`.
 
 ## Publicar mudanças no site
 

@@ -1,6 +1,6 @@
 "use strict";
 
-// Vagas da Vortex publicadas pelo dono da companhia (extensão "Vortex · Vagas", botão "Sincronizar vagas").
+// Vagas da Vortex publicadas pelo dono da companhia (extensão "Vortex · Dono", botão "Sincronizar Vortex (dono)").
 // Cada vaga traz as barras de carga e de passageiros como o PilOps mostra ao dono: número, limite e/ou percentual.
 const VortexStands = (() => {
   const kgPerPound = 0.45359237;

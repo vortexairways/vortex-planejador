@@ -110,3 +110,26 @@ test("consumo publicado vem do combustível utilizado, sem voo, piloto ou data",
   assert.ok(!text.includes("Piloto") && !text.includes("2026-11") && !text.includes("NABCDE"));
   audit(result);
 });
+
+test("sincronização do dono: publica voos novos sem receita e o coletor do Rafael os junta ao histórico", async () => {
+  const { withPublished } = await import("../coletor/dados.mjs");
+  const privateSnapshot = buildSnapshot({ ...base, flights: [flight("2026-11-10", 200, 90)] }, null, new Date("2026-11-10T12:00:00Z")).snapshot;
+  const published = publicSnapshot(privateSnapshot);
+  // O dono lê a Vortex (com o P$ e o combustível que a página mostra) partindo do dados.json público, como em extensao-astro/servico.js.
+  const owner = buildSnapshot({ ...base, flights: [flight("2026-11-11", 210, 95), flight("2026-11-10", 200, 90)] }, published,
+    new Date("2026-11-11T12:00:00Z"));
+  assert.ok(owner);
+  const ownerPublished = publicSnapshot(owner.snapshot);
+  audit(ownerPublished);
+  assert.ok(ownerPublished.flights.every(item => !("fuel" in item) && !("revenue" in item)));
+  assert.deepEqual(ownerPublished.flights.map(item => item.date).sort(), ["2026-11-10", "2026-11-11"]);
+  // O Rafael sincroniza depois: o voo do dono entra no histórico privado sem P$, e o antigo continua com o P$.
+  const merged = withPublished(privateSnapshot, ownerPublished);
+  assert.equal(merged.flights.length, 2);
+  assert.equal(merged.flights.find(item => item.date === "2026-11-10").revenue, 200);
+  assert.ok(!("revenue" in merged.flights.find(item => item.date === "2026-11-11")));
+  // Se o voo ainda estiver entre os 10 últimos, a nova leitura devolve o P$ a ele.
+  const reread = buildSnapshot({ ...base, flights: [flight("2026-11-11", 210, 95)] }, merged, new Date("2026-11-11T13:00:00Z")).snapshot;
+  assert.equal(reread.flights.filter(item => item.date === "2026-11-11").length, 1);
+  assert.equal(reread.flights.find(item => item.date === "2026-11-11").revenue, 210);
+});

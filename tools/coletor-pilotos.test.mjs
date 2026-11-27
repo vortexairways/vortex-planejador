@@ -4,7 +4,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 // Exercita a função que a extensão injeta, com a lista visível antes/depois da paginação do PilOps.
-const source = readFileSync(new URL("../coletor/extensao-chrome/coletor.js", import.meta.url), "utf8");
+const source = readFileSync(new URL("../coletor/extensao-chrome/leitura-vortex.js", import.meta.url), "utf8");
 const readerSource = source.slice(0, source.indexOf("async function section(")) + "\nreadCompany;";
 const row = (name, admin = false) => ["@" + name, ...(admin ? ["Admin"] : []), "BR", "78:40", "00:00", "Nov 10, 2026"].join("\n");
 

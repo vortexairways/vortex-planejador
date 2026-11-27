@@ -5,7 +5,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { buildSnapshot } from "./dados.mjs";
+import { buildSnapshot, withPublished } from "./dados.mjs";
 import { publicSnapshot } from "./publicacao.mjs";
 
 const repo = fileURLToPath(new URL("../", import.meta.url));
@@ -27,9 +27,28 @@ function git(...args) {
     windowsHide: true, stdio: ["ignore", "pipe", "inherit"] }).trim();
 }
 
+const localChanges = "Há alterações locais no projeto. Foram preservadas; tente sincronizar após salvá-las.";
+
+// O dono da companhia também publica pelo planejador (botão "Sincronizar Vortex (dono)"): docs/dados.json com a
+// frota ao vivo e os voos novos (sem receita) e docs/vagas.json. Esses commits vêm antes de montar e de enviar a coleta.
+function pullRebase() {
+  try {
+    execFileSync("git", ["-C", repo, "pull", "--rebase", "-q"], { env: gitEnv, timeout: 60_000, windowsHide: true, stdio: "inherit" });
+    return true;
+  } catch {
+    try { git("rebase", "--abort"); } catch { /* não havia rebase em andamento */ }
+    return false;
+  }
+}
+
+function bringPublished() {
+  if (git("status", "--porcelain")) throw new Error(localChanges);
+  if (!pullRebase()) throw new Error("Não foi possível trazer do GitHub o que já foi publicado (internet ou commits locais pendentes). Nada foi alterado.");
+}
+
 function publish(snapshot, report) {
   // A coleta nunca inclui arquivos editados pelo usuário no seu commit.
-  if (git("status", "--porcelain")) throw new Error("Há alterações locais no projeto. Foram preservadas; tente sincronizar após salvá-las.");
+  if (git("status", "--porcelain")) throw new Error(localChanges);
   if (automatic && git("branch", "--show-current") !== "main") throw new Error("A coleta automática só publica a branch main.");
   if (automatic) {
     const ahead = git("log", "--format=%H", "origin/main..HEAD").split("\n").filter(Boolean);
@@ -59,13 +78,11 @@ function publish(snapshot, report) {
     timeZone: "America/Sao_Paulo" }).format(new Date(snapshot.capturedAt));
   git("commit", "-q", "-m", "Dados da Vortex · coleta de " + stamp);
   console.log("Enviando ao GitHub…");
-  // O dono da companhia publica docs/vagas.json direto no GitHub (botão "Sincronizar vagas" do planejador).
-  // Traz esses commits antes de enviar a coleta; se não der para juntar, nada é enviado.
-  try {
-    execFileSync("git", ["-C", repo, "pull", "--rebase", "-q"], { env: gitEnv, timeout: 60_000, windowsHide: true, stdio: "inherit" });
-  } catch {
-    try { git("rebase", "--abort"); } catch { /* não havia rebase em andamento */ }
-    throw new Error("Não foi possível juntar a coleta com as mudanças que já estão no GitHub. A coleta ficou no commit local; nada foi enviado.");
+  // Se o dono publicou no meio desta coleta, os dois commits mexem no dados.json: o desta coleta é desfeito
+  // (o histórico privado já foi gravado) e basta sincronizar de novo.
+  if (!pullRebase()) {
+    if (git("log", "-1", "--format=%s").startsWith("Dados da Vortex · coleta de ")) git("reset", "-q", "--hard", "HEAD~1");
+    throw new Error("O dono da Vortex publicou ao mesmo tempo que esta coleta. Nada foi enviado; rode o Sincronizar Vortex de novo.");
   }
   // stdio herdado: na primeira vez o Git abre o login do GitHub no navegador.
   execFileSync("git", ["-C", repo, "push", "-q"], { env: gitEnv, timeout: 60_000, windowsHide: true, stdio: "inherit" });
@@ -138,9 +155,12 @@ const server = createServer(async (req, res) => {
     if (Array.isArray(notes)) {
       for (const note of notes.slice(0, 5)) if (typeof note === "string") console.log("Extensão: " + note.slice(0, 300));
     }
-    let previous = null;
-    try { previous = JSON.parse(readFileSync(privateFile, "utf8")); }
-    catch { try { previous = JSON.parse(readFileSync(dataFile, "utf8")); } catch { /* primeira coleta */ } }
+    bringPublished();
+    let previous = null, published = null;
+    try { published = JSON.parse(readFileSync(dataFile, "utf8")); } catch { /* primeira coleta */ }
+    try { previous = JSON.parse(readFileSync(privateFile, "utf8")); } catch { previous = published; }
+    // Voos que o dono publicou desde a última coleta entram no histórico (sem receita, até serem relidos).
+    previous = withPublished(previous, published);
     const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights }, previous);
     if (!built) {
       json(res, 422, { error: "Leitura incompleta." });

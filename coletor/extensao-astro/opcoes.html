@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vortex · Vagas</title>
+  <title>Vortex · Dono</title>
   <style>
     :root { color-scheme: light dark; --border: #c9d2e3; --muted: #5b6475; --blue: #184ccc; }
     @media (prefers-color-scheme: dark) { :root { --border: #3a4256; --muted: #a3acbd; --blue: #7ea2ff; } }
@@ -21,8 +21,8 @@
   </style>
 </head>
 <body>
-  <h1>Vortex · Vagas</h1>
-  <p>Esta extensão é do dono da Vortex. Ela lê a aba Vagas da companhia no PilOps (carga e passageiros de cada vaga, que só o dono vê) e publica no planejador, para todos os pilotos verem quanto cada vaga tem.</p>
+  <h1>Vortex · Dono</h1>
+  <p>Esta extensão é do dono da Vortex. Ela lê a companhia no PilOps (frota, hangares, hubs, rotas, pilotos, os 10 últimos voos e a aba Vagas, com a carga e os passageiros que só o dono vê) e publica no planejador a parte pública: frota ao vivo, voos novos sem receita e vagas.</p>
 
   <h2>Token do GitHub</h2>
   <p>Cole aqui o token de acesso fino (fine-grained) que dá acesso só ao repositório <strong>vortexairways/vortex-planejador</strong>, com a permissão <strong>Contents: Read and write</strong>. Ele fica guardado só neste Chrome.</p>
@@ -35,7 +35,7 @@
   <p id="status" role="status"></p>
 
   <h2>Sincronizar</h2>
-  <p>Use o botão <strong>Sincronizar vagas</strong> no planejador da Vortex ou o botão abaixo. Deixe o PilOps logado neste Chrome; a extensão abre a aba Vagas em segundo plano, lê e fecha.</p>
+  <p>Use o botão <strong>Sincronizar Vortex (dono)</strong> no planejador ou o botão abaixo. Deixe o PilOps logado neste Chrome; a extensão abre a Vortex numa aba em segundo plano (que fica ativa por alguns segundos durante a leitura dos pilotos), lê e fecha. Leva cerca de um minuto.</p>
   <div class="actions"><button id="sync" type="button">Sincronizar agora</button></div>
   <p id="result" role="status"></p>
 

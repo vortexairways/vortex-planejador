@@ -134,3 +134,31 @@ test("coleta junta o commit de vagas publicado pelo dono antes de enviar", async
     assert.equal(git(f.repo, "status", "--porcelain"), "");
   } finally { await f.cleanup(); }
 });
+
+test("voo publicado pelo dono entra no histórico privado sem receita e continua publicado", async () => {
+  const f = await fixture();
+  try {
+    const other = path.join(path.dirname(f.repo), "dono");
+    execFileSync("git", ["clone", "-q", "-b", "main", f.remote, other], { windowsHide: true, timeout: 10000 });
+    git(other, "config", "user.name", "Dono"); git(other, "config", "user.email", "dono@example.invalid");
+    const published = JSON.parse(readFileSync(path.join(other, "docs/dados.json"), "utf8"));
+    published.flights = [{ pilot: "astronauta", prefix: "NABCDE", model: "Test Plane", origin: "LEMD", destination: "KRDU",
+      date: "2026-11-26", minutes: 480, nm: 3400, paid: true }];
+    writeFileSync(path.join(other, "docs/dados.json"), JSON.stringify(published));
+    git(other, "add", "docs/dados.json"); git(other, "commit", "-m", "Vortex ao vivo"); git(other, "push", "-q", "origin", "main");
+    const child = f.launch(); await f.ready(child);
+    const { lease } = await (await f.post("job", {})).json();
+    // O Rafael relê só um voo novo; o do dono já saiu da lista dos 10 últimos.
+    const response = await f.post("snapshot", { ...input, lease, flights: [{ pilot: "Piloto", prefix: "NABCDE", model: "Test Plane",
+      origin: "KRDU", destination: "LEMD", date: "2026-11-27", minutes: 470, nm: 3400, fuel: 100000, revenue: 900000 }] });
+    assert.equal(response.status, 200); assert.equal(await child.done, 0);
+    const privateData = JSON.parse(readFileSync(path.join(f.repo, ".vortex-local/dados.json")));
+    const fromOwner = privateData.flights.find(flight => flight.pilot === "astronauta");
+    assert.equal(fromOwner.paid, true); assert.equal("revenue" in fromOwner, false);
+    assert.equal(privateData.flights.length, 2);
+    const data = JSON.parse(readFileSync(path.join(f.repo, "docs/dados.json")));
+    assert.deepEqual(data.flights.map(flight => [flight.pilot, flight.paid]), [["Piloto", true], ["astronauta", true]]);
+    const remote = execFileSync("git", ["--git-dir", f.remote, "rev-parse", "refs/heads/main"], { encoding: "utf8", windowsHide: true }).trim();
+    assert.equal(git(f.repo, "rev-parse", "HEAD"), remote);
+  } finally { await f.cleanup(); }
+});
