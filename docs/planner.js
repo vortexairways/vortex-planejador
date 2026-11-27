@@ -19,6 +19,7 @@ let capturedAt = null;
 let pilotsCapturedAt = null;
 let revenueMonitor = { readCount: 0, groups: [] };
 let revenueEstimates = { routes: [], models: [] };
+let fuelStats = { routes: [], models: [] };
 let refreshingData = false;
 let operationConfig = null;
 let shareLegs = [];
@@ -1234,19 +1235,44 @@ function rememberLimit(model, pounds) {
   return own;
 }
 
-// Renda por voo segundo o histórico publicado: mesma rota e modelo; senão P$/lb da rota com a carga típica
-// do modelo; senão a média do modelo ajustada pela distância.
-function incomeEstimate(route, model, miles) {
-  const same = revenueEstimates.routes.find(item => item.origin === route.origin &&
-    item.destination === route.destination && item.model === model);
+const sameLeg = (item, route, model) => item.origin === route.origin && item.destination === route.destination &&
+  (model === undefined || item.model === model);
+
+// Renda por voo segundo o histórico publicado: mesma rota e modelo; senão o que outros modelos rendem nesta
+// rota, na proporção da capacidade livre (limite combinado − combustível previsto); senão o P$ por nm do
+// modelo × a distância. O P$/nm não serve entre modelos: trechos curtos pagam mais por nm.
+function incomeEstimate(route, model, miles, minutes) {
+  const same = revenueEstimates.routes.find(item => sameLeg(item, route, model));
   if (same) return { perFlight: same.perFlight, basis: "route", count: same.count };
-  const typical = revenueEstimates.models.find(item => item.model === model);
-  if (!typical) return null;
-  const onRoute = revenueEstimates.routes.filter(item => item.origin === route.origin && item.destination === route.destination);
-  if (onRoute.length) return { perFlight: loadMedian(onRoute.map(item => item.perLb)) * typical.lbs, basis: "route-other",
-    count: onRoute.reduce((sum, item) => sum + item.count, 0) };
-  if (miles === null) return null;
-  return { perFlight: typical.perLbNm * miles * typical.lbs, basis: "model", count: typical.count };
+  const room = (name, time) => {
+    const limit = knownLimit(name), fuel = planFuel(name, route, time)?.fuel;
+    return limit && fuel && limit > fuel ? limit - fuel : null;
+  };
+  const mine = room(model, minutes);
+  const others = mine ? revenueEstimates.routes.filter(item => sameLeg(item, route))
+    .map(item => ({ item, room: room(item.model, null) })).filter(other => other.room) : [];
+  if (others.length) return { perFlight: loadMedian(others.map(other => other.item.perFlight * mine / other.room)),
+    basis: "route-other", count: others.reduce((sum, other) => sum + other.item.count, 0) };
+  const perNm = revenueEstimates.models.find(item => item.model === model)?.perNm;
+  if (!(perNm > 0) || miles === null) return null;
+  return { perFlight: perNm * miles, basis: "model", count: revenueEstimates.models.find(item => item.model === model).count };
+}
+
+// Combustível previsto: o que a Vortex gastou nesta rota com este modelo; senão o consumo medido do modelo
+// × o tempo; senão o catálogo. Sempre com 45 min de reserva.
+function planFuel(model, route, minutes) {
+  return VortexFuel.estimate(model, minutes, {
+    route: fuelStats.routes.find(item => sameLeg(item, route, model)),
+    model: fuelStats.models.find(item => item.model === model),
+  });
+}
+const flightCount = count => count + (count === 1 ? T(" voo", " flight") : T(" voos", " flights"));
+function fuelNote(fuel) {
+  if (!fuel) return T("modelo sem ficha", "no fuel sheet");
+  const basis = fuel.source === "route" ? T("gasto nesta rota · ", "burnt on this route · ") + flightCount(fuel.count)
+    : fuel.source === "model" ? T("consumo do modelo · ", "model's burn · ") + flightCount(fuel.count)
+      : T("catálogo · modelo ainda não voou", "catalogue · model not flown yet");
+  return fuel.tank ? basis + T(" · tanque ", " · tank ") + weightText(fuel.tank) : basis;
 }
 
 function fleetLoadRows(route) {
@@ -1254,8 +1280,8 @@ function fleetLoadRows(route) {
   const lots = loadInput("lots").value;
   return fleet.map(plane => {
     const time = blockEstimate(miles, plane, route.origin, route.destination);
-    const fuel = VortexFuel.estimate(plane.model, time.minutes);
-    const income = incomeEstimate(route, plane.model, miles);
+    const fuel = planFuel(plane.model, route, time.minutes);
+    const income = incomeEstimate(route, plane.model, miles, time.minutes);
     const seats = catalogEntry(plane.model)?.pax ?? null;
     const limit = knownLimit(plane.model);
     let offers = null;
@@ -1280,10 +1306,9 @@ function fleetLoadRows(route) {
 function incomeNote(row) {
   if (row.fromOffers) return row.offers.items.length + "/" + row.offers.offered + T(" lotes · ofertas coladas", " lots · pasted offers");
   if (!row.income) return T("sem voos pagos deste modelo", "no paid flights for this model");
-  return row.income.basis === "route" ? T("histórico desta rota · ", "history on this route · ") + row.income.count +
-      (row.income.count === 1 ? T(" voo", " flight") : T(" voos", " flights"))
-    : row.income.basis === "route-other" ? T("P$/lb da rota × carga típica do modelo", "route P$/lb × model's typical load")
-      : T("média do modelo pela distância", "model average by distance");
+  return row.income.basis === "route" ? T("histórico desta rota · ", "history on this route · ") + flightCount(row.income.count)
+    : row.income.basis === "route-other" ? T("outros modelos nesta rota, pela capacidade livre", "other models on this route, scaled by free capacity")
+      : T("P$/nm do modelo × distância", "model's P$/nm × distance");
 }
 
 function renderLoadFleet() {
@@ -1294,10 +1319,10 @@ function renderLoadFleet() {
   if (box.hidden) return;
   const lotsPasted = Boolean(loadInput("lots").value.trim());
   box.append(element("h3", "", T("Toda a frota em ", "Whole fleet on ") + loadPair(route)),
-    element("p", "meta", T("Da melhor para a pior renda por hora. Tempo: mediana dos voos da Vortex (ou catálogo). Combustível previsto: consumo médio do modelo × tempo + " +
-      VortexFuel.reserveMinutes + " min de reserva. Renda: mediana dos últimos voos pagos da mesma rota e modelo; sem eles, uma estimativa pela rota ou pelo modelo. Com ofertas coladas abaixo, vale a melhor combinação de lotes que cabe em cada avião.",
-    "Best to worst income per hour. Time: median of Vortex flights (or catalogue). Planned fuel: model's average burn × time + " +
-      VortexFuel.reserveMinutes + " min reserve. Income: median of the latest paid flights on the same route and model; without them, an estimate from the route or the model. With offers pasted below, the best lot combination that fits each aircraft is used.")));
+    element("p", "meta", T("Da melhor para a pior renda por hora. Tempo: mediana dos voos da Vortex (ou catálogo). Combustível previsto: o que a Vortex gastou nesta rota com o modelo (mediana); sem voos na rota, o consumo medido do modelo × tempo; sem voos do modelo, o catálogo. Sempre + " +
+      VortexFuel.reserveMinutes + " min de reserva. Renda: mediana dos últimos voos pagos da mesma rota e modelo; sem eles, o que outros modelos rendem na rota, na proporção da capacidade livre (limite − combustível), ou o P$/nm do modelo × distância. Com ofertas coladas abaixo, vale a melhor combinação de lotes que cabe em cada avião.",
+    "Best to worst income per hour. Time: median of Vortex flights (or catalogue). Planned fuel: what Vortex burnt on this route with the model (median); without flights on the route, the model's measured burn × time; without flights of the model, the catalogue. Always + " +
+      VortexFuel.reserveMinutes + " min reserve. Income: median of the latest paid flights on the same route and model; without them, what other models earn on the route scaled by free capacity (limit − fuel), or the model's P$/nm × distance. With offers pasted below, the best lot combination that fits each aircraft is used.")));
   if (lotsPasted && fleet.some(plane => !knownLimit(plane.model))) box.append(element("p", "meta load-hint", T(
     "Para usar as ofertas em todos os aviões, informe uma vez o limite combinado de cada modelo no PilOps (botão Usar no cálculo). O navegador guarda esse limite.",
     "To use the offers on every aircraft, enter each model's combined limit from PilOps once (Use in calculator button). The browser keeps that limit.")));
@@ -1325,7 +1350,7 @@ function renderLoadFleet() {
     metric(row.time.minutes ? clock(row.time.minutes) : "—", T("Tempo", "Time"),
       row.time.source === "pilops" ? T("histórico · ", "history · ") + row.time.count : row.time.minutes ? T("catálogo", "catalogue") : "");
     metric(row.fuel ? weightText(row.fuel.fuel) : "—", T("Combustível previsto", "Planned fuel"),
-      row.fuel ? T("tanque ", "tank ") + weightText(row.fuel.tank) : T("modelo sem ficha", "no fuel sheet"));
+      fuelNote(row.fuel));
     const whole = value => "P$ " + number.format(Math.round(value));
     metric(row.gross !== null ? whole(row.gross) : "—", row.fromOffers ? T("Melhor combinação", "Best combination")
       : T("Renda estimada por voo", "Estimated income per flight"), incomeNote(row));
@@ -1382,7 +1407,7 @@ function renderLoadSelectors() {
   renderLoadReference();
 }
 
-// Preenche o que já se sabe da aeronave: limite lembrado, tanque e combustível previsto pela ficha, assentos do catálogo.
+// Preenche o que já se sabe da aeronave: limite lembrado, tanque da ficha, combustível previsto pelo histórico, assentos do catálogo.
 const loadField = pounds => pounds === null || pounds === undefined ? "" : String(Math.round(fromPounds(pounds)));
 function applyLoadPlane() {
   const plane = loadPlane();
@@ -1395,7 +1420,7 @@ function applyLoadFuel() {
   const plane = loadPlane(), route = loadRoute();
   if (!plane || !route) return void (loadInput("fuel").value = "");
   const miles = distance(route.origin, route.destination);
-  loadInput("fuel").value = loadField(VortexFuel.estimate(plane.model, blockEstimate(miles, plane, route.origin, route.destination).minutes)?.fuel);
+  loadInput("fuel").value = loadField(planFuel(plane.model, route, blockEstimate(miles, plane, route.origin, route.destination).minutes)?.fuel);
 }
 
 function openLoad(route, plane) {
@@ -1700,6 +1725,7 @@ async function start() {
   pilotsCapturedAt = data.pilotsCapturedAt || null;
   revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
   revenueEstimates = data.revenueEstimates || { routes: [], models: [] };
+  fuelStats = data.fuelStats || { routes: [], models: [] };
   try {
     const response = await fetch("./operacao.json?t=" + Date.now(), { cache: "no-store" });
     if (response.ok) operationConfig = VortexOperation.read(await response.json(), routes);
@@ -2196,6 +2222,7 @@ async function refreshData() {
     capturedAt = data.capturedAt; pilotsCapturedAt = data.pilotsCapturedAt || null;
     revenueMonitor = data.revenueMonitor || { readCount: 0, groups: [] };
     revenueEstimates = data.revenueEstimates || { routes: [], models: [] };
+    fuelStats = data.fuelStats || { routes: [], models: [] };
     const currentRoute = old => routes.find(route => VortexOperation.pair(route) === VortexOperation.pair(old));
     const plan = [];
     for (const route of state.plan) {

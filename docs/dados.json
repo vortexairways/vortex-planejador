@@ -1587,7 +1587,7 @@
     "model": "Douglas MD-11",
     "count": 12,
     "lastDate": "2026-11-26",
-    "change": 0.010169,
+    "change": 0.09263,
     "state": "recuperada"
    },
    {
@@ -1605,7 +1605,7 @@
     "model": "Douglas MD-11",
     "count": 4,
     "lastDate": "2026-11-17",
-    "change": 0.135297,
+    "change": 0.136176,
     "state": "alta"
    },
    {
@@ -1614,8 +1614,8 @@
     "model": "Douglas MD-11",
     "count": 10,
     "lastDate": "2026-11-21",
-    "change": -0.113329,
-    "state": "queda"
+    "change": -0.058891,
+    "state": "recuperada"
    },
    {
     "origin": "OTHH",
@@ -1623,8 +1623,8 @@
     "model": "Douglas MD-11",
     "count": 10,
     "lastDate": "2026-11-27",
-    "change": 0.066773,
-    "state": "recuperada"
+    "change": 0.009608,
+    "state": "estavel"
    },
    {
     "origin": "SBRF",
@@ -1632,8 +1632,8 @@
     "model": "Airbus A330",
     "count": 3,
     "lastDate": "2026-11-20",
-    "change": 0.098166,
-    "state": "estavel"
+    "change": 0.324081,
+    "state": "alta"
    },
    {
     "origin": "LEMD",
@@ -1641,7 +1641,7 @@
     "model": "Douglas MD-11",
     "count": 4,
     "lastDate": "2026-11-22",
-    "change": 0.713702,
+    "change": 0.359626,
     "state": "alta"
    },
    {
@@ -1650,7 +1650,7 @@
     "model": "Airbus A320neo",
     "count": 2,
     "lastDate": "2026-11-25",
-    "change": -0.534272,
+    "change": -0.493013,
     "state": "queda"
    },
    {
@@ -1659,7 +1659,7 @@
     "model": "Airbus A330",
     "count": 2,
     "lastDate": "2026-11-19",
-    "change": 0.013708,
+    "change": -0.034451,
     "state": "estavel"
    },
    {
@@ -1668,7 +1668,7 @@
     "model": "Airbus A330",
     "count": 2,
     "lastDate": "2026-11-19",
-    "change": 0.12547,
+    "change": 0.113349,
     "state": "alta"
    },
    {
@@ -1677,7 +1677,7 @@
     "model": "Airbus A330",
     "count": 2,
     "lastDate": "2026-11-19",
-    "change": 0.080274,
+    "change": 0.028773,
     "state": "estavel"
    },
    {
@@ -1695,7 +1695,7 @@
     "model": "Douglas MD-11",
     "count": 2,
     "lastDate": "2026-11-20",
-    "change": 0.010892,
+    "change": 0.005321,
     "state": "estavel"
    },
    {
@@ -1704,7 +1704,7 @@
     "model": "Douglas MD-11",
     "count": 4,
     "lastDate": "2026-11-21",
-    "change": -0.445988,
+    "change": -0.176854,
     "state": "queda"
    },
    {
@@ -1713,8 +1713,8 @@
     "model": "Douglas MD-11",
     "count": 3,
     "lastDate": "2026-11-26",
-    "change": -0.005624,
-    "state": "recuperada"
+    "change": -0.001426,
+    "state": "estavel"
    },
    {
     "origin": "KRDU",
@@ -1722,7 +1722,7 @@
     "model": "Douglas MD-11",
     "count": 2,
     "lastDate": "2026-11-22",
-    "change": -0.509975,
+    "change": -0.159389,
     "state": "queda"
    },
    {
@@ -1731,7 +1731,7 @@
     "model": "Douglas MD-11",
     "count": 5,
     "lastDate": "2026-11-25",
-    "change": -0.563734,
+    "change": -0.345923,
     "state": "queda"
    },
    {
@@ -1830,7 +1830,7 @@
     "model": "Airbus A330",
     "count": 2,
     "lastDate": "2026-11-20",
-    "change": -0.058186,
+    "change": 0.031525,
     "state": "estavel"
    },
    {
@@ -1866,7 +1866,7 @@
     "model": "Airbus A380",
     "count": 3,
     "lastDate": "2026-11-24",
-    "change": -0.470225,
+    "change": -0.658456,
     "state": "queda"
    },
    {
@@ -1875,7 +1875,7 @@
     "model": "Airbus A380",
     "count": 3,
     "lastDate": "2026-11-24",
-    "change": -0.299605,
+    "change": -0.550954,
     "state": "queda"
    },
    {
@@ -1884,7 +1884,7 @@
     "model": "Airbus A380",
     "count": 2,
     "lastDate": "2026-11-24",
-    "change": -0.416842,
+    "change": -0.164701,
     "state": "queda"
    },
    {
@@ -1942,9 +1942,7 @@
     "model": "Douglas MD-11",
     "count": 10,
     "perFlight": 6302059,
-    "perHour": 1096459,
-    "perLb": 89.32,
-    "lbs": 69992
+    "perHour": 1096459
    },
    {
     "origin": "LEMD",
@@ -1952,9 +1950,7 @@
     "model": "Douglas MD-11",
     "count": 10,
     "perFlight": 4648292,
-    "perHour": 1322106,
-    "perLb": 109.35,
-    "lbs": 40586
+    "perHour": 1322106
    },
    {
     "origin": "LEMD",
@@ -1962,9 +1958,7 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 4718156,
-    "perHour": 752897,
-    "perLb": 40.53,
-    "lbs": 116418
+    "perHour": 752897
    },
    {
     "origin": "LEMD",
@@ -1972,9 +1966,7 @@
     "model": "Douglas MD-11",
     "count": 3,
     "perFlight": 9293651,
-    "perHour": 1040334,
-    "perLb": 82.65,
-    "lbs": 112446
+    "perHour": 1040334
    },
    {
     "origin": "RJTT",
@@ -1982,9 +1974,7 @@
     "model": "Airbus A380",
     "count": 1,
     "perFlight": 18061249,
-    "perHour": 1682725,
-    "perLb": 60.61,
-    "lbs": 297982
+    "perHour": 1682725
    },
    {
     "origin": "OTBD",
@@ -1992,9 +1982,7 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 8052020,
-    "perHour": 161040393,
-    "perLb": 11214.51,
-    "lbs": 718
+    "perHour": 161040393
    },
    {
     "origin": "OTHH",
@@ -2002,9 +1990,7 @@
     "model": "Airbus A320neo",
     "count": 2,
     "perFlight": 1421286,
-    "perHour": 227644,
-    "perLb": 69.98,
-    "lbs": 20629
+    "perHour": 227644
    },
    {
     "origin": "SBGL",
@@ -2012,9 +1998,7 @@
     "model": "Douglas MD-11",
     "count": 5,
     "perFlight": 8797236,
-    "perHour": 932783,
-    "perLb": 74.25,
-    "lbs": 125709
+    "perHour": 932783
    },
    {
     "origin": "OTHH",
@@ -2022,9 +2006,7 @@
     "model": "Airbus A380",
     "count": 1,
     "perFlight": 18731699,
-    "perHour": 2247804,
-    "perLb": 118.02,
-    "lbs": 158721
+    "perHour": 2247804
    },
    {
     "origin": "OTHH",
@@ -2032,9 +2014,7 @@
     "model": "Airbus A380",
     "count": 2,
     "perFlight": 6933007,
-    "perHour": 1214094,
-    "perLb": 52.52,
-    "lbs": 138490
+    "perHour": 1214094
    },
    {
     "origin": "OMDM",
@@ -2042,9 +2022,7 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 11418455,
-    "perHour": 762926,
-    "perLb": 68.3,
-    "lbs": 167177
+    "perHour": 762926
    },
    {
     "origin": "EFHK",
@@ -2052,9 +2030,7 @@
     "model": "Airbus A380",
     "count": 3,
     "perFlight": 9266003,
-    "perHour": 2163479,
-    "perLb": 70.8,
-    "lbs": 130509
+    "perHour": 2163479
    },
    {
     "origin": "LEMD",
@@ -2062,9 +2038,7 @@
     "model": "Airbus A380",
     "count": 3,
     "perFlight": 4257379,
-    "perHour": 1296664,
-    "perLb": 47.8,
-    "lbs": 89060
+    "perHour": 1296664
    },
    {
     "origin": "LEMD",
@@ -2072,9 +2046,7 @@
     "model": "Douglas MD-11",
     "count": 4,
     "perFlight": 10524380,
-    "perHour": 917614,
-    "perLb": 66.43,
-    "lbs": 141698
+    "perHour": 917614
    },
    {
     "origin": "KRDU",
@@ -2082,9 +2054,7 @@
     "model": "Douglas MD-11",
     "count": 2,
     "perFlight": 8846158,
-    "perHour": 1102600,
-    "perLb": 75.29,
-    "lbs": 129137
+    "perHour": 1102600
    },
    {
     "origin": "SBKP",
@@ -2092,9 +2062,7 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 2615400,
-    "perHour": 2659729,
-    "perLb": 179.54,
-    "lbs": 14567
+    "perHour": 2659729
    },
    {
     "origin": "KRDU",
@@ -2102,9 +2070,7 @@
     "model": "Douglas MD-11",
     "count": 4,
     "perFlight": 6997279,
-    "perHour": 704456,
-    "perLb": 53.91,
-    "lbs": 135948
+    "perHour": 704456
    },
    {
     "origin": "SBGL",
@@ -2112,9 +2078,7 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 1786188,
-    "perHour": 2143425,
-    "perLb": 144.9,
-    "lbs": 12327
+    "perHour": 2143425
    },
    {
     "origin": "EFHK",
@@ -2122,9 +2086,7 @@
     "model": "Douglas MD-11",
     "count": 10,
     "perFlight": 5766469,
-    "perHour": 1156509,
-    "perLb": 96.58,
-    "lbs": 59318
+    "perHour": 1156509
    },
    {
     "origin": "SBKP",
@@ -2132,9 +2094,7 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 6534182,
-    "perHour": 712820,
-    "perLb": 43.16,
-    "lbs": 151396
+    "perHour": 712820
    },
    {
     "origin": "SBRF",
@@ -2142,9 +2102,7 @@
     "model": "Airbus A330",
     "count": 3,
     "perFlight": 2462856,
-    "perHour": 822606,
-    "perLb": 74.09,
-    "lbs": 33242
+    "perHour": 822606
    },
    {
     "origin": "LEMD",
@@ -2152,9 +2110,7 @@
     "model": "Douglas MD-11",
     "count": 2,
     "perFlight": 7965478,
-    "perHour": 943594,
-    "perLb": 76.3,
-    "lbs": 104399
+    "perHour": 943594
    },
    {
     "origin": "SBGL",
@@ -2162,9 +2118,7 @@
     "model": "Airbus A330",
     "count": 2,
     "perFlight": 2267250,
-    "perHour": 766988,
-    "perLb": 66.93,
-    "lbs": 33919
+    "perHour": 766988
    },
    {
     "origin": "SUMU",
@@ -2172,9 +2126,7 @@
     "model": "Airbus A330",
     "count": 2,
     "perFlight": 2393090,
-    "perHour": 1063553,
-    "perLb": 85.83,
-    "lbs": 27886
+    "perHour": 1063553
    },
    {
     "origin": "SBCG",
@@ -2182,9 +2134,7 @@
     "model": "Airbus A330",
     "count": 2,
     "perFlight": 2775270,
-    "perHour": 979507,
-    "perLb": 84.2,
-    "lbs": 32970
+    "perHour": 979507
    },
    {
     "origin": "SBMA",
@@ -2192,9 +2142,7 @@
     "model": "Airbus A330",
     "count": 2,
     "perFlight": 2470908,
-    "perHour": 991910,
-    "perLb": 85.54,
-    "lbs": 28912
+    "perHour": 991910
    },
    {
     "origin": "LTAI",
@@ -2202,9 +2150,7 @@
     "model": "Airbus A320neo",
     "count": 1,
     "perFlight": 921517,
-    "perHour": 258369,
-    "perLb": 114.19,
-    "lbs": 8070
+    "perHour": 258369
    },
    {
     "origin": "RJTT",
@@ -2212,9 +2158,7 @@
     "model": "Douglas MD-11",
     "count": 4,
     "perFlight": 9590201,
-    "perHour": 847205,
-    "perLb": 68.75,
-    "lbs": 145251
+    "perHour": 847205
    },
    {
     "origin": "LYBE",
@@ -2222,9 +2166,7 @@
     "model": "Airbus A320neo",
     "count": 1,
     "perFlight": 251077,
-    "perHour": 96568,
-    "perLb": 55.38,
-    "lbs": 4534
+    "perHour": 96568
    },
    {
     "origin": "KRDU",
@@ -2232,9 +2174,7 @@
     "model": "Boeing 787-10 Dreamliner",
     "count": 1,
     "perFlight": 6312701,
-    "perHour": 724210,
-    "perLb": 55.64,
-    "lbs": 113460
+    "perHour": 724210
    },
    {
     "origin": "OTHH",
@@ -2242,9 +2182,7 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 13262447,
-    "perHour": 1444187,
-    "perLb": 117.88,
-    "lbs": 112509
+    "perHour": 1444187
    },
    {
     "origin": "EHAM",
@@ -2252,9 +2190,7 @@
     "model": "Airbus A320neo",
     "count": 1,
     "perFlight": 132648,
-    "perHour": 107553,
-    "perLb": 44.57,
-    "lbs": 2976
+    "perHour": 107553
    },
    {
     "origin": "EDDM",
@@ -2262,9 +2198,7 @@
     "model": "Airbus A320neo",
     "count": 1,
     "perFlight": 164880,
-    "perHour": 96046,
-    "perLb": 47.49,
-    "lbs": 3472
+    "perHour": 96046
    },
    {
     "origin": "LEXJ",
@@ -2272,9 +2206,7 @@
     "model": "Airbus A320neo",
     "count": 1,
     "perFlight": 221082,
-    "perHour": 117388,
-    "perLb": 39.61,
-    "lbs": 5581
+    "perHour": 117388
    },
    {
     "origin": "RJTT",
@@ -2282,9 +2214,7 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 10329765,
-    "perHour": 1283201,
-    "perLb": 102.46,
-    "lbs": 100821
+    "perHour": 1283201
    },
    {
     "origin": "LEMD",
@@ -2292,9 +2222,7 @@
     "model": "Boeing 787-10 Dreamliner",
     "count": 1,
     "perFlight": 4934383,
-    "perHour": 563930,
-    "perLb": 44.92,
-    "lbs": 109854
+    "perHour": 563930
    },
    {
     "origin": "LEMD",
@@ -2302,9 +2230,7 @@
     "model": "Airbus A320neo",
     "count": 1,
     "perFlight": 16440,
-    "perHour": 21443,
-    "perLb": 11.09,
-    "lbs": 1482
+    "perHour": 21443
    },
    {
     "origin": "SBGL",
@@ -2312,9 +2238,7 @@
     "model": "Boeing 787-10 Dreamliner",
     "count": 1,
     "perFlight": 5730180,
-    "perHour": 600019,
-    "perLb": 45.91,
-    "lbs": 124806
+    "perHour": 600019
    },
    {
     "origin": "SUMU",
@@ -2322,41 +2246,360 @@
     "model": "Douglas MD-11",
     "count": 1,
     "perFlight": 3492462,
-    "perHour": 2034444,
-    "perLb": 158.94,
-    "lbs": 21974
+    "perHour": 2034444
    }
   ],
   "models": [
    {
     "model": "Douglas MD-11",
     "count": 30,
-    "perLbNm": 0.024372,
-    "lbs": 94048
+    "perNm": 2216.5,
+    "perHour": 1045964
    },
    {
     "model": "Airbus A380",
     "count": 10,
-    "perLbNm": 0.024784,
-    "lbs": 122191
+    "perNm": 2892.77,
+    "perHour": 1392505
    },
    {
     "model": "Airbus A320neo",
     "count": 8,
-    "perLbNm": 0.075394,
-    "lbs": 5058
+    "perNm": 385.29,
+    "perHour": 112471
    },
    {
     "model": "Airbus A330",
     "count": 11,
-    "perLbNm": 0.082382,
-    "lbs": 32603
+    "perNm": 2730.79,
+    "perHour": 926971
    },
    {
     "model": "Boeing 787-10 Dreamliner",
     "count": 3,
-    "perLbNm": 0.013025,
-    "lbs": 113460
+    "perNm": 1430.8,
+    "perHour": 600019
+   }
+  ]
+ },
+ "fuelStats": {
+  "routes": [
+   {
+    "origin": "OTHH",
+    "destination": "LEMD",
+    "model": "Douglas MD-11",
+    "count": 10,
+    "fuel": 69992
+   },
+   {
+    "origin": "LEMD",
+    "destination": "EFHK",
+    "model": "Douglas MD-11",
+    "count": 10,
+    "fuel": 40586
+   },
+   {
+    "origin": "LEMD",
+    "destination": "OTHH",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 116418
+   },
+   {
+    "origin": "LEMD",
+    "destination": "SBGL",
+    "model": "Douglas MD-11",
+    "count": 3,
+    "fuel": 112446
+   },
+   {
+    "origin": "RJTT",
+    "destination": "LEMD",
+    "model": "Airbus A380",
+    "count": 1,
+    "fuel": 297982
+   },
+   {
+    "origin": "OTBD",
+    "destination": "OTHH",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 718
+   },
+   {
+    "origin": "OTHH",
+    "destination": "LEMD",
+    "model": "Airbus A320neo",
+    "count": 2,
+    "fuel": 20629
+   },
+   {
+    "origin": "SBGL",
+    "destination": "LEMD",
+    "model": "Douglas MD-11",
+    "count": 5,
+    "fuel": 125709
+   },
+   {
+    "origin": "OTHH",
+    "destination": "RJTT",
+    "model": "Airbus A380",
+    "count": 1,
+    "fuel": 158721
+   },
+   {
+    "origin": "OTHH",
+    "destination": "LEMD",
+    "model": "Airbus A380",
+    "count": 2,
+    "fuel": 138490
+   },
+   {
+    "origin": "OMDM",
+    "destination": "SBCP",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 167177
+   },
+   {
+    "origin": "EFHK",
+    "destination": "OTHH",
+    "model": "Airbus A380",
+    "count": 3,
+    "fuel": 130509
+   },
+   {
+    "origin": "LEMD",
+    "destination": "EFHK",
+    "model": "Airbus A380",
+    "count": 3,
+    "fuel": 89060
+   },
+   {
+    "origin": "LEMD",
+    "destination": "RJTT",
+    "model": "Douglas MD-11",
+    "count": 4,
+    "fuel": 141698
+   },
+   {
+    "origin": "KRDU",
+    "destination": "SBKP",
+    "model": "Douglas MD-11",
+    "count": 2,
+    "fuel": 129137
+   },
+   {
+    "origin": "SBKP",
+    "destination": "SBGL",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 14567
+   },
+   {
+    "origin": "KRDU",
+    "destination": "SBGL",
+    "model": "Douglas MD-11",
+    "count": 4,
+    "fuel": 135948
+   },
+   {
+    "origin": "SBGL",
+    "destination": "SBKP",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 12327
+   },
+   {
+    "origin": "EFHK",
+    "destination": "OTHH",
+    "model": "Douglas MD-11",
+    "count": 10,
+    "fuel": 59318
+   },
+   {
+    "origin": "SBKP",
+    "destination": "KRDU",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 151396
+   },
+   {
+    "origin": "SBRF",
+    "destination": "SBGL",
+    "model": "Airbus A330",
+    "count": 3,
+    "fuel": 33242
+   },
+   {
+    "origin": "LEMD",
+    "destination": "KRDU",
+    "model": "Douglas MD-11",
+    "count": 2,
+    "fuel": 104399
+   },
+   {
+    "origin": "SBGL",
+    "destination": "SUMU",
+    "model": "Airbus A330",
+    "count": 2,
+    "fuel": 33919
+   },
+   {
+    "origin": "SUMU",
+    "destination": "SBCG",
+    "model": "Airbus A330",
+    "count": 2,
+    "fuel": 27886
+   },
+   {
+    "origin": "SBCG",
+    "destination": "SBMA",
+    "model": "Airbus A330",
+    "count": 2,
+    "fuel": 32970
+   },
+   {
+    "origin": "SBMA",
+    "destination": "SBRF",
+    "model": "Airbus A330",
+    "count": 2,
+    "fuel": 28912
+   },
+   {
+    "origin": "LTAI",
+    "destination": "OTHH",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "fuel": 8070
+   },
+   {
+    "origin": "RJTT",
+    "destination": "LEMD",
+    "model": "Douglas MD-11",
+    "count": 4,
+    "fuel": 145251
+   },
+   {
+    "origin": "LYBE",
+    "destination": "LTAC",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "fuel": 4534
+   },
+   {
+    "origin": "KRDU",
+    "destination": "SBKP",
+    "model": "Boeing 787-10 Dreamliner",
+    "count": 1,
+    "fuel": 113460
+   },
+   {
+    "origin": "OTHH",
+    "destination": "RJTT",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 112509
+   },
+   {
+    "origin": "EHAM",
+    "destination": "EDDM",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "fuel": 2976
+   },
+   {
+    "origin": "EDDM",
+    "destination": "LYBE",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "fuel": 3472
+   },
+   {
+    "origin": "LEXJ",
+    "destination": "EHAM",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "fuel": 5581
+   },
+   {
+    "origin": "RJTT",
+    "destination": "OMDM",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 100821
+   },
+   {
+    "origin": "LEMD",
+    "destination": "KRDU",
+    "model": "Boeing 787-10 Dreamliner",
+    "count": 1,
+    "fuel": 109854
+   },
+   {
+    "origin": "LEMD",
+    "destination": "LEXJ",
+    "model": "Airbus A320neo",
+    "count": 1,
+    "fuel": 1482
+   },
+   {
+    "origin": "SBGL",
+    "destination": "LEMD",
+    "model": "Boeing 787-10 Dreamliner",
+    "count": 1,
+    "fuel": 124806
+   },
+   {
+    "origin": "SUMU",
+    "destination": "SBCG",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "fuel": 21974
+   }
+  ],
+  "models": [
+   {
+    "model": "Douglas MD-11",
+    "count": 30,
+    "perHour": 12595,
+    "perNm": 28.9
+   },
+   {
+    "model": "Airbus A380",
+    "count": 10,
+    "perHour": 27221,
+    "perNm": 53.1
+   },
+   {
+    "model": "Airbus A320neo",
+    "count": 8,
+    "perHour": 2338,
+    "perNm": 7.9
+   },
+   {
+    "model": "Airbus A330",
+    "count": 11,
+    "perHour": 11644,
+    "perNm": 33.1
+   },
+   {
+    "model": "Boeing 787-10 Dreamliner",
+    "count": 3,
+    "perHour": 13016,
+    "perNm": 28.6
+   },
+   {
+    "model": "Airbus A321",
+    "count": 1,
+    "perHour": 5091,
+    "perNm": 17
+   },
+   {
+    "model": "Airbus A220-300",
+    "count": 1,
+    "perHour": 3458,
+    "perNm": 10.2
    }
   ]
  }

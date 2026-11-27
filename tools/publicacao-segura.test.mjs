@@ -1,11 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { percentageMonitor, publicSnapshot, revenueEstimates } from "../coletor/publicacao.mjs";
+import { fuelStats, percentageMonitor, publicSnapshot, revenueEstimates } from "../coletor/publicacao.mjs";
 import { buildSnapshot } from "../coletor/dados.mjs";
 
-const flight = (date, revenue, payload = 100, model = "Test Plane") => ({ pilot: "Piloto", prefix: "NABCDE", model,
-  origin: "LEMD", destination: "KRDU", date, minutes: 60, nm: 3000, revenue, payload });
+// fuel: combustível utilizado no voo (as "lbs" do histórico do PilOps).
+const flight = (date, revenue, fuel = 100, model = "Test Plane") => ({ pilot: "Piloto", prefix: "NABCDE", model,
+  origin: "LEMD", destination: "KRDU", date, minutes: 60, nm: 3000, revenue, fuel });
 const base = { capturedAt: "2026-11-10T12:00:00Z", reportedFleet: 1,
   fleet: [{ prefix: "NABCDE", model: "Test Plane", airport: "LEMD", base: "LEMD", status: "Disponivel" }],
   hubs: ["LEMD"], routes: [{ origin: "LEMD", destination: "KRDU", code: "VTX0001" }], pilots: [], flights: [],
@@ -28,10 +29,11 @@ test("JSON público exclui valores, cargas, voos em andamento e campos imprevist
   assert.ok(!JSON.stringify(safe).includes("Sigilo"));
 });
 
-test("variação ajusta pela carga e usa a mediana anterior, sem publicar a referência absoluta", () => {
+test("variação compara o P$ por voo com a mediana anterior, sem publicar a referência absoluta", () => {
   const result = percentageMonitor([flight("2026-11-10", 180), flight("2026-11-09", 200)]);
   assert.equal(result.groups[0].change, -0.1); assert.equal(result.groups[0].state, "queda"); audit(result);
-  const stable = percentageMonitor([flight("2026-11-10", 100, 50), flight("2026-11-09", 200, 100)]);
+  // O combustível gasto não entra na conta: mesma receita com outro consumo continua estável.
+  const stable = percentageMonitor([flight("2026-11-10", 200, 50), flight("2026-11-09", 200, 100)]);
   assert.equal(stable.groups[0].change, 0);
   const rise = percentageMonitor([flight("2026-11-10", 240), flight("2026-11-09", 200)]);
   assert.equal(rise.groups[0].change, 0.2); assert.equal(rise.groups[0].state, "alta");
@@ -58,6 +60,15 @@ test("sem cache local, reler um voo já público o enriquece sem duplicar o hist
   audit(publicSnapshot(next.snapshot));
 });
 
+test("voos antigos com o combustível em payload viram fuel no arquivo privado", () => {
+  const { fuel, ...legacy } = flight("2026-11-09", 200, 1234);
+  const raw = buildSnapshot({ ...base, flights: [{ ...legacy, payload: 1234 }] }, null).snapshot;
+  assert.equal(raw.flights[0].fuel, 1234); assert.equal("payload" in raw.flights[0], false);
+  const next = buildSnapshot({ ...base, flights: [flight("2026-11-10", 180, 999)] }, { ...raw, flights: [{ ...legacy, payload: 1234 }] }).snapshot;
+  assert.deepEqual(next.flights.map(f => f.fuel), [999, 1234]);
+  assert.ok(next.flights.every(f => !("payload" in f)));
+});
+
 test("catálogo publicado não contém preços e a interface não oferece valores ou voos em andamento", () => {
   const catalog = readFileSync(new URL("../docs/aeronaves.js", import.meta.url), "utf8");
   const html = readFileSync(new URL("../docs/index.html", import.meta.url), "utf8");
@@ -73,13 +84,29 @@ test("renda estimada publica só medianas por rota e modelo, sem piloto, data ou
   const result = revenueEstimates(flights);
   const route = result.routes.find(item => item.model === "Test Plane");
   assert.deepEqual({ ...route }, { origin: "LEMD", destination: "KRDU", model: "Test Plane", count: 3,
-    perFlight: 200, perHour: 200, perLb: 3, lbs: 100 });
+    perFlight: 200, perHour: 200 });
   const model = result.models.find(item => item.model === "Test Plane");
-  assert.equal(model.perLbNm, 0.001); assert.equal(model.lbs, 100);
+  assert.deepEqual({ ...model }, { model: "Test Plane", count: 3, perNm: 0.07, perHour: 200 });
   const text = JSON.stringify(result);
   assert.ok(!text.includes("Piloto") && !text.includes("2026-11") && !text.includes("NABCDE"));
   audit(result);
   const many = Array.from({ length: 12 }, (_, i) => flight("2026-10-" + String(10 + i), i < 2 ? 1000 : 100));
   assert.equal(revenueEstimates(many).routes[0].count, 10);
   assert.equal(revenueEstimates(many).routes[0].perFlight, 100);
+});
+
+test("consumo publicado vem do combustível utilizado, sem voo, piloto ou data", () => {
+  const flights = [flight("2026-11-10", 300, 9000), flight("2026-11-09", 100, 12000), flight("2026-11-08", 0, 6000),
+    { ...flight("2026-11-07", 200, 500), minutes: 20 }, flight("2026-11-06", 400, 30000, "Outro modelo")];
+  const result = fuelStats(flights);
+  const model = result.models.find(item => item.model === "Test Plane");
+  // Traslado entra no consumo do modelo; voo de menos de 30 minutos não.
+  assert.deepEqual({ ...model }, { model: "Test Plane", count: 3, perHour: 9000, perNm: 3 });
+  const route = result.routes.find(item => item.model === "Test Plane");
+  // Na rota, só voos pagos (inclusive o curto): mediana de 500, 9000 e 12000.
+  assert.deepEqual({ ...route }, { origin: "LEMD", destination: "KRDU", model: "Test Plane", count: 3, fuel: 9000 });
+  assert.equal(fuelStats([{ ...flight("2026-11-10", 100), fuel: undefined, payload: 4321 }]).routes[0].fuel, 4321);
+  const text = JSON.stringify(result);
+  assert.ok(!text.includes("Piloto") && !text.includes("2026-11") && !text.includes("NABCDE"));
+  audit(result);
 });

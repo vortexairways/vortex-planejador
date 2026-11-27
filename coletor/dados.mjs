@@ -27,9 +27,16 @@ function cleanFlights(flights) {
   if (!Array.isArray(flights) || flights.length > 200) return null;
   if (!flights.every(f => isRecord(f) && pilotName.test(f.pilot || "") && tailCode.test(f.prefix || "") && label(f.model, 120) &&
       validCode(f.origin) && validCode(f.destination) && isoDay.test(f.date || "") && count(f.minutes, 3000) &&
-      amount(f.nm, 0, 20000) && (f.payload === null || amount(f.payload, 0, 2_000_000)) && amount(f.revenue, -1e10, 1e10))) return null;
-  return flights.map(({ pilot, prefix, model, origin, destination, date, minutes, nm, payload, revenue }) =>
-    ({ pilot, prefix, model, origin, destination, date, minutes, nm, payload, revenue }));
+      amount(f.nm, 0, 20000) && [f.fuel, f.payload].every(v => v === undefined || v === null || amount(v, 0, 2_000_000)) &&
+      amount(f.revenue, -1e10, 1e10))) return null;
+  return flights.map(withFuel);
+}
+
+// As "lbs" do histórico do PilOps são o combustível utilizado. Até a versão 1.5.0 a extensão chamava esse
+// número de "payload"; voos antigos são convertidos aqui.
+export function withFuel({ pilot, prefix, model, origin, destination, date, minutes, nm, fuel, payload, revenue }) {
+  const used = fuel ?? payload ?? null;
+  return { pilot, prefix, model, origin, destination, date, minutes, nm, fuel: used, revenue };
 }
 
 // input: leitura da extensão; previous: dados.json publicado (ou null).
@@ -50,7 +57,7 @@ export function buildSnapshot(input, previous, now = new Date()) {
   // Pilotos e voos são opcionais: se a leitura falhar, mantemos o que já estava publicado.
   const pilots = data.pilots === undefined || data.pilots === null ? null : cleanPilots(data.pilots);
   const newFlights = data.flights === undefined || data.flights === null ? null : cleanFlights(data.flights);
-  const merged = new Map((previous?.flights || []).map(f => [flightKey(f), f]));
+  const merged = new Map((previous?.flights || []).map(f => [flightKey(f), Number.isFinite(f.revenue) ? withFuel(f) : f]));
   let added = 0;
   for (const f of newFlights || []) {
     if (!merged.has(flightKey(f))) {

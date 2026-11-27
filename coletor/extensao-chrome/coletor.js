@@ -153,8 +153,9 @@ function readCompany(section, openTab) {
       flights.push({
         pilot: lines[i].slice(1), prefix, model, origin: rest[1], destination: rest[2], date: isoDay(day[1], day[2], day[3]),
         minutes: Number(time[1]) * 60 + Number(time[2]), nm: Math.round(Number(nm[1].replace(/,/g, "")) * 100) / 100,
-        // Carga no formato brasileiro (39.063,77); receita no americano (4,616,708.05).
-        payload: lbs ? Math.round(Number(lbs[1].replace(/\./g, "").replace(",", "."))) : null,
+        // As "lbs" da lista são o COMBUSTÍVEL UTILIZADO no voo (conferido na página do voo em 27/11/2026),
+        // no formato brasileiro (39.063,77); a receita vem no americano (4,616,708.05).
+        fuel: lbs ? Math.round(Number(lbs[1].replace(/\./g, "").replace(",", "."))) : null,
         revenue: Math.round(Number(money[1].replace(/,/g, "")) * 100) / 100,
       });
     }

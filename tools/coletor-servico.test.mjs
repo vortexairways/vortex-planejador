@@ -84,12 +84,12 @@ test("modo automatico publica somente a coleta validada em um remoto de teste lo
     const { lease } = await (await f.post("job", {})).json();
     const response = await f.post("snapshot", { ...input, lease, activeFlights: [{ pilot: "Privado" }],
       flights: [{ pilot: "Piloto", prefix: "NABCDE", model: "Test Plane", origin: "LEMD", destination: "KRDU",
-        date: "2026-11-10", minutes: 60, nm: 3000, payload: 100, revenue: 53123.47 }] });
+        date: "2026-11-10", minutes: 60, nm: 3000, fuel: 100, revenue: 53123.47 }] });
     assert.equal(response.status, 200); assert.equal(await child.done, 0);
     const data = JSON.parse(readFileSync(path.join(f.repo, "docs/dados.json")));
     assert.ok(data.revenueMonitor); assert.equal(data.flights.length, 1); assert.equal("activeFlights" in data, false);
     assert.equal(data.flights[0].paid, true); assert.equal("revenue" in data.flights[0], false);
-    assert.equal("payload" in data.flights[0], false);
+    assert.equal("payload" in data.flights[0], false); assert.equal("fuel" in data.flights[0], false);
     const privateData = JSON.parse(readFileSync(path.join(f.repo, ".vortex-local/dados.json")));
     assert.equal(privateData.flights[0].revenue, 53123.47);
     assert.equal(git(f.repo, "ls-files", ".vortex-local"), "");
