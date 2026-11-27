@@ -18,7 +18,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./style.css?v=20">
+  <link rel="stylesheet" href="./style.css?v=21">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script defer src="./aeroportos.js?v=3"></script>
   <script defer src="./aeronaves.js?v=3"></script>
@@ -27,10 +27,10 @@
   <script defer src="./movimentacoes.js?v=2"></script>
   <script defer src="./tempos.js?v=2"></script>
   <script defer src="./malha.js?v=1"></script>
-  <script defer src="./cargas.js?v=4"></script>
+  <script defer src="./cargas.js?v=5"></script>
   <script defer src="./combustivel.js?v=3"></script>
   <script defer src="./vagas.js?v=1"></script>
-  <script defer src="./planner.js?v=31"></script>
+  <script defer src="./planner.js?v=32"></script>
 </head>
 <body>
   <header class="top">
@@ -172,6 +172,19 @@
           <p id="load-unit-help" class="meta" data-en="Choose the unit before entering weights. Check the limits shown on the aircraft card in PilOps.">Escolha a unidade antes de digitar os pesos. Confira os limites no cartão da aeronave no PilOps.</p>
           <p id="load-reference" class="meta"></p>
           <div id="load-fleet" class="load-fleet" hidden></div>
+          <div class="pilops-fill">
+            <div class="pilops-fill-row">
+              <label><span data-en="Take">Levar</span><select id="fill-mode">
+                <option value="ambos" data-en="Passengers and cargo">Passageiros e carga</option>
+                <option value="passageiros" data-en="Passengers only">Só passageiros</option>
+                <option value="carga" data-en="Cargo only">Só carga</option>
+              </select></label>
+              <button id="fill-run" type="button" class="primary" data-en="Fill the flight in PilOps">Encher o voo no PilOps</button>
+            </div>
+            <p class="meta" data-en="Open the flight in PilOps in this Chrome (New flight, choose the aircraft). The Vortex · Cargo extension picks the offers to this route&#39;s destination that pay the most and puts them on the flight, keeping what is already aboard. The free weight discounts the planned fuel below (or the fuel in the tank, if higher).">Abra o voo no PilOps neste Chrome (Novo voo, escolha a aeronave). A extensão Vortex · Carga escolhe as ofertas para o destino desta rota que rendem mais e as coloca no voo, sem tirar o que já está a bordo. O peso livre desconta o combustível planejado abaixo (ou o do tanque, se for maior).</p>
+            <p id="fill-feedback" class="meta" role="status"></p>
+            <div id="fill-result"></div>
+          </div>
           <fieldset>
             <legend data-en="Aircraft limits and current load">Limites da aeronave e carga atual</legend>
             <div class="load-fields">

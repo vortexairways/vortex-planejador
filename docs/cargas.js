@@ -177,5 +177,17 @@ const VortexLoad = (() => {
     };
   }
 
-  return { simulate };
+  // Melhor combinação para ofertas lidas direto do PilOps pela extensão Vortex · Carga: peso em lb,
+  // pagamento em P$, assentos = passageiros (0 para carga). Devolve as posições escolhidas na lista recebida.
+  function best(offers, weightLimit, seatLimit) {
+    const lots = offers.map((offer, index) => ({ line: index + 1, weight: mass(offer.weight), seats: offer.seats,
+      payout: cents(offer.payout) })).filter(lot => lot.weight > 0 && Number.isInteger(lot.seats) && lot.seats >= 0 && lot.payout >= 0);
+    const room = Math.max(0, Math.floor(weightLimit * 1000)), seats = Math.max(0, Math.floor(seatLimit));
+    const chosen = selectLots(lots, room, seats);
+    const simple = ratioFirst(lots, room, seats);
+    return { indexes: chosen.items.map(lot => lot.line - 1), weight: chosen.weight / 1000, seats: chosen.seats,
+      payout: chosen.payout / 100, ratioFirstPayout: simple.payout / 100, exhaustive: chosen.exhaustive };
+  }
+
+  return { simulate, best };
 })();

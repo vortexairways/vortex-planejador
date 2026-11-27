@@ -1416,12 +1416,16 @@ function renderStandsStatus() {
 }
 
 function askStandsExtension(message, timeout) {
+  return askExtension(standsExtension, message, timeout);
+}
+
+function askExtension(id, message, timeout) {
   return new Promise((resolve, reject) => {
     const runtime = window.chrome?.runtime;
     if (!runtime?.sendMessage) { reject(new Error("missing")); return; }
     const timer = setTimeout(() => reject(new Error("timeout")), timeout);
     try {
-      runtime.sendMessage(standsExtension, message, response => {
+      runtime.sendMessage(id, message, response => {
         clearTimeout(timer);
         if (runtime.lastError || !response) reject(new Error("missing"));
         else resolve(response);
@@ -1473,6 +1477,120 @@ async function syncStands() {
   }
 }
 document.querySelector("#owner-sync").addEventListener("click", () => { void syncStands(); });
+
+// ---- Encher o voo no PilOps (extensão Vortex · Carga, no Chrome de cada piloto) ----
+// O botão manda rota, aeronave, combustível planejado (em lb) e o que levar; a extensão lê o voo aberto e as
+// ofertas no PilOps, escolhe a melhor combinação com o mesmo otimizador (cargas.js), grava e confere.
+const fillExtension = "chnmdafjlpcabenfcbodkkjofgchllhh";
+
+function fillInstallHelp(feedback) {
+  const link = (href, text) => { const node = element("a", "", text); node.href = href; node.target = "_blank"; node.rel = "noopener"; return node; };
+  feedback.replaceChildren(
+    T("Este botão precisa da extensão Vortex · Carga no Chrome em que você usa o PilOps. ", "This button needs the Vortex · Cargo extension in the Chrome where you use PilOps. "),
+    link("./extensao-carga.zip", T("Baixar a extensão", "Download the extension")),
+    T(", extrair, abrir chrome://extensions, ligar o Modo do desenvolvedor, clicar em Carregar sem compactação e escolher a pasta vortex-carga. Depois recarregue o PilOps. ",
+      ", unzip it, open chrome://extensions, turn on Developer mode, click Load unpacked and choose the vortex-carga folder. Then reload PilOps. "),
+    link("https://github.com/vortexairways/vortex-planejador#encher-o-voo-no-pilops", T("Passo a passo", "Step by step")), ".");
+}
+
+function fillProblem(answer) {
+  const wrote = answer.wrote ? T(" As abas do PilOps foram recarregadas; confira a carga lá.", " The PilOps tabs were reloaded; check the load there.") : "";
+  switch (answer.code) {
+    case "no-pilops": return T("Não achei o PilOps logado neste Chrome. Entre em pilops.com e clique de novo.", "Couldn't find PilOps signed in on this Chrome. Sign in at pilops.com and click again.");
+    case "no-flight": return T("Não há voo aberto no PilOps. Lá, clique em Novo voo, escolha a aeronave e volte aqui.", "There is no open flight in PilOps. There, click New flight, choose the aircraft and come back.");
+    case "started": return T("O voo aberto no PilOps já foi iniciado; a carga não pode mais mudar.", "The open PilOps flight has already started; its load can no longer change.") + wrote;
+    case "origin": return T("O voo aberto no PilOps sai de ", "The open PilOps flight departs from ") + answer.from + T(", mas a rota escolhida sai de ", ", but the chosen route departs from ") + answer.origin + ".";
+    case "destination": return T("O voo aberto no PilOps vai para ", "The open PilOps flight goes to ") + answer.to + T(", mas a rota escolhida vai para ", ", but the chosen route goes to ") + answer.destination + ".";
+    case "aircraft": return T("O voo aberto no PilOps usa a ", "The open PilOps flight uses ") + answer.registration + T("; aqui está escolhida a ", "; the planner has ") + answer.planned +
+      T(". Escolha a mesma aeronave e clique de novo.", " selected. Choose the same aircraft and click again.");
+    case "changed": return T("O voo mudou no PilOps enquanto eu lia as ofertas (outra aba?). Nada foi gravado; clique de novo.", "The flight changed in PilOps while the offers were being read (another tab?). Nothing was saved; click again.");
+    case "busy": return T("A extensão já está enchendo um voo. Espere terminar.", "The extension is already filling a flight. Wait for it to finish.");
+    case "auth": return T("O login do PilOps expirou. Recarregue o PilOps e clique de novo.", "The PilOps sign-in expired. Reload PilOps and click again.") + wrote;
+    case "write": return T("O PilOps recusou a gravação", "PilOps refused the change") + (answer.message ? " (" + answer.message + ")" : "") + "." + wrote;
+    case "verify": return T("Gravei, mas não consegui conferir o voo.", "Saved, but couldn't verify the flight.") + wrote;
+    case "request": return T("Rota, aeronave ou combustível inválidos.", "Invalid route, aircraft or fuel.");
+    case "api": return T("O PilOps respondeu de um jeito inesperado", "PilOps answered in an unexpected way") + (answer.status ? " (" + answer.status + ")" : "") + "." +
+      (wrote || T(" Nada foi gravado.", " Nothing was saved."));
+    default: return T("Algo deu errado na extensão", "Something went wrong in the extension") + (answer.detail ? ": " + answer.detail : "") + "." + wrote;
+  }
+}
+
+function renderFill(answer) {
+  const feedback = document.querySelector("#fill-feedback"), box = document.querySelector("#fill-result");
+  const free = Math.max(0, answer.freeWeight);
+  const fuelText = T("Peso livre calculado com ", "Free weight computed with ") + weightText(answer.fuel) +
+    (answer.fuelSource === "plano" ? T(" de combustível (o planejado).", " of fuel (the planned amount).") : T(" de combustível (o que já está no tanque).", " of fuel (already in the tank)."));
+  if (!answer.added.length) {
+    feedback.textContent = (answer.offered
+      ? T("Nenhuma oferta nova coube no voo ", "No new offer fit on flight ")
+      : T("Não há oferta para ", "There is no offer to ") + answer.destination + T(" que caiba no voo ", " that fits on flight ")) +
+      answer.registration + ": " + weightText(free) + T(" e ", " and ") + answer.freeSeats + T(" assentos livres. ", " free seats. ") + fuelText;
+    return;
+  }
+  const count = answer.added.length;
+  feedback.textContent = T("Pronto: ", "Done: ") + count + (count === 1 ? T(" oferta colocada", " offer added") : T(" ofertas colocadas", " offers added")) +
+    T(" no voo ", " to flight ") + answer.registration + " (" + answer.origin + " → " + answer.destination + ") · " + loadMoney(answer.payout) + ". " +
+    T("As abas do PilOps foram recarregadas: no voo, clique em Próximo para ver a carga e seguir para o combustível.",
+      "The PilOps tabs were reloaded: in the flight, click Next to see the load and go on to fuel.");
+  const fill = element("div", "load-fill");
+  const pct = free > 0 ? " (" + Math.round(answer.addedWeight / free * 100) + "%)" : "";
+  fill.append(element("p", "meta", T("Peso ", "Weight ") + weightText(answer.addedWeight) + T(" de ", " of ") + weightText(free) + T(" livres", " free") + pct +
+    T(" · assentos ", " · seats ") + answer.addedSeats + T(" de ", " of ") + answer.freeSeats + " · " + fuelText));
+  const list = element("ol", "load-picks");
+  for (const lot of [...answer.added].sort((a, b) => b.price - a.price)) {
+    const item = element("li");
+    const kind = lot.type === "PASSENGER" ? lot.seats + (lot.seats === 1 ? T(" passageiro", " passenger") : T(" passageiros", " passengers")) : T("Carga", "Cargo");
+    item.append(element("strong", "", kind + " → " + answer.destination),
+      element("span", "", weightText(lot.weight) + " · " + loadMoney(lot.price) + " · " + loadMoney(lot.price / fromPounds(lot.weight)) + "/" + loadUnit()));
+    list.append(item);
+  }
+  fill.append(list);
+  const notes = [];
+  const gain = answer.payout - answer.ratioFirstPayout;
+  if (!answer.reasons.length && gain >= 0.005) notes.push(T("Pegando sempre a oferta de maior P$ por peso que ainda cabe, daria ", "Always taking the offer with the highest P$ per weight that still fits would give ") +
+    loadMoney(answer.ratioFirstPayout) + T(". Esta combinação rende ", ". This combination earns ") + loadMoney(gain) + T(" a mais.", " more."));
+  if (answer.kept) notes.push(T("Mantido o que já estava a bordo: ", "Kept what was already aboard: ") + answer.kept + (answer.kept === 1 ? T(" item", " item") : T(" itens", " items")) +
+    " (" + weightText(answer.keptWeight) + ").");
+  if (answer.reasons.length) notes.push(T("Algumas ofertas foram pegas por outro piloto no meio do caminho; o espaço foi preenchido com as seguintes.",
+    "Some offers were taken by another pilot along the way; the space was filled with the next ones."));
+  if (answer.refused) notes.push(T("Ofertas recusadas pelo PilOps: ", "Offers refused by PilOps: ") + answer.refused + ".");
+  if (answer.truncated) notes.push(T("Havia ofertas demais; só as primeiras 1.600 foram consideradas.", "There were too many offers; only the first 1,600 were considered."));
+  if (answer.otherDestinations) notes.push(T("Há itens a bordo para outro destino; confira no PilOps.", "There are items aboard for another destination; check in PilOps."));
+  for (const note of notes) fill.append(element("p", "meta", note));
+  if (answer.lost) fill.append(element("p", "meta fill-warning", T("Atenção: ", "Warning: ") + answer.lost +
+    T(" item(ns) que estavam a bordo não aparecem mais no voo. Confira no PilOps.", " item(s) that were aboard no longer show on the flight. Check in PilOps.")));
+  box.append(fill);
+}
+
+async function fillFlight() {
+  const feedback = document.querySelector("#fill-feedback"), box = document.querySelector("#fill-result");
+  const trigger = document.querySelector("#fill-run");
+  const route = loadRoute(), plane = loadPlane();
+  box.replaceChildren();
+  if (!route || !plane) {
+    feedback.textContent = T("Escolha acima a rota e a aeronave do voo.", "Choose the flight's route and aircraft above.");
+    return;
+  }
+  const fuel = loadNumber("fuel");
+  trigger.disabled = true;
+  feedback.textContent = T("Procurando a extensão Vortex · Carga…", "Looking for the Vortex · Cargo extension…");
+  try {
+    try { await askExtension(fillExtension, { type: "ping" }, 4000); }
+    catch { fillInstallHelp(feedback); return; }
+    feedback.textContent = T("Lendo o voo e as ofertas no PilOps e enchendo o voo (até um minuto)…", "Reading the flight and offers in PilOps and filling the flight (up to a minute)…");
+    const answer = await askExtension(fillExtension, { type: "encher", origin: route.origin, destination: route.destination, registration: plane.prefix,
+      fuel: fuel === null ? null : Math.round(toPounds(fuel)), mode: document.querySelector("#fill-mode").value }, 300000);
+    if (answer.ok) renderFill(answer);
+    else feedback.textContent = fillProblem(answer);
+  } catch (error) {
+    feedback.textContent = error.message === "timeout"
+      ? T("A extensão não respondeu a tempo. Confira o voo no PilOps antes de tentar de novo.", "The extension did not answer in time. Check the flight in PilOps before trying again.")
+      : T("A extensão parou de responder. Confira o voo no PilOps antes de tentar de novo.", "The extension stopped answering. Check the flight in PilOps before trying again.");
+  } finally {
+    trigger.disabled = false;
+  }
+}
+document.querySelector("#fill-run").addEventListener("click", () => { void fillFlight(); });
 
 function chooseLoadPlane(plane) {
   loadInput("plane").value = plane.prefix;
