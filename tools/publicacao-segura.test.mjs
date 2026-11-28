@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fuelStats, percentageMonitor, publicSnapshot } from "../coletor/publicacao.mjs";
-import { buildSnapshot } from "../coletor/dados.mjs";
+import { buildSnapshot, routesDropped } from "../coletor/dados.mjs";
 
 // fuel: combustível utilizado no voo (as "lbs" do histórico do PilOps).
 const flight = (date, revenue, fuel = 100, model = "Test Plane") => ({ pilot: "Piloto", prefix: "NABCDE", model,
@@ -130,4 +130,15 @@ test("sincronização do dono: publica voos novos sem receita e o coletor do Raf
   const reread = buildSnapshot({ ...base, flights: [flight("2026-11-11", 210, 95)] }, merged, new Date("2026-11-11T13:00:00Z")).snapshot;
   assert.equal(reread.flights.filter(item => item.date === "2026-11-11").length, 1);
   assert.equal(reread.flights.find(item => item.date === "2026-11-11").revenue, 210);
+});
+
+test("rotas: leitura com menos da metade das rotas publicadas é recusada e a malha publicada fica", () => {
+  // Revisão do Codex (28/11/2026): uma lista de rotas ainda carregando chegou a substituir a malha publicada.
+  const routes = count => Array.from({ length: count }, (_, i) => ({ origin: "LEMD", destination: "KRDU", code: "VTX" + (i + 1) }));
+  const published = { ...buildSnapshot(base, null).snapshot, routes: routes(10) };
+  assert.equal(buildSnapshot({ ...base, routes: routes(4) }, published), null);
+  assert.match(routesDropped({ routes: routes(4) }, published), /4 rotas ativas e o planejador tem 10/);
+  assert.ok(buildSnapshot({ ...base, routes: routes(5) }, published), "metade ainda é aceita (rotas desativadas de verdade)");
+  assert.ok(buildSnapshot({ ...base, routes: routes(1) }, { ...published, routes: routes(5) }), "malha pequena não trava");
+  assert.ok(buildSnapshot({ ...base, routes: routes(1) }, null), "primeira coleta não tem com o que comparar");
 });

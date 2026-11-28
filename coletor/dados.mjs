@@ -55,6 +55,15 @@ export function withPublished(previous, published) {
   return { ...base, flights: [...(base.flights || []), ...extra], flightsSince: base.flightsSince || published.flightsSince || null };
 }
 
+// Rotas lidas caindo para menos da metade das publicadas é quase sempre uma lista que não carregou inteira
+// (revisão do Codex, 28/11/2026): a leitura é recusada e as rotas publicadas ficam. Devolve o motivo ou null.
+export function routesDropped(input, previous) {
+  const before = Array.isArray(previous?.routes) ? previous.routes.length : 0;
+  const now = Array.isArray(input?.routes) ? input.routes.length : 0;
+  return before >= 6 && now < Math.ceil(before / 2)
+    ? "a leitura trouxe " + now + " rotas ativas e o planejador tem " + before + " (lista incompleta?)" : null;
+}
+
 // input: leitura da extensão; previous: dados.json publicado (ou null).
 export function buildSnapshot(input, previous, now = new Date()) {
   const data = input;
@@ -68,7 +77,7 @@ export function buildSnapshot(input, previous, now = new Date()) {
     new Set(fleet.map(p => p.prefix)).size !== fleet.length ||
     !routes.every(r => isRecord(r) && validCode(r.origin) && validCode(r.destination) &&
       r.origin !== r.destination && typeof r.code === "string" && /^VTX[0-9]{1,12}$/.test(r.code)) ||
-    !hubs.every(validCode) || new Set(hubs).size !== hubs.length) return null;
+    !hubs.every(validCode) || new Set(hubs).size !== hubs.length || routesDropped(data, previous)) return null;
 
   // Pilotos e voos são opcionais: se a leitura falhar, mantemos o que já estava publicado.
   const pilots = data.pilots === undefined || data.pilots === null ? null : cleanPilots(data.pilots);

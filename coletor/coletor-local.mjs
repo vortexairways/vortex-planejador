@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { buildSnapshot, withPublished } from "./dados.mjs";
+import { buildSnapshot, routesDropped, withPublished } from "./dados.mjs";
 import { publicSnapshot } from "./publicacao.mjs";
 
 const repo = fileURLToPath(new URL("../", import.meta.url));
@@ -173,7 +173,8 @@ const server = createServer(async (req, res) => {
     const built = buildSnapshot({ fleet, routes, hubs, reportedFleet, pilots, flights }, previous);
     if (!built) {
       json(res, 422, { error: "Leitura incompleta." });
-      return finish(1, "A leitura veio incompleta ou inválida. Os dados publicados foram mantidos.");
+      const dropped = routesDropped({ routes }, previous);
+      return finish(1, "A leitura veio incompleta ou inválida" + (dropped ? " (" + dropped + ")" : "") + ". Os dados publicados foram mantidos.");
     }
     const { snapshot, report } = built;
     const extras = privateHook ? await privateHook.arquivos(snapshot, repo) : [];

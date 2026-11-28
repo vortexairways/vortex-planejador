@@ -29,7 +29,8 @@ function fixture(shown = 10, expected = 11) {
     },
   };
   const location = { origin: "https://pilops.com", pathname: "/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1" };
-  return { state, fill, location, read: vm.runInNewContext(readerSource, { document, location }) };
+  // window: a leitura guarda ali o motivo de uma recusa (__vortexRecusado).
+  return { state, fill, location, read: vm.runInNewContext(readerSource, { document, location, window: {} }) };
 }
 
 test("não aceita os dez primeiros de onze e solicita a próxima página", () => {
