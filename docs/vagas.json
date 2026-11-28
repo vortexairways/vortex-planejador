@@ -1,6 +1,6 @@
 {
  "version": 1,
- "capturedAt": "2026-11-28T01:13:52.314Z",
+ "capturedAt": "2026-11-28T14:56:02.112Z",
  "total": 184,
  "stands": [
   {
@@ -330,11 +330,12 @@
   {
    "airport": "HLLM",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 18,
-    "text": "16.552 lbs / 90.000 lbs 18%",
+    "pct": 100,
+    "text": "89.970 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 16552
+    "value": 89970
    },
    "city": "Tripoli, LY",
    "code": "HLLM-C-04",
@@ -358,11 +359,12 @@
   {
    "airport": "HLLM",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 23,
-    "text": "20.415 lbs / 90.000 lbs 23%",
+    "pct": 100,
+    "text": "89.966 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 20415
+    "value": 89966
    },
    "city": "Tripoli, LY",
    "code": "HLLM-C-03",
@@ -712,11 +714,12 @@
   {
    "airport": "ENTC",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 99,
-    "text": "89.541 lbs / 90.000 lbs 99%",
+    "pct": 100,
+    "text": "89.949 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 89541
+    "value": 89949
    },
    "city": "Tromsø, NO",
    "code": "ENTC-C-02",
@@ -1155,6 +1158,33 @@
    },
    "city": "Tenerife, ES",
    "code": "GCXO-C-01",
+   "expires": "2026-12-25",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "KBNA",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Nashville, US",
+   "code": "KBNA-C-06",
    "expires": "2026-12-25",
    "pax": {
     "max": 1500,
@@ -1982,33 +2012,6 @@
    "size": "large"
   },
   {
-   "airport": "KBNA",
-   "cargo": {
-    "max": 90000,
-    "pct": 0,
-    "text": "0 lbs / 90.000 lbs 0%",
-    "unit": "lb",
-    "value": 0
-   },
-   "city": "Nashville, US",
-   "code": "KBNA-C-06",
-   "expires": "2026-12-25",
-   "pax": {
-    "max": 1500,
-    "pct": 0,
-    "text": "0 / 1500 Passageiros 0%",
-    "value": 0
-   },
-   "routes": {
-    "codes": [],
-    "count": 0,
-    "destinations": [],
-    "limit": 10,
-    "text": "0 / 10"
-   },
-   "size": "large"
-  },
-  {
    "airport": "UWSG",
    "cargo": {
     "max": 90000,
@@ -2468,6 +2471,33 @@
    "size": "large"
   },
   {
+   "airport": "UUWW",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Moscow, RU",
+   "code": "UUWW-C-05",
+   "expires": "2026-12-26",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
+   },
+   "size": "large"
+  },
+  {
    "airport": "ZYTL",
    "cargo": {
     "max": 90000,
@@ -2497,38 +2527,12 @@
   {
    "airport": "UUWW",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 0,
-    "text": "0 lbs / 90.000 lbs 0%",
+    "pct": 100,
+    "text": "89.987 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 0
-   },
-   "city": "Moscow, RU",
-   "code": "UUWW-C-05",
-   "expires": "2026-12-26",
-   "pax": {
-    "max": 1500,
-    "pct": 0,
-    "text": "0 / 1500 Passageiros 0%",
-    "value": 0
-   },
-   "routes": {
-    "codes": [],
-    "count": 0,
-    "destinations": [],
-    "limit": 10,
-    "text": "0 / 10"
-   },
-   "size": "large"
-  },
-  {
-   "airport": "UUWW",
-   "cargo": {
-    "max": 90000,
-    "pct": 29,
-    "text": "25.921 lbs / 90.000 lbs 29%",
-    "unit": "lb",
-    "value": 25921
+    "value": 89987
    },
    "city": "Moscow, RU",
    "code": "UUWW-C-02",
@@ -2537,8 +2541,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1499 / 1500 Passageiros 100%",
-    "value": 1499
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],
@@ -2552,11 +2556,12 @@
   {
    "airport": "UUWW",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 96,
-    "text": "85.971 lbs / 90.000 lbs 96%",
+    "pct": 100,
+    "text": "89.982 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 85971
+    "value": 89982
    },
    "city": "Moscow, RU",
    "code": "UUWW-C-03",
@@ -2580,11 +2585,12 @@
   {
    "airport": "UUWW",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 54,
-    "text": "48.174 lbs / 90.000 lbs 54%",
+    "pct": 100,
+    "text": "89.985 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 48174
+    "value": 89985
    },
    "city": "Moscow, RU",
    "code": "UUWW-C-04",
@@ -3148,20 +3154,22 @@
   {
    "airport": "LPPT",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 96,
-    "text": "86.473 lbs / 90.000 lbs 96%",
+    "pct": 100,
+    "text": "89.991 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 86473
+    "value": 89991
    },
    "city": "Lisbon, PT",
    "code": "LPPT-C-06",
    "expires": "2027-01-20",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 99,
-    "text": "1483 / 1500 Passageiros 99%",
-    "value": 1483
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],
@@ -3205,9 +3213,9 @@
     "full": true,
     "max": 90000,
     "pct": 100,
-    "text": "89.959 lbs / 90.000 lbs 100%",
+    "text": "89.988 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 89959
+    "value": 89988
    },
    "city": "St. John's, CA",
    "code": "CYYT-C-07",
@@ -3259,19 +3267,19 @@
    "airport": "SBCP",
    "cargo": {
     "max": 90000,
-    "pct": 94,
-    "text": "84.582 lbs / 90.000 lbs 94%",
+    "pct": 99,
+    "text": "89.302 lbs / 90.000 lbs 99%",
     "unit": "lb",
-    "value": 84582
+    "value": 89302
    },
    "city": "Campos Dos Goytacazes, BR",
    "code": "SBCP-C-01",
    "expires": "2027-02-11",
    "pax": {
     "max": 1500,
-    "pct": 98,
-    "text": "1475 / 1500 Passageiros 98%",
-    "value": 1475
+    "pct": 99,
+    "text": "1487 / 1500 Passageiros 99%",
+    "value": 1487
    },
    "routes": {
     "codes": [],
@@ -3341,18 +3349,18 @@
    "cargo": {
     "max": 90000,
     "pct": 99,
-    "text": "89.057 lbs / 90.000 lbs 99%",
+    "text": "89.424 lbs / 90.000 lbs 99%",
     "unit": "lb",
-    "value": 89057
+    "value": 89424
    },
    "city": "Dubai, AE",
    "code": "OMDM-C-01",
    "expires": "2027-02-20",
    "pax": {
     "max": 1500,
-    "pct": 98,
-    "text": "1472 / 1500 Passageiros 98%",
-    "value": 1472
+    "pct": 99,
+    "text": "1486 / 1500 Passageiros 99%",
+    "value": 1486
    },
    "routes": {
     "codes": [],
@@ -3367,19 +3375,20 @@
    "airport": "OMDM",
    "cargo": {
     "max": 90000,
-    "pct": 99,
-    "text": "89.423 lbs / 90.000 lbs 99%",
+    "pct": 98,
+    "text": "88.620 lbs / 90.000 lbs 98%",
     "unit": "lb",
-    "value": 89423
+    "value": 88620
    },
    "city": "Dubai, AE",
    "code": "OMDM-C-03",
    "expires": "2027-02-20",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 97,
-    "text": "1454 / 1500 Passageiros 97%",
-    "value": 1454
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],
@@ -3393,20 +3402,22 @@
   {
    "airport": "KRDU",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 97,
-    "text": "87.528 lbs / 90.000 lbs 97%",
+    "pct": 100,
+    "text": "89.757 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 87528
+    "value": 89757
    },
    "city": "Raleigh/Durham, US",
    "code": "KRDU-C-02",
    "expires": "2027-02-28",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 99,
-    "text": "1478 / 1500 Passageiros 99%",
-    "value": 1478
+    "pct": 100,
+    "text": "1498 / 1500 Passageiros 100%",
+    "value": 1498
    },
    "routes": {
     "codes": [],
@@ -3474,20 +3485,22 @@
   {
    "airport": "SBKP",
    "cargo": {
+    "full": true,
     "max": 8000,
-    "pct": 94,
-    "text": "7.503 lbs / 8.000 lbs 94%",
+    "pct": 100,
+    "text": "7.995 lbs / 8.000 lbs 100%",
     "unit": "lb",
-    "value": 7503
+    "value": 7995
    },
    "city": "Campinas, BR",
    "code": "SBKP-A-01",
    "expires": "2027-03-05",
    "pax": {
+    "full": true,
     "max": 120,
-    "pct": 99,
-    "text": "119 / 120 Passageiros 99%",
-    "value": 119
+    "pct": 100,
+    "text": "120 / 120 Passageiros 100%",
+    "value": 120
    },
    "routes": {
     "codes": [],
@@ -3555,11 +3568,12 @@
   {
    "airport": "KMKE",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 98,
-    "text": "88.247 lbs / 90.000 lbs 98%",
+    "pct": 100,
+    "text": "89.879 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 88247
+    "value": 89879
    },
    "city": "Milwaukee, US",
    "code": "KMKE-C-07",
@@ -3567,8 +3581,8 @@
    "pax": {
     "max": 1500,
     "pct": 99,
-    "text": "1490 / 1500 Passageiros 99%",
-    "value": 1490
+    "text": "1484 / 1500 Passageiros 99%",
+    "value": 1484
    },
    "routes": {
     "codes": [],
@@ -3744,11 +3758,12 @@
   {
    "airport": "GCTS",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 96,
-    "text": "86.139 lbs / 90.000 lbs 96%",
+    "pct": 100,
+    "text": "89.818 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 86139
+    "value": 89818
    },
    "city": "Tenerife, ES",
    "code": "GCTS-C-05",
@@ -3757,8 +3772,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1500 / 1500 Passageiros 100%",
-    "value": 1500
+    "text": "1499 / 1500 Passageiros 100%",
+    "value": 1499
    },
    "routes": {
     "codes": [],
@@ -3775,9 +3790,9 @@
     "full": true,
     "max": 90000,
     "pct": 100,
-    "text": "89.993 lbs / 90.000 lbs 100%",
+    "text": "89.898 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 89993
+    "value": 89898
    },
    "city": "Tenerife, ES",
    "code": "GCTS-C-07",
@@ -3909,20 +3924,22 @@
   {
    "airport": "SBCT",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 98,
-    "text": "87.964 lbs / 90.000 lbs 98%",
+    "pct": 100,
+    "text": "89.812 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 87964
+    "value": 89812
    },
    "city": "Curitiba, BR",
    "code": "SBCT-C-02",
    "expires": "2027-10-03",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 99,
-    "text": "1485 / 1500 Passageiros 99%",
-    "value": 1485
+    "pct": 100,
+    "text": "1498 / 1500 Passageiros 100%",
+    "value": 1498
    },
    "routes": {
     "codes": [],
@@ -3963,20 +3980,22 @@
   {
    "airport": "SABE",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 99,
-    "text": "88.865 lbs / 90.000 lbs 99%",
+    "pct": 100,
+    "text": "89.739 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 88865
+    "value": 89739
    },
    "city": "Buenos Aires, AR",
    "code": "SABE-C-02",
    "expires": "2027-10-03",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 99,
-    "text": "1491 / 1500 Passageiros 99%",
-    "value": 1491
+    "pct": 100,
+    "text": "1495 / 1500 Passageiros 100%",
+    "value": 1495
    },
    "routes": {
     "codes": [],
@@ -4017,12 +4036,11 @@
   {
    "airport": "OTHH",
    "cargo": {
-    "full": true,
     "max": 90000,
-    "pct": 100,
-    "text": "89.978 lbs / 90.000 lbs 100%",
+    "pct": 99,
+    "text": "89.074 lbs / 90.000 lbs 99%",
     "unit": "lb",
-    "value": 89978
+    "value": 89074
    },
    "city": "Doha, QA",
    "code": "OTHH-C-01",
@@ -4031,8 +4049,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1500 / 1500 Passageiros 100%",
-    "value": 1500
+    "text": "1499 / 1500 Passageiros 100%",
+    "value": 1499
    },
    "routes": {
     "codes": [],
@@ -4076,18 +4094,19 @@
     "full": true,
     "max": 90000,
     "pct": 100,
-    "text": "89.652 lbs / 90.000 lbs 100%",
+    "text": "89.936 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 89652
+    "value": 89936
    },
    "city": "Helsinki, FI",
    "code": "EFHK-C-02",
    "expires": "2027-10-18",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 93,
-    "text": "1399 / 1500 Passageiros 93%",
-    "value": 1399
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],
@@ -4133,9 +4152,9 @@
     "full": true,
     "max": 90000,
     "pct": 100,
-    "text": "89.972 lbs / 90.000 lbs 100%",
+    "text": "89.591 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 89972
+    "value": 89591
    },
    "city": "Montijo, PT",
    "code": "LPMT-C-01",
@@ -4144,8 +4163,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1494 / 1500 Passageiros 100%",
-    "value": 1494
+    "text": "1499 / 1500 Passageiros 100%",
+    "value": 1499
    },
    "routes": {
     "codes": [],
@@ -4184,13 +4203,43 @@
    "size": "large"
   },
   {
+   "airport": "SBGL",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.987 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89987
+   },
+   "city": "Rio De Janeiro, BR",
+   "code": "SBGL-C-05",
+   "expires": "2027-10-20",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1497 / 1500 Passageiros 100%",
+    "value": 1497
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
    "airport": "SBEG",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 98,
-    "text": "88.276 lbs / 90.000 lbs 98%",
+    "pct": 100,
+    "text": "89.927 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 88276
+    "value": 89927
    },
    "city": "Manaus, BR",
    "code": "SBEG-C-03",
@@ -4198,8 +4247,8 @@
    "pax": {
     "max": 1500,
     "pct": 99,
-    "text": "1486 / 1500 Passageiros 99%",
-    "value": 1486
+    "text": "1488 / 1500 Passageiros 99%",
+    "value": 1488
    },
    "routes": {
     "codes": [],
@@ -4213,11 +4262,12 @@
   {
    "airport": "SBRF",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 98,
-    "text": "88.524 lbs / 90.000 lbs 98%",
+    "pct": 100,
+    "text": "89.862 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 88524
+    "value": 89862
    },
    "city": "Recife, BR",
    "code": "SBRF-C-03",
@@ -4226,8 +4276,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1496 / 1500 Passageiros 100%",
-    "value": 1496
+    "text": "1497 / 1500 Passageiros 100%",
+    "value": 1497
    },
    "routes": {
     "codes": [],
@@ -4255,8 +4305,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1497 / 1500 Passageiros 100%",
-    "value": 1497
+    "text": "1498 / 1500 Passageiros 100%",
+    "value": 1498
    },
    "routes": {
     "codes": [],
@@ -4295,34 +4345,6 @@
    "size": "large"
   },
   {
-   "airport": "SBGL",
-   "cargo": {
-    "max": 90000,
-    "pct": 97,
-    "text": "86.927 lbs / 90.000 lbs 97%",
-    "unit": "lb",
-    "value": 86927
-   },
-   "city": "Rio De Janeiro, BR",
-   "code": "SBGL-C-05",
-   "expires": "2027-10-20",
-   "pax": {
-    "full": true,
-    "max": 1500,
-    "pct": 100,
-    "text": "1498 / 1500 Passageiros 100%",
-    "value": 1498
-   },
-   "routes": {
-    "codes": [],
-    "count": 1,
-    "destinations": [],
-    "limit": 10,
-    "text": "1 / 10"
-   },
-   "size": "large"
-  },
-  {
    "airport": "SBRJ",
    "cargo": {
     "max": 90000,
@@ -4352,11 +4374,12 @@
   {
    "airport": "SBKP",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 96,
-    "text": "86.789 lbs / 90.000 lbs 96%",
+    "pct": 100,
+    "text": "89.917 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 86789
+    "value": 89917
    },
    "city": "Campinas, BR",
    "code": "SBKP-C-02",
@@ -4365,8 +4388,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1493 / 1500 Passageiros 100%",
-    "value": 1493
+    "text": "1498 / 1500 Passageiros 100%",
+    "value": 1498
    },
    "routes": {
     "codes": [],
@@ -4439,9 +4462,9 @@
     "full": true,
     "max": 90000,
     "pct": 100,
-    "text": "89.584 lbs / 90.000 lbs 100%",
+    "text": "89.879 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 89584
+    "value": 89879
    },
    "city": "Tokyo, JP",
    "code": "RJTT-C-06",
@@ -4449,8 +4472,8 @@
    "pax": {
     "max": 1500,
     "pct": 99,
-    "text": "1492 / 1500 Passageiros 99%",
-    "value": 1492
+    "text": "1486 / 1500 Passageiros 99%",
+    "value": 1486
    },
    "routes": {
     "codes": [],
@@ -4467,9 +4490,9 @@
     "full": true,
     "max": 90000,
     "pct": 100,
-    "text": "89.903 lbs / 90.000 lbs 100%",
+    "text": "89.880 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 89903
+    "value": 89880
    },
    "city": "Tokyo, JP",
    "code": "RJTT-C-07",
@@ -4478,8 +4501,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1499 / 1500 Passageiros 100%",
-    "value": 1499
+    "text": "1493 / 1500 Passageiros 100%",
+    "value": 1493
    },
    "routes": {
     "codes": [],
@@ -4494,19 +4517,20 @@
    "airport": "RJTT",
    "cargo": {
     "max": 90000,
-    "pct": 99,
-    "text": "89.452 lbs / 90.000 lbs 99%",
+    "pct": 20,
+    "text": "17.731 lbs / 90.000 lbs 20%",
     "unit": "lb",
-    "value": 89452
+    "value": 17731
    },
    "city": "Tokyo, JP",
    "code": "RJTT-C-01",
    "expires": "2027-10-29",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 96,
-    "text": "1447 / 1500 Passageiros 96%",
-    "value": 1447
+    "pct": 100,
+    "text": "1499 / 1500 Passageiros 100%",
+    "value": 1499
    },
    "routes": {
     "codes": [],
@@ -4547,21 +4571,50 @@
   {
    "airport": "KRDU",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 98,
-    "text": "88.142 lbs / 90.000 lbs 98%",
+    "pct": 100,
+    "text": "89.998 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 88142
+    "value": 89998
    },
    "city": "Raleigh/Durham, US",
    "code": "KRDU-C-03",
    "expires": "2027-11-02",
    "pax": {
+    "max": 1500,
+    "pct": 99,
+    "text": "1488 / 1500 Passageiros 99%",
+    "value": 1488
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LTAI",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.955 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89955
+   },
+   "city": "Antalya, TR",
+   "code": "LTAI-C-02",
+   "expires": "2027-11-03",
+   "pax": {
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1500 / 1500 Passageiros 100%",
-    "value": 1500
+    "text": "1497 / 1500 Passageiros 100%",
+    "value": 1497
    },
    "routes": {
     "codes": [],
@@ -4600,51 +4653,24 @@
    "size": "medium"
   },
   {
-   "airport": "LTAI",
-   "cargo": {
-    "full": true,
-    "max": 90000,
-    "pct": 100,
-    "text": "89.921 lbs / 90.000 lbs 100%",
-    "unit": "lb",
-    "value": 89921
-   },
-   "city": "Antalya, TR",
-   "code": "LTAI-C-02",
-   "expires": "2027-11-03",
-   "pax": {
-    "full": true,
-    "max": 1500,
-    "pct": 100,
-    "text": "1500 / 1500 Passageiros 100%",
-    "value": 1500
-   },
-   "routes": {
-    "codes": [],
-    "count": 1,
-    "destinations": [],
-    "limit": 10,
-    "text": "1 / 10"
-   },
-   "size": "large"
-  },
-  {
    "airport": "EFHK",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 97,
-    "text": "87.313 lbs / 90.000 lbs 97%",
+    "pct": 100,
+    "text": "89.834 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 87313
+    "value": 89834
    },
    "city": "Helsinki, FI",
    "code": "EFHK-C-04",
    "expires": "2027-11-09",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 98,
-    "text": "1474 / 1500 Passageiros 98%",
-    "value": 1474
+    "pct": 100,
+    "text": "1499 / 1500 Passageiros 100%",
+    "value": 1499
    },
    "routes": {
     "codes": [],
@@ -4658,12 +4684,11 @@
   {
    "airport": "LTAI",
    "cargo": {
-    "full": true,
     "max": 90000,
-    "pct": 100,
-    "text": "89.946 lbs / 90.000 lbs 100%",
+    "pct": 97,
+    "text": "87.722 lbs / 90.000 lbs 97%",
     "unit": "lb",
-    "value": 89946
+    "value": 87722
    },
    "city": "Antalya, TR",
    "code": "LTAI-C-06",
@@ -4687,20 +4712,22 @@
   {
    "airport": "SUMU",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 44,
-    "text": "39.475 lbs / 90.000 lbs 44%",
+    "pct": 100,
+    "text": "89.864 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 39475
+    "value": 89864
    },
    "city": "Montevideo, UY",
    "code": "SUMU-C-01",
    "expires": "2027-11-10",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 98,
-    "text": "1475 / 1500 Passageiros 98%",
-    "value": 1475
+    "pct": 100,
+    "text": "1495 / 1500 Passageiros 100%",
+    "value": 1495
    },
    "routes": {
     "codes": [],
@@ -4715,10 +4742,10 @@
    "airport": "SBCG",
    "cargo": {
     "max": 90000,
-    "pct": 99,
-    "text": "88.877 lbs / 90.000 lbs 99%",
+    "pct": 94,
+    "text": "84.238 lbs / 90.000 lbs 94%",
     "unit": "lb",
-    "value": 88877
+    "value": 84238
    },
    "city": "Campo Grande, BR",
    "code": "SBCG-C-01",
@@ -4726,8 +4753,8 @@
    "pax": {
     "max": 1500,
     "pct": 99,
-    "text": "1482 / 1500 Passageiros 99%",
-    "value": 1482
+    "text": "1490 / 1500 Passageiros 99%",
+    "value": 1490
    },
    "routes": {
     "codes": [],
@@ -4742,20 +4769,19 @@
    "airport": "SBMA",
    "cargo": {
     "max": 90000,
-    "pct": 98,
-    "text": "88.539 lbs / 90.000 lbs 98%",
+    "pct": 99,
+    "text": "89.208 lbs / 90.000 lbs 99%",
     "unit": "lb",
-    "value": 88539
+    "value": 89208
    },
    "city": "Marabá, BR",
    "code": "SBMA-C-01",
    "expires": "2027-11-10",
    "pax": {
-    "full": true,
     "max": 1500,
-    "pct": 100,
-    "text": "1493 / 1500 Passageiros 100%",
-    "value": 1493
+    "pct": 99,
+    "text": "1486 / 1500 Passageiros 99%",
+    "value": 1486
    },
    "routes": {
     "codes": [],
@@ -4796,45 +4822,15 @@
   {
    "airport": "LEMD",
    "cargo": {
-    "full": true,
     "max": 90000,
-    "pct": 100,
-    "text": "89.979 lbs / 90.000 lbs 100%",
+    "pct": 16,
+    "text": "14.221 lbs / 90.000 lbs 16%",
     "unit": "lb",
-    "value": 89979
+    "value": 14221
    },
    "city": "Madrid, ES",
    "code": "LEMD-C-02",
    "expires": "2027-11-18",
-   "pax": {
-    "full": true,
-    "max": 1500,
-    "pct": 100,
-    "text": "1500 / 1500 Passageiros 100%",
-    "value": 1500
-   },
-   "routes": {
-    "codes": [],
-    "count": 1,
-    "destinations": [],
-    "limit": 10,
-    "text": "1 / 10"
-   },
-   "size": "large"
-  },
-  {
-   "airport": "LEMD",
-   "cargo": {
-    "full": true,
-    "max": 90000,
-    "pct": 124,
-    "text": "111.279 lbs / 90.000 lbs 124%",
-    "unit": "lb",
-    "value": 111279
-   },
-   "city": "Madrid, ES",
-   "code": "LEMD-C-05",
-   "expires": "2027-11-28",
    "pax": {
     "full": true,
     "max": 1500,
@@ -4855,13 +4851,13 @@
    "airport": "LEMD",
    "cargo": {
     "max": 90000,
-    "pct": 9,
-    "text": "7.839 lbs / 90.000 lbs 9%",
+    "pct": 98,
+    "text": "88.134 lbs / 90.000 lbs 98%",
     "unit": "lb",
-    "value": 7839
+    "value": 88134
    },
    "city": "Madrid, ES",
-   "code": "LEMD-C-06",
+   "code": "LEMD-C-05",
    "expires": "2027-11-28",
    "pax": {
     "full": true,
@@ -4880,22 +4876,53 @@
    "size": "large"
   },
   {
+   "airport": "LEMD",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.999 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89999
+   },
+   "city": "Madrid, ES",
+   "code": "LEMD-C-06",
+   "expires": "2027-11-28",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
    "airport": "EFHK",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 9,
-    "text": "8.529 lbs / 90.000 lbs 9%",
+    "pct": 100,
+    "text": "89.956 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 8529
+    "value": 89956
    },
    "city": "Helsinki, FI",
    "code": "EFHK-C-01",
    "expires": "2028-01-18",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 94,
-    "text": "1405 / 1500 Passageiros 94%",
-    "value": 1405
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],
@@ -4920,10 +4947,11 @@
    "code": "LEMD-C-03",
    "expires": "2028-01-18",
    "pax": {
+    "full": true,
     "max": 1500,
-    "pct": 93,
-    "text": "1391 / 1500 Passageiros 93%",
-    "value": 1391
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],
@@ -4937,22 +4965,20 @@
   {
    "airport": "LEMD",
    "cargo": {
-    "full": true,
     "max": 90000,
-    "pct": 120,
-    "text": "108.272 lbs / 90.000 lbs 120%",
+    "pct": 74,
+    "text": "66.841 lbs / 90.000 lbs 74%",
     "unit": "lb",
-    "value": 108272
+    "value": 66841
    },
    "city": "Madrid, ES",
    "code": "LEMD-C-01",
    "expires": "2028-01-18",
    "pax": {
-    "full": true,
     "max": 1500,
-    "pct": 118,
-    "text": "1773 / 1500 Passageiros 118%",
-    "value": 1773
+    "pct": 93,
+    "text": "1392 / 1500 Passageiros 93%",
+    "value": 1392
    },
    "routes": {
     "codes": [],
@@ -4966,21 +4992,21 @@
   {
    "airport": "SBSP",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 98,
-    "text": "87.866 lbs / 90.000 lbs 98%",
+    "pct": 100,
+    "text": "89.674 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 87866
+    "value": 89674
    },
    "city": "São Paulo, BR",
    "code": "SBSP-C-02",
    "expires": "2028-10-03",
    "pax": {
-    "full": true,
     "max": 1500,
-    "pct": 100,
-    "text": "1498 / 1500 Passageiros 100%",
-    "value": 1498
+    "pct": 99,
+    "text": "1483 / 1500 Passageiros 99%",
+    "value": 1483
    },
    "routes": {
     "codes": [],
@@ -4994,11 +5020,12 @@
   {
    "airport": "SBSP",
    "cargo": {
+    "full": true,
     "max": 90000,
-    "pct": 98,
-    "text": "87.855 lbs / 90.000 lbs 98%",
+    "pct": 100,
+    "text": "89.991 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 87855
+    "value": 89991
    },
    "city": "São Paulo, BR",
    "code": "SBSP-C-03",
@@ -5007,8 +5034,8 @@
     "full": true,
     "max": 1500,
     "pct": 100,
-    "text": "1499 / 1500 Passageiros 100%",
-    "value": 1499
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],

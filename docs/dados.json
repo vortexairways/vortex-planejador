@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-27T22:25:55.244Z",
+ "capturedAt": "2026-11-28T14:56:02.112Z",
  "reportedFleet": 18,
  "fleet": [
   {
@@ -40,16 +40,16 @@
   {
    "prefix": "N6KZLB",
    "model": "Douglas MD-11",
-   "airport": "LEMD",
+   "airport": "RJTT",
    "base": "KJFK",
-   "status": "EM USO"
+   "status": "Sem alerta no cartão"
   },
   {
    "prefix": "N2IUPG",
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "LEMD",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "N4XBCS",
@@ -84,12 +84,12 @@
    "model": "Douglas MD-11",
    "airport": "LEMD",
    "base": "RJTT",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NUNFUD",
    "model": "Douglas MD-11",
-   "airport": "EFHK",
+   "airport": "RJTT",
    "base": "OTHH",
    "status": "Sem alerta no cartão"
   },
@@ -98,7 +98,7 @@
    "model": "Douglas MD-11",
    "airport": "RJTT",
    "base": "SBGL",
-   "status": "Sem alerta no cartão"
+   "status": "EM USO"
   },
   {
    "prefix": "NE2XUQ",
@@ -117,41 +117,61 @@
   {
    "prefix": "N6D7I2",
    "model": "Airbus A380",
-   "airport": "UUWW",
+   "airport": "GCTS",
    "base": "LEMD",
    "status": "EM USO"
   }
  ],
  "routes": [
   {
-   "origin": "ENTC",
-   "destination": "HLLM",
-   "code": "VTX0000"
+   "origin": "LEMD",
+   "destination": "RJTT",
+   "code": "VTX0001"
   },
   {
-   "origin": "UUWW",
-   "destination": "ENTC",
-   "code": "VTX0000"
+   "origin": "RJTT",
+   "destination": "LEMD",
+   "code": "VTX0002"
   },
   {
-   "origin": "ENTC",
-   "destination": "GCTS",
-   "code": "VTX0000"
+   "origin": "SBGL",
+   "destination": "LEMD",
+   "code": "VTX0008"
   },
   {
-   "origin": "GCTS",
-   "destination": "ENTC",
-   "code": "VTX0000"
+   "origin": "KRDU",
+   "destination": "SBGL",
+   "code": "VTX0002"
   },
   {
-   "origin": "HLLM",
-   "destination": "GCTS",
-   "code": "VTX0000"
+   "origin": "OTHH",
+   "destination": "RJTT",
+   "code": "VTX0007"
   },
   {
-   "origin": "UUWW",
-   "destination": "HLLM",
-   "code": "VTX0000"
+   "origin": "LPPT",
+   "destination": "LPMT",
+   "code": "VTX0005"
+  },
+  {
+   "origin": "SBSP",
+   "destination": "LTAI",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "KRDU",
+   "destination": "SBKP",
+   "code": "VTX4444"
+  },
+  {
+   "origin": "CYYT",
+   "destination": "KMKE",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "LTAI",
+   "destination": "OTHH",
+   "code": "VTX5555"
   },
   {
    "origin": "ENTC",
@@ -159,19 +179,129 @@
    "code": "VTX0000"
   },
   {
-   "origin": "HLLM",
-   "destination": "ENTC",
-   "code": "VTX0000"
-  },
-  {
    "origin": "UUWW",
    "destination": "GCTS",
    "code": "VTX0000"
   },
   {
-   "origin": "SBSP",
-   "destination": "EFHK",
+   "origin": "SBGL",
+   "destination": "SUMU",
+   "code": "VTX0002"
+  },
+  {
+   "origin": "UUWW",
+   "destination": "ENTC",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "UUWW",
+   "destination": "HLLM",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "OTHH",
    "code": "VTX0001"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "KRDU",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "SBCT",
+   "destination": "SBCF",
+   "code": "VTX0087"
+  },
+  {
+   "origin": "HLLM",
+   "destination": "ENTC",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "HLLM",
+   "destination": "GCTS",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "OTHH",
+   "destination": "LEMD",
+   "code": "VTX0092"
+  },
+  {
+   "origin": "EFHK",
+   "destination": "RJTT",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "LTAI",
+   "destination": "GCTS",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "ENTC",
+   "destination": "GCTS",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "KMKE",
+   "destination": "SBSP",
+   "code": "VTX2222"
+  },
+  {
+   "origin": "ENTC",
+   "destination": "HLLM",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "SABE",
+   "destination": "SBCT",
+   "code": "VTX0082"
+  },
+  {
+   "origin": "EFHK",
+   "destination": "OTHH",
+   "code": "VTX0091"
+  },
+  {
+   "origin": "LPMT",
+   "destination": "LPPT",
+   "code": "VTX0006"
+  },
+  {
+   "origin": "SBEG",
+   "destination": "SBRF",
+   "code": "VTX0093"
+  },
+  {
+   "origin": "SBKP",
+   "destination": "KRDU",
+   "code": "VTX3333"
+  },
+  {
+   "origin": "GCTS",
+   "destination": "ENTC",
+   "code": "VTX0000"
+  },
+  {
+   "origin": "OMDM",
+   "destination": "RJTT",
+   "code": "VTX5555"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "KRDU",
+   "code": "VTX0001"
+  },
+  {
+   "origin": "RJTT",
+   "destination": "OMDM",
+   "code": "VTX4444"
+  },
+  {
+   "origin": "SUMU",
+   "destination": "SBCG",
+   "code": "VTX0099"
   },
   {
    "origin": "SBRF",
@@ -180,148 +310,8 @@
   },
   {
    "origin": "EFHK",
-   "destination": "RJTT",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "LEMD",
-   "destination": "OTHH",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "LEMD",
-   "destination": "KRDU",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "RJTT",
-   "destination": "KRDU",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "LEMD",
-   "destination": "RJTT",
-   "code": "VTX0001"
-  },
-  {
-   "origin": "RJTT",
-   "destination": "EFHK",
-   "code": "VTX0002"
-  },
-  {
-   "origin": "EFHK",
    "destination": "SBSP",
    "code": "VTX0002"
-  },
-  {
-   "origin": "SBGL",
-   "destination": "SUMU",
-   "code": "VTX0002"
-  },
-  {
-   "origin": "RJTT",
-   "destination": "LEMD",
-   "code": "VTX0002"
-  },
-  {
-   "origin": "KRDU",
-   "destination": "SBGL",
-   "code": "VTX0002"
-  },
-  {
-   "origin": "SBMA",
-   "destination": "SBRF",
-   "code": "VTX0003"
-  },
-  {
-   "origin": "LPPT",
-   "destination": "LPMT",
-   "code": "VTX0005"
-  },
-  {
-   "origin": "SBKP",
-   "destination": "SBGL",
-   "code": "VTX0006"
-  },
-  {
-   "origin": "LPMT",
-   "destination": "LPPT",
-   "code": "VTX0006"
-  },
-  {
-   "origin": "OTHH",
-   "destination": "RJTT",
-   "code": "VTX0007"
-  },
-  {
-   "origin": "SBGL",
-   "destination": "LEMD",
-   "code": "VTX0008"
-  },
-  {
-   "origin": "LEMD",
-   "destination": "SBGL",
-   "code": "VTX0009"
-  },
-  {
-   "origin": "SABE",
-   "destination": "SBCT",
-   "code": "VTX0082"
-  },
-  {
-   "origin": "SBCT",
-   "destination": "SBCF",
-   "code": "VTX0087"
-  },
-  {
-   "origin": "LEMD",
-   "destination": "EFHK",
-   "code": "VTX0090"
-  },
-  {
-   "origin": "EFHK",
-   "destination": "OTHH",
-   "code": "VTX0091"
-  },
-  {
-   "origin": "OTHH",
-   "destination": "LEMD",
-   "code": "VTX0092"
-  },
-  {
-   "origin": "SBEG",
-   "destination": "SBRF",
-   "code": "VTX0093"
-  },
-  {
-   "origin": "SUMU",
-   "destination": "SBCG",
-   "code": "VTX0099"
-  },
-  {
-   "origin": "SBCG",
-   "destination": "SBMA",
-   "code": "VTX0099"
-  },
-  {
-   "origin": "LTAI",
-   "destination": "GCTS",
-   "code": "VTX2222"
-  },
-  {
-   "origin": "SBSP",
-   "destination": "LTAI",
-   "code": "VTX2222"
-  },
-  {
-   "origin": "KMKE",
-   "destination": "SBSP",
-   "code": "VTX2222"
-  },
-  {
-   "origin": "CYYT",
-   "destination": "KMKE",
-   "code": "VTX2222"
   },
   {
    "origin": "GCTS",
@@ -329,14 +319,19 @@
    "code": "VTX2222"
   },
   {
+   "origin": "SBSP",
+   "destination": "EFHK",
+   "code": "VTX0001"
+  },
+  {
    "origin": "SBCP",
    "destination": "OMDM",
    "code": "VTX3331"
   },
   {
-   "origin": "SBKP",
-   "destination": "KRDU",
-   "code": "VTX3333"
+   "origin": "SBMA",
+   "destination": "SBRF",
+   "code": "VTX0003"
   },
   {
    "origin": "OMDM",
@@ -344,24 +339,29 @@
    "code": "VTX4444"
   },
   {
-   "origin": "KRDU",
-   "destination": "SBKP",
-   "code": "VTX4444"
+   "origin": "SBCG",
+   "destination": "SBMA",
+   "code": "VTX0099"
+  },
+  {
+   "origin": "LEMD",
+   "destination": "EFHK",
+   "code": "VTX0090"
   },
   {
    "origin": "RJTT",
-   "destination": "OMDM",
-   "code": "VTX4444"
+   "destination": "EFHK",
+   "code": "VTX0002"
   },
   {
-   "origin": "OMDM",
-   "destination": "RJTT",
-   "code": "VTX5555"
+   "origin": "LEMD",
+   "destination": "SBGL",
+   "code": "VTX0009"
   },
   {
-   "origin": "LTAI",
-   "destination": "OTHH",
-   "code": "VTX5555"
+   "origin": "SBKP",
+   "destination": "SBGL",
+   "code": "VTX0006"
   }
  ],
  "hubs": [
@@ -380,31 +380,31 @@
    "name": "astronauta",
    "role": "ADMIN",
    "level": null,
-   "totalMinutes": 138440,
-   "companyMinutes": 128140,
+   "totalMinutes": 138883,
+   "companyMinutes": 128583,
    "joined": "2026-05-23"
   },
   {
    "name": "Titanocs",
    "role": null,
    "level": null,
-   "totalMinutes": 24061,
-   "companyMinutes": 11948,
+   "totalMinutes": 24631,
+   "companyMinutes": 12518,
    "joined": "2026-10-20"
   },
   {
    "name": "FabianoEgidio",
    "role": null,
    "level": null,
-   "totalMinutes": 166947,
-   "companyMinutes": 2840,
+   "totalMinutes": 167694,
+   "companyMinutes": 3587,
    "joined": "2026-11-24"
   },
   {
    "name": "nassis89",
    "role": null,
    "level": null,
-   "totalMinutes": 14415,
+   "totalMinutes": 14890,
    "companyMinutes": 1900,
    "joined": "2026-11-10"
   },
@@ -428,7 +428,7 @@
    "name": "marcelocanela",
    "role": null,
    "level": null,
-   "totalMinutes": 13877,
+   "totalMinutes": 13944,
    "companyMinutes": 221,
    "joined": "2026-11-07"
   },
@@ -468,7 +468,7 @@
    "name": "wolfwet",
    "role": null,
    "level": null,
-   "totalMinutes": 0,
+   "totalMinutes": 353,
    "companyMinutes": 0,
    "joined": "2026-11-27"
   },
@@ -497,8 +497,41 @@
    "joined": "2026-11-09"
   }
  ],
- "pilotsCapturedAt": "2026-11-27T22:25:55.244Z",
+ "pilotsCapturedAt": "2026-11-28T14:56:02.112Z",
  "flights": [
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "HLLM",
+   "destination": "GCTS",
+   "date": "2026-11-28",
+   "minutes": 194,
+   "nm": 1565.88,
+   "paid": true
+  },
+  {
+   "pilot": "FabianoEgidio",
+   "prefix": "N6KZLB",
+   "model": "Douglas MD-11",
+   "origin": "LEMD",
+   "destination": "RJTT",
+   "date": "2026-11-28",
+   "minutes": 747,
+   "nm": 5810.2,
+   "paid": true
+  },
+  {
+   "pilot": "Titanocs",
+   "prefix": "NUNFUD",
+   "model": "Douglas MD-11",
+   "origin": "EFHK",
+   "destination": "RJTT",
+   "date": "2026-11-28",
+   "minutes": 570,
+   "nm": 4221.66,
+   "paid": true
+  },
   {
    "pilot": "astronauta",
    "prefix": "N6KZLB",
@@ -552,6 +585,17 @@
    "date": "2026-11-27",
    "minutes": 747,
    "nm": 5810.2,
+   "paid": true
+  },
+  {
+   "pilot": "astronauta",
+   "prefix": "N6D7I2",
+   "model": "Airbus A380",
+   "origin": "UUWW",
+   "destination": "HLLM",
+   "date": "2026-11-27",
+   "minutes": 249,
+   "nm": 1689.74,
    "paid": true
   },
   {
@@ -1646,7 +1690,7 @@
  ],
  "flightsSince": "2026-11-02",
  "revenueMonitor": {
-  "readCount": 101,
+  "readCount": 105,
   "groups": [
    {
     "origin": "LEMD",
@@ -1706,10 +1750,10 @@
     "origin": "LEMD",
     "destination": "RJTT",
     "model": "Douglas MD-11",
-    "count": 4,
-    "lastDate": "2026-11-22",
-    "change": 0.359626,
-    "state": "alta"
+    "count": 5,
+    "lastDate": "2026-11-28",
+    "change": -0.087925,
+    "state": "estavel"
    },
    {
     "origin": "OTHH",
@@ -2000,6 +2044,15 @@
     "state": "unico"
    },
    {
+    "origin": "UUWW",
+    "destination": "HLLM",
+    "model": "Airbus A380",
+    "count": 1,
+    "lastDate": "2026-11-27",
+    "change": null,
+    "state": "unico"
+   },
+   {
     "origin": "ENTC",
     "destination": "UUWW",
     "model": "Airbus A380",
@@ -2007,11 +2060,36 @@
     "lastDate": "2026-11-27",
     "change": null,
     "state": "unico"
+   },
+   {
+    "origin": "EFHK",
+    "destination": "RJTT",
+    "model": "Douglas MD-11",
+    "count": 1,
+    "lastDate": "2026-11-28",
+    "change": null,
+    "state": "unico"
+   },
+   {
+    "origin": "HLLM",
+    "destination": "GCTS",
+    "model": "Airbus A380",
+    "count": 1,
+    "lastDate": "2026-11-28",
+    "change": null,
+    "state": "unico"
    }
   ]
  },
  "fuelStats": {
   "routes": [
+   {
+    "origin": "LEMD",
+    "destination": "RJTT",
+    "model": "Douglas MD-11",
+    "count": 5,
+    "fuel": 144600
+   },
    {
     "origin": "OTHH",
     "destination": "LEMD",
@@ -2069,13 +2147,6 @@
     "fuel": 89100
    },
    {
-    "origin": "LEMD",
-    "destination": "RJTT",
-    "model": "Douglas MD-11",
-    "count": 4,
-    "fuel": 141700
-   },
-   {
     "origin": "KRDU",
     "destination": "SBGL",
     "model": "Douglas MD-11",
@@ -2099,22 +2170,22 @@
   ],
   "models": [
    {
+    "model": "Airbus A380",
+    "count": 13,
+    "perHour": 20000,
+    "perNm": 43
+   },
+   {
     "model": "Douglas MD-11",
     "count": 30,
-    "perHour": 12600,
-    "perNm": 29
+    "perHour": 12800,
+    "perNm": 29.5
    },
    {
     "model": "Airbus A330",
     "count": 12,
     "perHour": 11650,
     "perNm": 33
-   },
-   {
-    "model": "Airbus A380",
-    "count": 11,
-    "perHour": 27150,
-    "perNm": 51.5
    },
    {
     "model": "Airbus A320neo",
