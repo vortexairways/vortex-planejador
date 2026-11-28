@@ -58,18 +58,43 @@ function readCompany(section, openTab) {
     return hubs.length && hubs.length === expected ? hubs : null;
   }
   if (section === "Rotas") {
+    // Cada rota é uma linha: "ORIG → DEST" + código VTX, descrição, carga, passageiros e o selo de status.
+    // Para o dono a linha tem mais coisa (números em carga e passageiros, talvez botões depois do status):
+    // em 28/11/2026 a 2.0.6 recusou a página do Astro porque exigia "Ativo" como último texto da linha.
+    // Por isso o status é procurado como linha própria em qualquer ponto da linha, e o total de rotas
+    // também vale no formato "48 / 60 rotas". O motivo de uma recusa fica em __vortexRecusado.
+    const refuse = (reason, row) => {
+      window.__vortexRecusado = ("rotas: " + reason + (row ? " | linha: " +
+        row.innerText.split("\n").map(t => t.trim()).filter(Boolean).join(" | ") : "")).slice(0, 400);
+      return null;
+    };
     const codes = [...document.querySelectorAll("p")].filter(el =>
       el.getClientRects().length && /^VTX\d+$/.test(el.innerText.trim()));
-    const expected = Number(body.match(/(?:^|\n)\s*(\d+)\s+rotas?\s*(?:\n|$)/i)?.[1]);
-    if (!codes.length || codes.length !== expected) return null;
+    const total = body.split("\n").map(t => t.trim())
+      .map(t => /^(\d+)(?:\s*(?:\/|de)\s*\d+)?\s+rotas?$/i.exec(t)).find(Boolean);
+    if (!codes.length) return refuse("nenhum código VTX visível");
+    if (total && codes.length !== Number(total[1])) return refuse(codes.length + " códigos visíveis, a página diz " + total[0]);
+    if (!total) {
+      // Sem o total na página, só aceita a lista depois de quatro leituras seguidas (2 s) com o mesmo tamanho.
+      const last = window.__vortexRotas;
+      window.__vortexRotas = { count: codes.length, reads: last?.count === codes.length ? last.reads + 1 : 1 };
+      if (window.__vortexRotas.reads < 4) return refuse("a página não mostra o total (" + codes.length + " códigos visíveis)");
+    }
     const routes = [];
     for (const code of codes) {
-      const airports = code.parentElement.firstElementChild.innerText.trim().split(/\s+/);
+      const airports = (code.parentElement.firstElementChild?.innerText || "").trim().split(/\s+/)
+        .filter(value => /^[A-Z0-9]{3,5}$/.test(value));
       const row = code.closest(".rounded-lg");
-      const status = row?.innerText.match(/(?:Status\s*|\n)(Ativo|Inativo|Ativa|Inativa)\s*$/i)?.[1];
-      if (airports.length !== 2 || airports.some(value => !/^[A-Z0-9]{3,5}$/.test(value)) || !status) return null;
-      if (/^ativ/i.test(status)) routes.push({ origin: airports[0], destination: airports[1], code: code.innerText.trim() });
+      if (!row) return refuse("linha da rota " + airports.join("-") + " não encontrada");
+      // Um seletor de status traz no texto todas as opções; nesse caso vale só a opção escolhida.
+      const chosen = [...row.querySelectorAll("select")].map(select => select.selectedOptions?.[0]?.text.trim() || "");
+      const lines = chosen.length ? chosen : row.innerText.split("\n").map(t => t.trim());
+      const statuses = [...new Set(lines.filter(t => /^(Ativo|Inativo|Ativa|Inativa)$/i.test(t)).map(t => t.toLowerCase()))];
+      if (airports.length !== 2) return refuse("aeroportos não lidos", row);
+      if (statuses.length !== 1) return refuse(statuses.length ? "status ambíguo" : "status não encontrado", row);
+      if (/^ativ/i.test(statuses[0])) routes.push({ origin: airports[0], destination: airports[1], code: code.innerText.trim() });
     }
+    window.__vortexRecusado = null;
     return routes;
   }
   const months = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
