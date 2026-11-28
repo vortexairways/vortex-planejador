@@ -14,6 +14,56 @@ const full = window.VortexFull || null;
 // Na extensão a página não mora no GitHub Pages: os dados vêm do site publicado.
 const dataUrl = name => (full?.dataBase || "./") + name + "?t=" + Date.now();
 
+// Extensão dos admins parada numa versão velha. Ela se atualiza sozinha pela pasta do OneDrive, mas em 28/11/2026 a
+// do Astro ficou na 2.0.6 com a pasta já na 2.0.9, sem ninguém saber. Uma extensão parada não recebe código novo:
+// só esta página, que sai sempre do site, consegue avisar. A versão vem na resposta que a ponte da própria extensão
+// devolve à página (window.postMessage, pedido "status"). Suba o número quando publicar uma versão que todos os
+// admins precisam ter (vortex-privado/DISTRIBUICAO.md); o teste da parte privada não deixa passar da publicada.
+const adminMinimum = "2.0.9";
+let adminVersion = null;
+const olderThan = (version, minimum) => {
+  const a = version.split(".").map(Number), b = minimum.split(".").map(Number);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) < (b[i] || 0);
+  return false;
+};
+window.addEventListener("message", event => {
+  if (event.source !== window || event.origin !== location.origin || event.data?.vortexAdmin !== "resposta") return;
+  const version = event.data.answer?.version;
+  if (typeof version !== "string" || !/^\d+(\.\d+){1,3}$/.test(version) || version === adminVersion) return;
+  adminVersion = version;
+  paintAdminUpdate();
+});
+// A versão dos admins já pergunta o status ao abrir; este pedido próprio garante a resposta mesmo se a dela chegar
+// antes deste arquivo (a resposta com outro id é ignorada por ela).
+if (full) window.postMessage({ vortexAdmin: "pedido", id: "vtx-site-versao", type: "status" }, location.origin);
+
+function paintAdminUpdate() {
+  let box = document.querySelector("#admin-update");
+  if (!adminVersion || !olderThan(adminVersion, adminMinimum)) { box?.remove(); return; }
+  if (!box) {
+    box = document.createElement("aside");
+    box.id = "admin-update";
+    box.className = "admin-update";
+    box.setAttribute("role", "alert");
+    document.querySelector("main.shell")?.prepend(box);
+  }
+  const line = (tag, text) => { const node = document.createElement(tag); node.textContent = text; return node; };
+  const steps = document.createElement("ol");
+  steps.append(
+    line("li", T("No Explorador de Arquivos, abra a pasta Vortex Admin do OneDrive e espere todos os arquivos ficarem com o círculo verde ✓ (botão direito na pasta › Sempre manter neste dispositivo).",
+      "In File Explorer, open the Vortex Admin folder in OneDrive and wait until every file shows the green ✓ circle (right-click the folder › Always keep on this device).")),
+    line("li", T("Abra a página de extensões do navegador (no Chrome: chrome://extensions) e clique em Recarregar (a seta redonda) na Vortex · Admin.",
+      "Open the browser's extensions page (in Chrome: chrome://extensions) and click Reload (the round arrow) on Vortex · Admin.")),
+    line("li", T("Volte aqui e aperte F5. Se continuar nesta versão, confira em Detalhes da extensão se ela foi carregada da pasta Vortex Admin do OneDrive.",
+      "Come back here and press F5. If it stays on this version, check in the extension's Details that it was loaded from the Vortex Admin folder in OneDrive.")));
+  box.replaceChildren(
+    line("strong", T("Sua Vortex · Admin está na versão " + adminVersion + " e não se atualizou sozinha.",
+      "Your Vortex · Admin is on version " + adminVersion + " and did not update by itself.")),
+    line("p", T("Ela precisa ser a " + adminMinimum + " ou mais nova. Até lá, Sincronizar Vortex e as correções recentes podem falhar.",
+      "It must be " + adminMinimum + " or newer. Until then, Sync Vortex and recent fixes may fail.")),
+    steps);
+}
+
 // Dados da coleta no PilOps, publicados em dados.json pelo coletor local.
 let fleet = [];
 let routes = [];
@@ -1907,6 +1957,7 @@ function paintAll() {
   renderStandsStatus();
   renderLoadSelectors();
   renderLoadResults();
+  paintAdminUpdate();
   full?.paint();
 }
 

@@ -144,6 +144,11 @@ h2 { font-size: 1.23rem; }
 .snapshot-heading { display: flex; align-items: center; gap: .3rem .65rem; flex-wrap: wrap; font-size: .9rem; }
 .snapshot-heading .tag { margin-top: 0; font-weight: 700; }
 .notice p { color: var(--muted); font-size: .82rem; margin-top: .3rem; }
+/* Extensão dos admins parada numa versão velha (planner.js, paintAdminUpdate). */
+.admin-update { background: #fff7ed; border: 1px solid #fdba74; border-left: 4px solid #ea580c; border-radius: .85rem; padding: .75rem 1rem; margin-bottom: 1.15rem; color: #7c2d12; }
+.admin-update strong { font-size: .95rem; }
+.admin-update p, .admin-update li { font-size: .85rem; margin-top: .3rem; }
+.admin-update ol { margin: .2rem 0 0 1.25rem; }
 button, select { font: inherit; }
 button { font-size: .85rem; font-weight: 650; cursor: pointer; }
 button:disabled { cursor: default; color: #52607a; border: 1px solid #b9c8e0; background: #f1f5fd; border-radius: .55rem; padding: .65rem .85rem; flex-shrink: 0; }
