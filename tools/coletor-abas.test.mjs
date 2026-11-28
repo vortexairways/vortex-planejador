@@ -40,6 +40,13 @@ test("Hangares: recusa enquanto as matrículas ainda carregam (2/2 Vagas com uma
   assert.equal(page("Hangares").read(), null);
 });
 
+test("Hangares: nenhuma matrícula em hangar nenhum é lista carregando, não frota fora dos hangares", () => {
+  const cards = [hangar("SBGR", ["0/2 Vagas"]), hangar("LEMD", [])];
+  const { read, window } = page("Hangares", { nodes: { '[role="button"][aria-label]': cards } });
+  assert.equal(read(), null);
+  assert.match(window.__vortexRecusado, /^hangares: nenhuma matrícula nos hangares/);
+});
+
 test("Hubs: recusa com o motivo quando a contagem não bate com o total da página", () => {
   const link = code => ({ href: "https://pilops.com/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1/hubs/" + code, innerText: code + " Hub" });
   const nodes = { 'a[href*="/hubs/"]': [link("SBGR"), link("LEMD")] };

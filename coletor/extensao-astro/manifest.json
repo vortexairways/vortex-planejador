@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Vortex · Dono",
   "description": "Botão do dono no planejador da Vortex: lê a companhia no PilOps (frota, pilotos, voos e vagas com carga e passageiros) e publica a parte pública no planejador.",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "background": {
     "service_worker": "servico.js",
     "type": "module"

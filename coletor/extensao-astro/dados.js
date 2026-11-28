@@ -55,13 +55,20 @@ export function withPublished(previous, published) {
   return { ...base, flights: [...(base.flights || []), ...extra], flightsSince: base.flightsSince || published.flightsSince || null };
 }
 
-// Rotas lidas caindo para menos da metade das publicadas é quase sempre uma lista que não carregou inteira
-// (revisão do Codex, 28/11/2026): a leitura é recusada e as rotas publicadas ficam. Devolve o motivo ou null.
-export function routesDropped(input, previous) {
-  const before = Array.isArray(previous?.routes) ? previous.routes.length : 0;
-  const now = Array.isArray(input?.routes) ? input.routes.length : 0;
-  return before >= 6 && now < Math.ceil(before / 2)
-    ? "a leitura trouxe " + now + " rotas ativas e o planejador tem " + before + " (lista incompleta?)" : null;
+// Rotas incompletas (segunda revisão do Codex, 28/11/2026; substitui a regra da "metade" da primeira revisão, que
+// deixava passar 20 de 39 rotas): uma lista sem o total da página (routesConfirmed diferente de true) não pode
+// apagar mais que duas rotas publicadas, e nenhuma lista vazia substitui a malha. Nesses casos ficam as rotas
+// publicadas e o resto da leitura (frota, pilotos, voos) segue. Lista confirmada pelo total vale sempre, mesmo com
+// muitas rotas removidas. Devolve o motivo ou null.
+const routeKey = r => [r.code, r.origin, r.destination].join("|");
+export function routesKept(input, previous) {
+  if (!Array.isArray(previous?.routes) || !previous.routes.length) return null;
+  if (Array.isArray(input?.routes) && !input.routes.length) return "a leitura não trouxe nenhuma rota ativa; ficaram as publicadas";
+  if (input?.routesConfirmed === true) return null;
+  const read = new Set((Array.isArray(input?.routes) ? input.routes : []).map(routeKey));
+  const missing = previous.routes.filter(r => !read.has(routeKey(r))).length;
+  return missing > 2 ? "a lista lida (sem o total da página) não tem " + missing + " das " + previous.routes.length +
+    " rotas publicadas; ficaram as publicadas" : null;
 }
 
 // input: leitura da extensão; previous: dados.json publicado (ou null).
@@ -77,7 +84,8 @@ export function buildSnapshot(input, previous, now = new Date()) {
     new Set(fleet.map(p => p.prefix)).size !== fleet.length ||
     !routes.every(r => isRecord(r) && validCode(r.origin) && validCode(r.destination) &&
       r.origin !== r.destination && typeof r.code === "string" && /^VTX[0-9]{1,12}$/.test(r.code)) ||
-    !hubs.every(validCode) || new Set(hubs).size !== hubs.length || routesDropped(data, previous)) return null;
+    !hubs.every(validCode) || new Set(hubs).size !== hubs.length) return null;
+  const kept = routesKept(data, previous);
 
   // Pilotos e voos são opcionais: se a leitura falhar, mantemos o que já estava publicado.
   const pilots = data.pilots === undefined || data.pilots === null ? null : cleanPilots(data.pilots);
@@ -100,7 +108,7 @@ export function buildSnapshot(input, previous, now = new Date()) {
       capturedAt: now.toISOString(),
       reportedFleet: data.reportedFleet,
       fleet: fleet.map(({ prefix, model, airport, base, status }) => ({ prefix, model, airport, base, status })),
-      routes: routes.map(({ origin, destination, code }) => ({ origin, destination, code })),
+      routes: (kept ? previous.routes : routes).map(({ origin, destination, code }) => ({ origin, destination, code })),
       hubs,
       pilots: pilots || previous?.pilots || [],
       pilotsCapturedAt: pilots ? now.toISOString() : previous?.pilotsCapturedAt || null,
@@ -109,6 +117,7 @@ export function buildSnapshot(input, previous, now = new Date()) {
       flightsSince: previous?.flightsSince || (newFlights ? (flights.at(-1)?.date || today) : null),
     },
     report: { pilotsRead: Boolean(pilots), pilotsInvalid: data.pilots != null && !pilots,
-      flightsRead: Boolean(newFlights), flightsInvalid: data.flights != null && !newFlights, flightsAdded: added },
+      flightsRead: Boolean(newFlights), flightsInvalid: data.flights != null && !newFlights, flightsAdded: added,
+      routesKept: kept },
   };
 }

@@ -7,16 +7,19 @@ const company = "https://pilops.com/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o
 
 // Executada na página. Lê apenas os campos visíveis e os elementos das abas da Vortex.
 function readCompany(section, openTab) {
+  // Página fora da Vortex ou aba de Rotas fora da tela: a contagem de leituras estáveis das rotas recomeça
+  // (segunda revisão do Codex, 28/11).
+  const notYet = () => { if (section === "Rotas") window.__vortexRotas = null; return null; };
   if (location.origin !== "https://pilops.com" ||
-      location.pathname !== "/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1") return null;
+      location.pathname !== "/pt-BR/app/companies/cmpi0v4et3bukpl0d9hgcj5o1") return notYet();
   const heading = [...document.querySelectorAll("h1")].find(el => /Vortex Airways/i.test(el.innerText));
-  if (!heading) return null;
+  if (!heading) return notYet();
   const tabs = [...document.querySelectorAll('[role="tab"]')];
   const tab = tabs.find(el => el.innerText.trim() === section);
-  if (!tab) return null;
+  if (!tab) return notYet();
   if (tab.getAttribute("aria-selected") !== "true") {
     if (openTab) tab.click();
-    return null;
+    return notYet();
   }
   const body = document.body.innerText;
   const split = el => el.innerText.split("\n").map(t => t.trim()).filter(Boolean);
@@ -24,7 +27,7 @@ function readCompany(section, openTab) {
   // para o erro nunca mostrar o motivo velho de outra aba.
   window.__vortexRecusado = null;
   const refuse = (reason, el) => {
-    window.__vortexRecusado = (section.toLowerCase() + ": " + reason + (el ? " | linha: " + split(el).join(" | ") : "")).slice(0, 400);
+    window.__vortexRecusado = (section.toLowerCase() + ": " + reason + (el ? " | linha: " + split(el).join(" | ") : "")).slice(0, 600);
     return null;
   };
   if (section === "Frota") {
@@ -69,6 +72,8 @@ function readCompany(section, openTab) {
       }
       for (const prefix of prefixes) bases.push([prefix, card.getAttribute("aria-label")]);
     }
+    // Nenhuma matrícula em hangar nenhum é a lista ainda carregando (segunda revisão do Codex, 28/11).
+    if (!bases.length) return refuse("nenhuma matrícula nos hangares (a lista ainda pode estar carregando)");
     return Object.fromEntries(bases);
   }
   if (section === "Hubs") {
@@ -88,19 +93,19 @@ function readCompany(section, openTab) {
     // também vale no formato "48 / 60 rotas". O motivo de uma recusa fica em __vortexRecusado.
     // Revisão do Codex (28/11): qualquer recusa zera a contagem de leituras estáveis, e a linha de cada rota
     // precisa conter um código VTX só (um contêiner com várias rotas daria o status da vizinha).
+    // Segunda revisão do Codex (28/11): a estabilidade compara QUAIS rotas vieram (código, aeroportos e status), não só
+    // quantas; o resultado diz se a lista foi confirmada pelo total da página (routes + total). Sem o total, quem monta
+    // os dados (coletor/dados.mjs, routesKept) não deixa a lista apagar mais que duas rotas publicadas.
     const refuseRoutes = (reason, row) => { window.__vortexRotas = null; return refuse(reason, row); };
     const codes = [...document.querySelectorAll("p")].filter(el =>
       el.getClientRects().length && /^VTX\d+$/.test(el.innerText.trim()));
-    const total = body.split("\n").map(t => t.trim())
-      .map(t => /^(\d+)(?:\s*(?:\/|de)\s*\d+)?\s+rotas?$/i.exec(t)).find(Boolean);
+    // O total vale só se a página mostrar um número só ("48 rotas" ou "48 / 60 rotas"); dois totais diferentes (outro
+    // painel com "3 rotas", por exemplo) é o mesmo que nenhum.
+    const totals = [...new Set(body.split("\n").map(t => /^(\d+)(?:\s*(?:\/|de)\s*\d+)?\s+rotas?$/i.exec(t.trim())?.[1])
+      .filter(Boolean))];
+    const total = totals.length === 1 ? Number(totals[0]) : null;
     if (!codes.length) return refuseRoutes("nenhum código VTX visível");
-    if (total && codes.length !== Number(total[1])) return refuseRoutes(codes.length + " códigos visíveis, a página diz " + total[0]);
-    if (!total) {
-      // Sem o total na página, só aceita a lista depois de seis leituras seguidas (3 s) com o mesmo tamanho.
-      const last = window.__vortexRotas;
-      window.__vortexRotas = { count: codes.length, reads: last?.count === codes.length ? last.reads + 1 : 1 };
-      if (window.__vortexRotas.reads < 6) return refuse("a página não mostra o total (" + codes.length + " códigos visíveis)");
-    }
+    if (total !== null && codes.length !== total) return refuseRoutes(codes.length + " códigos visíveis, a página diz " + total + " rotas");
     const codesIn = el => codes.filter(code => el.contains(code)).length;
     // Na página real (28/11) a linha é o cartão .rounded-lg com um código só. Se o cartão tiver mais de um,
     // sobe a partir do código até o último ancestral que ainda tem um código só: essa é a linha da rota.
@@ -112,7 +117,26 @@ function readCompany(section, openTab) {
       return el === code ? null : el;
     };
     const status = /^(Ativo|Inativo|Ativa|Inativa|Active|Inactive)$/i;
-    const routes = [];
+    // Visão do dono (Astro, 28/11/2026, 2.0.10): a linha não tem o selo "Ativo"; vem "LEMD | EFHK | VTX0090 | Madrid
+    // para Helsinki | 108.272 | LBS | 1.773 | PAX | Vaga lotada" e o status fica numa chave liga/desliga sem texto
+    // (role="switch", como as abas, que também são do Radix). Vale a chave só se o bloco da rota (até o maior
+    // ancestral com este código só) tiver exatamente uma. Caixas de marcar não contam: podem ser seleção da linha.
+    const widest = el => {
+      while (el.parentElement && el.parentElement !== document.body && codesIn(el.parentElement) === 1) el = el.parentElement;
+      return el;
+    };
+    const switchOf = row => {
+      const found = [...widest(row).querySelectorAll('[role="switch"]')];
+      if (found.length !== 1) return null;
+      const on = found[0].getAttribute("aria-checked"), state = found[0].getAttribute("data-state");
+      return on === "true" || state === "checked" ? "ativo" : on === "false" || state === "unchecked" ? "inativo" : null;
+    };
+    // Para o diagnóstico de uma recusa: os controles do bloco da rota (tipo, papel, estado e rótulo, curtos).
+    const controlsOf = row => [...widest(row).querySelectorAll("button, input, select, [role]")].slice(0, 6).map(el =>
+      [el.tagName?.toLowerCase(), el.getAttribute("type"), el.getAttribute("role"), el.getAttribute("aria-checked"),
+        el.getAttribute("data-state"), (el.getAttribute("aria-label") || el.innerText || "").trim().slice(0, 20)]
+        .filter(Boolean).join(":")).join(", ") || "nenhum";
+    const routes = [], seen = [];
     for (const code of codes) {
       const airports = (code.parentElement.firstElementChild?.innerText || "").trim().split(/\s+/)
         .filter(value => /^[A-Z0-9]{3,5}$/.test(value));
@@ -124,12 +148,23 @@ function readCompany(section, openTab) {
         .filter(text => status.test(text));
       const lines = chosen.length ? chosen : row.innerText.split("\n").map(t => t.trim());
       const statuses = [...new Set(lines.filter(t => status.test(t)).map(t => t.toLowerCase()))];
+      if (!statuses.length && switchOf(row)) statuses.push(switchOf(row));
       if (airports.length !== 2) return refuseRoutes("aeroportos não lidos", row);
-      if (statuses.length !== 1) return refuseRoutes(statuses.length ? "status ambíguo" : "status não encontrado", row);
-      if (/^(ativ|activ)/i.test(statuses[0])) routes.push({ origin: airports[0], destination: airports[1], code: code.innerText.trim() });
+      if (statuses.length !== 1) {
+        return refuseRoutes(statuses.length ? "status ambíguo" : "status não encontrado (controles: " + controlsOf(row) + ")", row);
+      }
+      const active = /^(ativ|activ)/i.test(statuses[0]);
+      seen.push(code.innerText.trim() + ":" + airports.join("-") + ":" + (active ? "A" : "I"));
+      if (active) routes.push({ origin: airports[0], destination: airports[1], code: code.innerText.trim() });
+    }
+    if (total === null) {
+      // Sem o total na página, só aceita a lista depois de seis leituras seguidas (3 s) com as MESMAS rotas.
+      const key = seen.join(","), last = window.__vortexRotas;
+      window.__vortexRotas = { key, reads: last?.key === key ? last.reads + 1 : 1 };
+      if (window.__vortexRotas.reads < 6) return refuse("a página não mostra o total (" + codes.length + " códigos visíveis)");
     }
     window.__vortexRotas = null;
-    return routes;
+    return { routes, total };
   }
   const months = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
   const isoDay = (mon, dayNumber, year) => months[mon.toLowerCase()]
@@ -257,7 +292,8 @@ async function readVortex(tabId) {
   const { fleet, reportedFleet } = await section(tabId, "Frota");
   const hangars = await section(tabId, "Hangares");
   const hubs = await section(tabId, "Hubs");
-  const routes = await section(tabId, "Rotas");
+  // Rotas vêm com o total da página (null quando ela não mostra): sem ele, a lista não está confirmada.
+  const { routes, total: routesTotal } = await section(tabId, "Rotas");
   // Pilotos e voos são opcionais: se a aba não carregar, a frota e as rotas são publicadas assim mesmo.
   const notes = [];
   const optional = name => section(tabId, name).catch(error => { notes.push(error.message); return null; });
@@ -277,7 +313,8 @@ async function readVortex(tabId) {
     }
   }
   const flights = await optional("Voos");
-  return { fleet: fleet.map(p => ({ ...p, base: hangars[p.prefix] ?? null })), reportedFleet, hubs, routes, pilots, flights, notes };
+  return { fleet: fleet.map(p => ({ ...p, base: hangars[p.prefix] ?? null })), reportedFleet, hubs, routes,
+    routesConfirmed: Number.isInteger(routesTotal), pilots, flights, notes };
 }
 
 globalThis.VortexReader = { company, readCompany, section, readVortex };

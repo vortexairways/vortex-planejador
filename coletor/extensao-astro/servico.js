@@ -129,6 +129,7 @@ async function sync() {
         return out;
       } });
     const dados = files["docs/dados.json"], vagas = files["docs/vagas.json"] || null;
+    if (report.routesKept) notes.push("Rotas: " + report.routesKept + ".");
     if (vagasKept) notes.push("Vagas: ficaram as do site (" + stamp(vagasKept) + "), mais novas que esta leitura.");
     else if (stands && !stands.withValues) {
       notes.push("Vagas: as barras de carga e passageiros vieram vazias (—), então não foram publicadas. Só o dono da companhia vê esses números.");

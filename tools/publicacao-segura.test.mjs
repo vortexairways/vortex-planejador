@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fuelStats, percentageMonitor, publicFuel, publicFuelMinimum, publicSnapshot } from "../coletor/publicacao.mjs";
-import { buildSnapshot, routesDropped } from "../coletor/dados.mjs";
+import { buildSnapshot, routesKept } from "../coletor/dados.mjs";
 
 // fuel: combustível utilizado no voo (as "lbs" do histórico do PilOps).
 const flight = (date, revenue, fuel = 100, model = "Test Plane") => ({ pilot: "Piloto", prefix: "NABCDE", model,
@@ -132,15 +132,25 @@ test("sincronização do dono: publica voos novos sem receita e o coletor do Raf
   assert.equal(reread.flights.find(item => item.date === "2026-11-11").revenue, 210);
 });
 
-test("rotas: leitura com menos da metade das rotas publicadas é recusada e a malha publicada fica", () => {
-  // Revisão do Codex (28/11/2026): uma lista de rotas ainda carregando chegou a substituir a malha publicada.
-  const routes = count => Array.from({ length: count }, (_, i) => ({ origin: "LEMD", destination: "KRDU", code: "VTX" + (i + 1) }));
-  const published = { ...buildSnapshot(base, null).snapshot, routes: routes(10) };
-  assert.equal(buildSnapshot({ ...base, routes: routes(4) }, published), null);
-  assert.match(routesDropped({ routes: routes(4) }, published), /4 rotas ativas e o planejador tem 10/);
-  assert.ok(buildSnapshot({ ...base, routes: routes(5) }, published), "metade ainda é aceita (rotas desativadas de verdade)");
-  assert.ok(buildSnapshot({ ...base, routes: routes(1) }, { ...published, routes: routes(5) }), "malha pequena não trava");
-  assert.ok(buildSnapshot({ ...base, routes: routes(1) }, null), "primeira coleta não tem com o que comparar");
+test("rotas: lista sem o total da página não apaga a malha publicada; lista confirmada vale", () => {
+  // Segunda revisão do Codex (28/11/2026): uma leitura de 20 das 39 rotas, sem o total, substituía a malha.
+  const routes = (count, from = 1) => Array.from({ length: count }, (_, i) => ({ origin: "LEMD", destination: "KRDU", code: "VTX" + (i + from) }));
+  const published = { ...buildSnapshot(base, null).snapshot, routes: routes(39) };
+  let out = buildSnapshot({ ...base, routes: routes(20) }, published);
+  assert.equal(out.snapshot.routes.length, 39, "ficam as 39 publicadas");
+  assert.match(out.report.routesKept, /não tem 19 das 39 rotas publicadas/);
+  assert.equal(out.snapshot.fleet.length, base.fleet.length, "o resto da leitura segue publicado");
+  out = buildSnapshot({ ...base, routes: routes(39, 100) }, published);
+  assert.equal(out.snapshot.routes[0].code, "VTX1", "mesmo tamanho com outras rotas também não substitui");
+  out = buildSnapshot({ ...base, routes: routes(37) }, published);
+  assert.equal(out.snapshot.routes.length, 37, "até duas rotas a menos sem o total: desativadas de verdade");
+  assert.equal(out.report.routesKept, null);
+  out = buildSnapshot({ ...base, routes: routes(20), routesConfirmed: true }, published);
+  assert.equal(out.snapshot.routes.length, 20, "confirmada pelo total da página, vale mesmo com muitas a menos");
+  out = buildSnapshot({ ...base, routes: [], routesConfirmed: true }, published);
+  assert.equal(out.snapshot.routes.length, 39, "nenhuma rota ativa nunca substitui a malha");
+  assert.match(routesKept({ routes: [] }, published), /nenhuma rota ativa/);
+  assert.equal(buildSnapshot({ ...base, routes: routes(1) }, null).report.routesKept, null, "primeira coleta não tem com o que comparar");
 });
 
 test("consumo público: só grupos com 3 voos ou mais, arredondados; o site publicado já segue a regra", () => {
