@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-28T15:19:55.522Z",
+ "capturedAt": "2026-11-28T15:51:00.590Z",
  "reportedFleet": 18,
  "fleet": [
   {
@@ -468,7 +468,7 @@
    "name": "wolfwet",
    "role": null,
    "level": null,
-   "totalMinutes": 353,
+   "totalMinutes": 385,
    "companyMinutes": 0,
    "joined": "2026-11-27"
   },
@@ -497,7 +497,7 @@
    "joined": "2026-11-09"
   }
  ],
- "pilotsCapturedAt": "2026-11-28T15:19:55.522Z",
+ "pilotsCapturedAt": "2026-11-28T15:51:00.590Z",
  "flights": [
   {
    "pilot": "astronauta",

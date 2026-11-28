@@ -1,6 +1,6 @@
 {
  "version": 1,
- "capturedAt": "2026-11-28T15:19:55.522Z",
+ "capturedAt": "2026-11-28T15:51:00.590Z",
  "total": 184,
  "stands": [
   {
@@ -2471,7 +2471,7 @@
    "size": "large"
   },
   {
-   "airport": "ZYTL",
+   "airport": "UUWW",
    "cargo": {
     "max": 90000,
     "pct": 0,
@@ -2479,8 +2479,8 @@
     "unit": "lb",
     "value": 0
    },
-   "city": "Ganjingzi, Dalian, CN",
-   "code": "ZYTL-C-06",
+   "city": "Moscow, RU",
+   "code": "UUWW-C-05",
    "expires": "2026-12-26",
    "pax": {
     "max": 1500,
@@ -2498,7 +2498,7 @@
    "size": "large"
   },
   {
-   "airport": "UUWW",
+   "airport": "ZYTL",
    "cargo": {
     "max": 90000,
     "pct": 0,
@@ -2506,8 +2506,8 @@
     "unit": "lb",
     "value": 0
    },
-   "city": "Moscow, RU",
-   "code": "UUWW-C-05",
+   "city": "Ganjingzi, Dalian, CN",
+   "code": "ZYTL-C-06",
    "expires": "2026-12-26",
    "pax": {
     "max": 1500,
@@ -3917,33 +3917,6 @@
    "size": "large"
   },
   {
-   "airport": "LTAI",
-   "cargo": {
-    "max": 90000,
-    "pct": 0,
-    "text": "0 lbs / 90.000 lbs 0%",
-    "unit": "lb",
-    "value": 0
-   },
-   "city": "Antalya, TR",
-   "code": "LTAI-C-05",
-   "expires": "2027-10-03",
-   "pax": {
-    "max": 1500,
-    "pct": 0,
-    "text": "0 / 1500 Passageiros 0%",
-    "value": 0
-   },
-   "routes": {
-    "codes": [],
-    "count": 0,
-    "destinations": [],
-    "limit": 10,
-    "text": "0 / 10"
-   },
-   "size": "large"
-  },
-  {
    "airport": "SBCT",
    "cargo": {
     "full": true,
@@ -3969,6 +3942,33 @@
     "destinations": [],
     "limit": 10,
     "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "LTAI",
+   "cargo": {
+    "max": 90000,
+    "pct": 0,
+    "text": "0 lbs / 90.000 lbs 0%",
+    "unit": "lb",
+    "value": 0
+   },
+   "city": "Antalya, TR",
+   "code": "LTAI-C-05",
+   "expires": "2027-10-03",
+   "pax": {
+    "max": 1500,
+    "pct": 0,
+    "text": "0 / 1500 Passageiros 0%",
+    "value": 0
+   },
+   "routes": {
+    "codes": [],
+    "count": 0,
+    "destinations": [],
+    "limit": 10,
+    "text": "0 / 10"
    },
    "size": "large"
   },
@@ -4922,20 +4922,20 @@
    "cargo": {
     "full": true,
     "max": 90000,
-    "pct": 120,
-    "text": "108.272 lbs / 90.000 lbs 120%",
+    "pct": 100,
+    "text": "89.980 lbs / 90.000 lbs 100%",
     "unit": "lb",
-    "value": 108272
+    "value": 89980
    },
    "city": "Madrid, ES",
-   "code": "LEMD-C-01",
+   "code": "LEMD-C-03",
    "expires": "2028-01-18",
    "pax": {
     "full": true,
     "max": 1500,
-    "pct": 118,
-    "text": "1773 / 1500 Passageiros 118%",
-    "value": 1773
+    "pct": 100,
+    "text": "1500 / 1500 Passageiros 100%",
+    "value": 1500
    },
    "routes": {
     "codes": [],
@@ -4951,20 +4951,20 @@
    "cargo": {
     "full": true,
     "max": 90000,
-    "pct": 100,
-    "text": "89.980 lbs / 90.000 lbs 100%",
+    "pct": 120,
+    "text": "108.272 lbs / 90.000 lbs 120%",
     "unit": "lb",
-    "value": 89980
+    "value": 108272
    },
    "city": "Madrid, ES",
-   "code": "LEMD-C-03",
+   "code": "LEMD-C-01",
    "expires": "2028-01-18",
    "pax": {
     "full": true,
     "max": 1500,
-    "pct": 100,
-    "text": "1500 / 1500 Passageiros 100%",
-    "value": 1500
+    "pct": 118,
+    "text": "1773 / 1500 Passageiros 118%",
+    "value": 1773
    },
    "routes": {
     "codes": [],
