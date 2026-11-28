@@ -1,6 +1,6 @@
 {
  "version": 1,
- "capturedAt": "2026-11-28T14:56:02.112Z",
+ "capturedAt": "2026-11-28T14:58:42.683Z",
  "total": 184,
  "stands": [
   {
@@ -4203,35 +4203,6 @@
    "size": "large"
   },
   {
-   "airport": "SBGL",
-   "cargo": {
-    "full": true,
-    "max": 90000,
-    "pct": 100,
-    "text": "89.987 lbs / 90.000 lbs 100%",
-    "unit": "lb",
-    "value": 89987
-   },
-   "city": "Rio De Janeiro, BR",
-   "code": "SBGL-C-05",
-   "expires": "2027-10-20",
-   "pax": {
-    "full": true,
-    "max": 1500,
-    "pct": 100,
-    "text": "1497 / 1500 Passageiros 100%",
-    "value": 1497
-   },
-   "routes": {
-    "codes": [],
-    "count": 1,
-    "destinations": [],
-    "limit": 10,
-    "text": "1 / 10"
-   },
-   "size": "large"
-  },
-  {
    "airport": "SBEG",
    "cargo": {
     "full": true,
@@ -4249,35 +4220,6 @@
     "pct": 99,
     "text": "1488 / 1500 Passageiros 99%",
     "value": 1488
-   },
-   "routes": {
-    "codes": [],
-    "count": 1,
-    "destinations": [],
-    "limit": 10,
-    "text": "1 / 10"
-   },
-   "size": "large"
-  },
-  {
-   "airport": "SBRF",
-   "cargo": {
-    "full": true,
-    "max": 90000,
-    "pct": 100,
-    "text": "89.862 lbs / 90.000 lbs 100%",
-    "unit": "lb",
-    "value": 89862
-   },
-   "city": "Recife, BR",
-   "code": "SBRF-C-03",
-   "expires": "2027-10-20",
-   "pax": {
-    "full": true,
-    "max": 1500,
-    "pct": 100,
-    "text": "1497 / 1500 Passageiros 100%",
-    "value": 1497
    },
    "routes": {
     "codes": [],
@@ -4307,6 +4249,64 @@
     "pct": 100,
     "text": "1498 / 1500 Passageiros 100%",
     "value": 1498
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBGL",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.987 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89987
+   },
+   "city": "Rio De Janeiro, BR",
+   "code": "SBGL-C-05",
+   "expires": "2027-10-20",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1497 / 1500 Passageiros 100%",
+    "value": 1497
+   },
+   "routes": {
+    "codes": [],
+    "count": 1,
+    "destinations": [],
+    "limit": 10,
+    "text": "1 / 10"
+   },
+   "size": "large"
+  },
+  {
+   "airport": "SBRF",
+   "cargo": {
+    "full": true,
+    "max": 90000,
+    "pct": 100,
+    "text": "89.862 lbs / 90.000 lbs 100%",
+    "unit": "lb",
+    "value": 89862
+   },
+   "city": "Recife, BR",
+   "code": "SBRF-C-03",
+   "expires": "2027-10-20",
+   "pax": {
+    "full": true,
+    "max": 1500,
+    "pct": 100,
+    "text": "1497 / 1500 Passageiros 100%",
+    "value": 1497
    },
    "routes": {
     "codes": [],
