@@ -71,6 +71,19 @@ export function routesKept(input, previous) {
     " rotas publicadas; ficaram as publicadas" : null;
 }
 
+// Aviso das rotas para a mensagem da sincronização (extensões e coletor local), ou null.
+export function routesNote(report) {
+  const parts = [];
+  const unsure = report?.routesUncertain;
+  if (unsure?.total) {
+    parts.push(unsure.total + (unsure.total === 1 ? " rota mostra" : " rotas mostram") + " a situação da vaga no lugar do status " +
+      "(\"Vaga lotada\"); " + unsure.kept + " seguem como estavam publicadas" +
+      (unsure.total > unsure.kept ? " e " + (unsure.total - unsure.kept) + " ficam de fora até um admin sincronizar" : ""));
+  }
+  if (report?.routesKept) parts.push(report.routesKept);
+  return parts.length ? "Rotas: " + parts.join("; ") + "." : null;
+}
+
 // input: leitura da extensão; previous: dados.json publicado (ou null).
 export function buildSnapshot(input, previous, now = new Date()) {
   const data = input;
@@ -85,7 +98,11 @@ export function buildSnapshot(input, previous, now = new Date()) {
     !routes.every(r => isRecord(r) && validCode(r.origin) && validCode(r.destination) &&
       r.origin !== r.destination && typeof r.code === "string" && /^VTX[0-9]{1,12}$/.test(r.code)) ||
     !hubs.every(validCode) || new Set(hubs).size !== hubs.length) return null;
-  const kept = routesKept(data, previous);
+  // Rotas de status incerto (visão do dono, "Vaga lotada") só ficam se já estavam publicadas como ativas.
+  const published = new Set((Array.isArray(previous?.routes) ? previous.routes : []).map(routeKey));
+  const unsure = routes.filter(r => r.uncertain === true);
+  const usable = routes.filter(r => r.uncertain !== true || published.has(routeKey(r)));
+  const kept = routesKept({ ...data, routes: usable }, previous);
 
   // Pilotos e voos são opcionais: se a leitura falhar, mantemos o que já estava publicado.
   const pilots = data.pilots === undefined || data.pilots === null ? null : cleanPilots(data.pilots);
@@ -108,7 +125,7 @@ export function buildSnapshot(input, previous, now = new Date()) {
       capturedAt: now.toISOString(),
       reportedFleet: data.reportedFleet,
       fleet: fleet.map(({ prefix, model, airport, base, status }) => ({ prefix, model, airport, base, status })),
-      routes: (kept ? previous.routes : routes).map(({ origin, destination, code }) => ({ origin, destination, code })),
+      routes: (kept ? previous.routes : usable).map(({ origin, destination, code }) => ({ origin, destination, code })),
       hubs,
       pilots: pilots || previous?.pilots || [],
       pilotsCapturedAt: pilots ? now.toISOString() : previous?.pilotsCapturedAt || null,
@@ -118,6 +135,6 @@ export function buildSnapshot(input, previous, now = new Date()) {
     },
     report: { pilotsRead: Boolean(pilots), pilotsInvalid: data.pilots != null && !pilots,
       flightsRead: Boolean(newFlights), flightsInvalid: data.flights != null && !newFlights, flightsAdded: added,
-      routesKept: kept },
+      routesKept: kept, routesUncertain: { total: unsure.length, kept: unsure.filter(r => published.has(routeKey(r))).length } },
   };
 }

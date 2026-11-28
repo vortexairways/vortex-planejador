@@ -19,7 +19,7 @@ const dataUrl = name => (full?.dataBase || "./") + name + "?t=" + Date.now();
 // só esta página, que sai sempre do site, consegue avisar. A versão vem na resposta que a ponte da própria extensão
 // devolve à página (window.postMessage, pedido "status"). Suba o número quando publicar uma versão que todos os
 // admins precisam ter (vortex-privado/DISTRIBUICAO.md); o teste da parte privada não deixa passar da publicada.
-const adminMinimum = "2.0.11";
+const adminMinimum = "2.0.12";
 let adminVersion = null;
 const olderThan = (version, minimum) => {
   const a = version.split(".").map(Number), b = minimum.split(".").map(Number);

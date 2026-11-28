@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { buildSnapshot, withPublished } from "./dados.mjs";
+import { buildSnapshot, routesNote, withPublished } from "./dados.mjs";
 import { publicSnapshot } from "./publicacao.mjs";
 
 const repo = fileURLToPath(new URL("../", import.meta.url));
@@ -176,7 +176,7 @@ const server = createServer(async (req, res) => {
       return finish(1, "A leitura veio incompleta ou inválida. Os dados publicados foram mantidos.");
     }
     const { snapshot, report } = built;
-    if (report.routesKept) console.log("Rotas: " + report.routesKept + ".");
+    if (routesNote(report)) console.log(routesNote(report));
     const extras = privateHook ? await privateHook.arquivos(snapshot, repo) : [];
     if (!Array.isArray(extras) || extras.some(extra => !extraAllowed.test(extra?.path || "") || extra.path === "docs/dados.json" ||
         typeof extra.content !== "string")) throw new Error("a pasta privada devolveu um arquivo inesperado.");

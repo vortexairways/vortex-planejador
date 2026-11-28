@@ -149,13 +149,20 @@ function readCompany(section, openTab) {
       const lines = chosen.length ? chosen : row.innerText.split("\n").map(t => t.trim());
       const statuses = [...new Set(lines.filter(t => status.test(t)).map(t => t.toLowerCase()))];
       if (!statuses.length && switchOf(row)) statuses.push(switchOf(row));
+      // Visão do dono (Astro, 2.0.11, 28/11/2026): a coluna de status pode trazer a situação da vaga no lugar de
+      // "Ativo" ("Vaga lotada"), sem controle nenhum na linha; o VTX0090 LEMD-EFHK, que o dono vê assim, está
+      // "Ativo" na visão do admin. Sem como saber o status, a rota vem marcada como incerta e quem monta os dados
+      // (coletor/dados.mjs) só a mantém se ela já estava publicada como ativa.
+      const uncertain = !statuses.length && lines.some(t => /^Vaga\s+\S+/i.test(t));
       if (airports.length !== 2) return refuseRoutes("aeroportos não lidos", row);
-      if (statuses.length !== 1) {
+      if (statuses.length !== 1 && !uncertain) {
         return refuseRoutes(statuses.length ? "status ambíguo" : "status não encontrado (controles: " + controlsOf(row) + ")", row);
       }
-      const active = /^(ativ|activ)/i.test(statuses[0]);
-      seen.push(code.innerText.trim() + ":" + airports.join("-") + ":" + (active ? "A" : "I"));
-      if (active) routes.push({ origin: airports[0], destination: airports[1], code: code.innerText.trim() });
+      const active = !uncertain && /^(ativ|activ)/i.test(statuses[0]);
+      seen.push(code.innerText.trim() + ":" + airports.join("-") + ":" + (uncertain ? "?" : active ? "A" : "I"));
+      if (active || uncertain) {
+        routes.push({ origin: airports[0], destination: airports[1], code: code.innerText.trim(), ...(uncertain ? { uncertain: true } : {}) });
+      }
     }
     if (total === null) {
       // Sem o total na página, só aceita a lista depois de seis leituras seguidas (3 s) com as MESMAS rotas.

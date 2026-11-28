@@ -93,8 +93,19 @@ test("visão do dono (Astro, 2.0.10): status numa chave liga/desliga sem texto e
   assert.equal(p.total(), 2);
 });
 
-test("linha sem status e sem chave: a recusa mostra os controles da linha para o diagnóstico", () => {
-  const p = page([route("LEMD", "EFHK", { owner: true, status: "Vaga lotada" })], "1 / 60 rotas");
+test("visão do dono (Astro, 2.0.11): \"Vaga lotada\" no lugar do status vira rota incerta, não recusa", () => {
+  // Página real do Astro: "LEMD | EFHK | VTX0090 | Madrid para Helsinki | 108.272 | LBS | 1.773 | PAX | Vaga lotada",
+  // sem controle nenhum na linha; na visão do admin o VTX0090 está "Ativo".
+  const codes = [route("LEMD", "EFHK", { owner: true, status: "Vaga lotada", code: "VTX0090" }),
+    route("ENTC", "HLLM", { owner: true }), route("EFHK", "LEMD", { owner: true, status: "Inativo" })];
+  const p = page(codes, "3 / 60 rotas");
+  assert.deepEqual(p.read(), [{ origin: "LEMD", destination: "EFHK", code: "VTX0090", uncertain: true },
+    { origin: "ENTC", destination: "HLLM", code: "VTX0000" }]);
+  assert.equal(p.total(), 3);
+});
+
+test("linha sem status, sem vaga e sem chave: a recusa mostra os controles da linha para o diagnóstico", () => {
+  const p = page([route("LEMD", "EFHK", { owner: true, status: "Em análise" })], "1 / 60 rotas");
   assert.equal(p.read(), null);
   assert.match(p.window.__vortexRecusado, /^rotas: status não encontrado \(controles: nenhum\) \| linha: LEMD \| EFHK \| VTX0000/);
 });

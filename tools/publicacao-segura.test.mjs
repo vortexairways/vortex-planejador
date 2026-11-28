@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fuelStats, percentageMonitor, publicFuel, publicFuelMinimum, publicSnapshot } from "../coletor/publicacao.mjs";
-import { buildSnapshot, routesKept } from "../coletor/dados.mjs";
+import { buildSnapshot, routesKept, routesNote } from "../coletor/dados.mjs";
 
 // fuel: combustível utilizado no voo (as "lbs" do histórico do PilOps).
 const flight = (date, revenue, fuel = 100, model = "Test Plane") => ({ pilot: "Piloto", prefix: "NABCDE", model,
@@ -151,6 +151,21 @@ test("rotas: lista sem o total da página não apaga a malha publicada; lista co
   assert.equal(out.snapshot.routes.length, 39, "nenhuma rota ativa nunca substitui a malha");
   assert.match(routesKept({ routes: [] }, published), /nenhuma rota ativa/);
   assert.equal(buildSnapshot({ ...base, routes: routes(1) }, null).report.routesKept, null, "primeira coleta não tem com o que comparar");
+});
+
+test("rotas incertas (\"Vaga lotada\" na visão do dono) só ficam se já estavam publicadas como ativas", () => {
+  const published = { ...buildSnapshot(base, null).snapshot,
+    routes: [{ origin: "LEMD", destination: "EFHK", code: "VTX0090" }, { origin: "ENTC", destination: "HLLM", code: "VTX0000" }] };
+  const reading = { ...base, routesConfirmed: true, routes: [
+    { origin: "LEMD", destination: "EFHK", code: "VTX0090", uncertain: true },
+    { origin: "SBGR", destination: "SBKP", code: "VTX0777", uncertain: true },
+    { origin: "ENTC", destination: "HLLM", code: "VTX0000" }] };
+  const out = buildSnapshot(reading, published);
+  assert.deepEqual(out.snapshot.routes.map(r => r.code), ["VTX0090", "VTX0000"]);
+  assert.ok(out.snapshot.routes.every(r => !("uncertain" in r)), "a marca não vai para o site");
+  assert.deepEqual(out.report.routesUncertain, { total: 2, kept: 1 });
+  assert.match(routesNote(out.report), /^Rotas: 2 rotas mostram .*1 seguem como estavam publicadas e 1 ficam de fora/);
+  assert.equal(routesNote(buildSnapshot({ ...base, routesConfirmed: true }, published).report), null);
 });
 
 test("consumo público: só grupos com 3 voos ou mais, arredondados; o site publicado já segue a regra", () => {

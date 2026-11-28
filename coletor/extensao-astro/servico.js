@@ -8,7 +8,7 @@
 // leitura-vortex.js, dados.js, publicacao.js e publicacao-github.js são cópias geradas por
 // tools/empacotar-extensao-vagas.ps1.
 import "./leitura-vortex.js";
-import { buildSnapshot } from "./dados.js";
+import { buildSnapshot, routesNote } from "./dados.js";
 import { publicFuel, publicSnapshot } from "./publicacao.js";
 import { newerThan, publishTogether } from "./publicacao-github.js";
 
@@ -129,7 +129,7 @@ async function sync() {
         return out;
       } });
     const dados = files["docs/dados.json"], vagas = files["docs/vagas.json"] || null;
-    if (report.routesKept) notes.push("Rotas: " + report.routesKept + ".");
+    if (routesNote(report)) notes.push(routesNote(report));
     if (vagasKept) notes.push("Vagas: ficaram as do site (" + stamp(vagasKept) + "), mais novas que esta leitura.");
     else if (stands && !stands.withValues) {
       notes.push("Vagas: as barras de carga e passageiros vieram vazias (—), então não foram publicadas. Só o dono da companhia vê esses números.");
