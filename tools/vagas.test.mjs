@@ -100,4 +100,5 @@ test("a extensão do dono usa as mesmas regras de leitura e publicação do cole
   same("coletor/extensao-astro/leitura-vortex.js", "coletor/extensao-chrome/leitura-vortex.js");
   same("coletor/extensao-astro/dados.js", "coletor/dados.mjs");
   same("coletor/extensao-astro/publicacao.js", "coletor/publicacao.mjs");
+  same("coletor/extensao-astro/publicacao-github.js", "coletor/publicacao-github.mjs");
 });

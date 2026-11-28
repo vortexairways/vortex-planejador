@@ -1512,7 +1512,15 @@ function renderLoadResults() {
   const rank = value => value ?? -Infinity;
   const sorted = [...loadScenarios].sort(([, a], [, b]) => (b.perHour !== null) - (a.perHour !== null) ||
     rank(b.perHour ?? b.grossPerHour) - rank(a.perHour ?? a.grossPerHour) || rank(b.net ?? b.gross) - rank(a.net ?? a.gross));
+  // Os dois grupos não se comparam entre si: um aviso separa os cenários sem líquido por hora (revisão do Codex, 28/11).
+  const withNet = sorted.some(([, scenario]) => scenario.perHour !== null);
+  let grossShown = false;
   for (const [key, scenario] of sorted) {
+    if (withNet && scenario.perHour === null && !grossShown) {
+      grossShown = true;
+      list.append(element("p", "meta load-group", T("Abaixo, cenários sem custos ou sem duração: ordenados pelo bruto, à parte dos de cima (não dá para comparar bruto com líquido).",
+        "Below, scenarios without costs or duration: ranked by gross, apart from the ones above (gross and net don't compare).")));
+    }
     const { items, gross, net, unit, minutes, source, route, plane } = scenario;
     const perHour = scenario.perHour ?? scenario.grossPerHour;
     const card = element("article", "load-result");

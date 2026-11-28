@@ -1,6 +1,7 @@
 # Prepara a extensão do dono (coletor/extensao-astro) e gera docs/extensao-vagas.zip (pasta vortex-dono).
 # 1. Copia para a extensão os arquivos compartilhados com o coletor do Rafael:
-#    leitura-vortex.js (leitura da página), dados.mjs -> dados.js e publicacao.mjs -> publicacao.js (regras da publicação).
+#    leitura-vortex.js (leitura da página), dados.mjs -> dados.js e publicacao.mjs -> publicacao.js (regras da publicação)
+#    e publicacao-github.mjs -> publicacao-github.js (tudo num commit só).
 # 2. Compacta SEM compressão, para o teste tools/vagas.test.mjs conferir que o pacote está em dia.
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -8,6 +9,7 @@ $extension = Join-Path $root "coletor\extensao-astro"
 Copy-Item (Join-Path $root "coletor\extensao-chrome\leitura-vortex.js") (Join-Path $extension "leitura-vortex.js") -Force
 Copy-Item (Join-Path $root "coletor\dados.mjs") (Join-Path $extension "dados.js") -Force
 Copy-Item (Join-Path $root "coletor\publicacao.mjs") (Join-Path $extension "publicacao.js") -Force
+Copy-Item (Join-Path $root "coletor\publicacao-github.mjs") (Join-Path $extension "publicacao-github.js") -Force
 $stage = Join-Path ([System.IO.Path]::GetTempPath()) ("vortex-dono-" + [guid]::NewGuid())
 $folder = Join-Path $stage "vortex-dono"
 New-Item -ItemType Directory -Force $folder | Out-Null

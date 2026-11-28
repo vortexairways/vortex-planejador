@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { fuelStats, percentageMonitor, publicSnapshot } from "../coletor/publicacao.mjs";
+import { fuelStats, percentageMonitor, publicFuel, publicFuelMinimum, publicSnapshot } from "../coletor/publicacao.mjs";
 import { buildSnapshot, routesDropped } from "../coletor/dados.mjs";
 
 // fuel: combustível utilizado no voo (as "lbs" do histórico do PilOps).
@@ -141,4 +141,24 @@ test("rotas: leitura com menos da metade das rotas publicadas é recusada e a ma
   assert.ok(buildSnapshot({ ...base, routes: routes(5) }, published), "metade ainda é aceita (rotas desativadas de verdade)");
   assert.ok(buildSnapshot({ ...base, routes: routes(1) }, { ...published, routes: routes(5) }), "malha pequena não trava");
   assert.ok(buildSnapshot({ ...base, routes: routes(1) }, null), "primeira coleta não tem com o que comparar");
+});
+
+test("consumo público: só grupos com 3 voos ou mais, arredondados; o site publicado já segue a regra", () => {
+  // Revisão do Codex (28/11/2026): num grupo de um voo só, a mediana era o combustível exato de um voo público.
+  const three = [flight("2026-11-10", 300, 9040), flight("2026-11-09", 100, 12000), flight("2026-11-08", 200, 8000)];
+  const lone = flight("2026-11-07", 200, 7777, "Avião raro");
+  const safe = publicSnapshot({ ...base, flights: [...three, lone] }).fuelStats;
+  assert.deepEqual(safe.routes.map(item => [item.model, item.count, item.fuel]), [["Test Plane", 3, 9000]]);
+  assert.deepEqual(safe.models.map(item => item.model), ["Test Plane"]);
+  assert.ok(!JSON.stringify(safe).includes("7777") && !JSON.stringify(safe).includes("Avião raro"));
+  const model = safe.models[0];
+  assert.equal(model.perHour % 50, 0);
+  assert.equal(model.perNm * 2, Math.round(model.perNm * 2));
+  // O que vem da coleta anterior também passa pela regra.
+  const old = { routes: [{ origin: "LEMD", destination: "KRDU", model: "X", count: 1, fuel: 5123 }], models: [{ model: "X", count: 2, perHour: 1234, perNm: 3.3 }] };
+  assert.deepEqual(publicFuel(old), { routes: [], models: [] });
+  assert.deepEqual(publicFuel(null), { routes: [], models: [] });
+  const site = JSON.parse(readFileSync(new URL("../docs/dados.json", import.meta.url), "utf8")).fuelStats;
+  for (const item of [...site.routes, ...site.models]) assert.ok(item.count >= publicFuelMinimum, JSON.stringify(item));
+  for (const item of site.routes) assert.equal(item.fuel % 100, 0);
 });

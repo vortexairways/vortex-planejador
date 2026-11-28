@@ -54,6 +54,21 @@ export function fuelStats(flights) {
   return { routes, models };
 }
 
+// O site público só recebe consumo de grupos com 3 voos ou mais, com valores arredondados (revisão do Codex,
+// 28/11/2026: em 21 grupos de um voo só a "mediana" era o combustível exato daquele voo, e o voo aparece na lista
+// pública). Rota: 100 lb; modelo: 50 lb/h e 0,5 lb/nm. Vale também para o consumo reaproveitado da coleta anterior.
+export const publicFuelMinimum = 3;
+const roundTo = (value, step) => Math.round(value / step) * step;
+export function publicFuel(stats) {
+  const enough = item => Number.isInteger(item?.count) && item.count >= publicFuelMinimum;
+  return {
+    routes: (Array.isArray(stats?.routes) ? stats.routes : []).filter(item => enough(item) && positive(item.fuel))
+      .map(({ origin, destination, model, count, fuel }) => ({ origin, destination, model, count, fuel: roundTo(fuel, 100) })),
+    models: (Array.isArray(stats?.models) ? stats.models : []).filter(item => enough(item) && positive(item.perHour) && positive(item.perNm))
+      .map(({ model, count, perHour, perNm }) => ({ model, count, perHour: roundTo(perHour, 50), perNm: roundTo(perNm, 0.5) })),
+  };
+}
+
 export function publicSnapshot(data) {
   return {
     capturedAt: data.capturedAt, reportedFleet: data.reportedFleet,
@@ -68,6 +83,6 @@ export function publicSnapshot(data) {
       paid: Number.isFinite(f.revenue) ? f.revenue > 0 : f.paid === true })),
     flightsSince: data.flightsSince || null,
     revenueMonitor: percentageMonitor(data.flights || []),
-    fuelStats: fuelStats(data.flights || []),
+    fuelStats: publicFuel(fuelStats(data.flights || [])),
   };
 }
